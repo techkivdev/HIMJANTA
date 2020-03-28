@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title id="page_title">Destination</title>
+
+  <!-- CSS  -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"
+    integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="external/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link href="external/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link href="css/style.css" type="text/css" rel="stylesheet" />
+</head>
+
+
+<body>
+
+  <!-- **************************************** -->
+  <!-- Navigation Sectione -->
+  <!-- **************************************** -->
+
+  <!--=========== NAV SECTION ================= -->
+  <div class="navbar-fixed">
+
+    <!-- Dropdown Structure -->
+    <ul id="nav_dropdown" class="dropdown-content">
+      <li><a href="history.html">History</a></li> 
+      <li><a href="forum/index.html?pt=COMMONFORUM&id=NA&fl=NA">Forum</a></li>           
+    </ul>
+
+    <nav id="main_nav_bar" class="white z-depth-2" role="navigation" style="display: none;">
+      <div class="nav-wrapper container">
+
+        <!-- Logo Container -->
+        <a id="logo-container" href="index.html" class="brand-logo">KivTravels</a>
+
+        <!-- Navigation List -->
+        <ul class="right hide-on-med-and-down">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="destinations.html?fl=NA">Destinations</a></li>
+          <li><a href="packages.html?fl=NA">Packages</a></li>
+          <li><a href="login.html">Profile</a></li>
+
+           <!-- Dropdown Trigger -->
+         <li><a class="dropdown-trigger" href="#!" data-target="nav_dropdown">More<i class="material-icons right">arrow_drop_down</i></a></li>
+
+
+        </ul>
+
+        <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+
+      </div>
+
+
+
+    </nav>
+
+  </div>
+
+  <!-- Mobile Navigation List -->
+  <ul id="nav-mobile" class="sidenav">
+
+    <div class="container-fluid">
+      <div class="fb-profile">
+        <img class="fb-image-lg left-align z-depth-2" src="Images/nav_mobile.jpg" alt="Snow"
+          style="height: 200px; margin-bottom: 10px;">
+      </div>
+    </div>
+
+
+    <li><a href="index.html">Home</a></li>
+    <li><a href="destinations.html?fl=NA">Destinations</a></li>
+    <li><a href="packages.html?fl=NA">Packages</a></li>
+    <li id='nav_profile'><a href="login.html">Profile</a></li>
+    <li class="divider"></li>
+    <li id='nav_history'><a href="history.html">History</a></li>
+    <li><a href="forum/index.html?pt=COMMONFORUM&id=NA&fl=NA">Forum</a></li>
+    <li class="divider"></li>
+    <li style="margin-top: 10px;"><a href="terms_and_conditions.html">Terms & Conditions</a></li>
+    <li><a href="privacy_police.html">Privacy Police</a></li>
+    <li><a href="about_us.html">About Us</a></li>
+  </ul>
+
+  <!-- ========================================== -->
+
+
+
+
+  <!-- **************************************** -->
+  <!-- Header Section -->
+  <!-- **************************************** -->
+
+
+  <!-- **************************************** -->
+  <!-- Main Banner -->
+  <!-- **************************************** -->
+
+  <div id="header_section" class="new-container" style="display: none; height: 400px;  margin-top: 1px;">
+
+    <img id="banner_main_image" class="z-depth-2" src="Images/default.jpg" alt="Snow"
+      style="height: 400px; width:100%; background-size: 100%;">
+
+    <div class="centered">
+      <h1 id="banner_main_header"> </h1>
+      <p id="banner_small_header"> </p>
+      <br>    
+
+      <div id="header_btn_options_dest" style="margin-top: 15%;">
+        <div class="col s12">
+          <ul class="tabs tabs-fixed-width tab-demo z-depth-1 white lighten-5 rcorners">
+            <li class="tab" style="width: 100px;"><a class="active blue-text" href="#details_dest"><i
+                  class="material-icons blue-text"
+                  style="font-size: 40px; margin-top: 5px;">format_list_bulleted</i></a></li>
+            <li class="tab" style="width: 100px;"><a class="blue-text" href="#images_dest"><i
+                  class="material-icons blue-text" style="font-size: 40px;  margin-top: 5px;">image</i></a></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+
+
+
+  </div>
+
+
+  <!-- ***************** END ******************* -->
+
+  <!-- Discussion Forum -->
+  <div id="discussion_forum" class="fixed-action-btn" style="display: block;">
+    <a href="#!" onclick="openDiscussionForm()" class="btn-floating btn-large  red">
+      <i class="large material-icons">chat</i>
+    </a>
+  </div>
+
+
+  <!-- Progress Bar -->
+  <div id="main_progress" class="center-align header-margin">
+
+    <div class="preloader-wrapper active">
+      <div class="spinner-layer spinner-red-only">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div>
+        <div class="gap-patch">
+          <div class="circle"></div>
+        </div>
+        <div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+  <!-- **************************************** -->
+  <!-- Container Section 1 -->
+  <!-- **************************************** -->
+
+  <div id="main_list_container" class="container row">
+
+    <!-- **************************************** -->
+    <!--   Coloum Section 1  -->
+    <div id="col_section_1" style="display: none;">
+
+      <!-- details  -->
+      <div id="details_dest">
+        
+        <!-- Row Section 1 -->
+        <div id="hdr_details_card" class="row" style="margin: -100px 0px 0px 0px;">
+
+          <!-- CARD Infromation 1 -->
+          <div class="col s12">
+            <div class="card" style="border-radius: 25px;">
+
+              <div id="header_card_dest" class="red-card-content white-text z-depth-2"
+                style="border-radius: 25px 25px 0px 0px;">
+
+                <div class="card-content">
+                  <p id="dest_title" style="font-size: 25px;">Destination Name</p>
+
+                  <!-- Price -->
+                  <div class="col s12 m12" style="margin-top: 2%;">
+                    <div class="right-align">
+
+                      <span>
+                        <small id="dest_header_1" class="black-text" style="font-size: 10px;">Per Person</small><br>
+                        <small id="dest_price" style="font-size: 30px;">$12000</small>
+                        <small class="white-text" style="font-size: 10px;">/ Per Person</small><br>
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                  <div class="row">
+                    <div class="col s12 m12">
+                      <div>
+                        <span>
+                          <small><i class="material-icons black-text" style="font-size: 15px;">date_range</i></small>
+                          <small id="dest_header_2" class="black-text" style="font-size: 15px;">Best Time</small>
+                        </span>
+                      </div>
+
+                      <span>
+                        <small id="dest_best_time" style="font-size: 15px;">Sept - Oct</small>                        
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                  <div class="row">
+
+                    <div class="col s12 m12">
+                      <div>
+                        <span>
+                          <small><i class="material-icons black-text" style="font-size: 15px;">access_time</i></small>
+                          <small id="dest_header_7" class="black-text" style="font-size: 15px;">Duration</small>
+                        </span>
+                      </div>
+                      
+                      <p id="dest_duration">13 days</p>
+                    </div>                  
+
+                  </div> 
+
+                  <!-- Tags -->
+                  <div id="dest_tags_sec" class="row">
+                    <div class="col s12">  
+                      <div id="dest_tags">
+                        <!-- All Activities Details -->
+                        <div class="chip">
+                          <img src="Images/default.jpg" alt="default">
+                          Jane Doe
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                   <!-- BTN -->
+                   <div class="col s12 row">  
+                    <div class="row">                                
+                        <div class="center-align">
+                        <a onclick="openRequestForm()" class="waves-effect waves-light btn-large pink rcorners">Get Free Quotes</a>
+                        </div>
+                      </div> 
+                  </div>
+                   
+                  
+                
+                  
+
+                </div>
+
+
+              </div>
+
+
+              <div class="card-content black-text">
+
+                <!-- ------------------ -->
+                  <!-- Quick Options ---- -->
+                  <!-- <i class="fas fa-lightbulb-exclamation"></i> -->
+                  <!-- <i onclick="viewEssentialDetails()" class="material-icons white-text" style="font-size: 30px;">info</i> -->
+                  <div id="dest_quick_action_sec" class="row" style="margin-top: 5px;">
+                    <!-- Script Code -->                   
+                  </div>
+
+                  <!-- ------------------ -->
+
+
+                <!-- Card Body START -->
+                <div class="row">
+
+                   <!-- activities -->
+                  <div id="dest_activity_sec" class="row">
+                    <div class="col s12">
+                      <p id="dest_header_3" class="grey-text">Activities : </p>
+
+                      <div id="dest_activities">
+
+                        <!-- All Activities Details -->
+                        <div class="chip">
+                          <img src="Images/default.jpg" alt="default">
+                          Jane Doe
+                        </div>
+
+                      </div>
+
+
+                    </div>
+                  </div>
+
+                  <!-- Description -->
+                  <div class="row">
+                    <div class="col s12">
+                      <p id="dest_header_5" class="grey-text">Description</p>
+                      <p id="dest_description" class="long-text">#</p>
+
+                      <div class="right-align" style="margin-top: 4%;">
+                        <a onclick="viewOverview()" class="waves-effect waves-teal btn-flat blue-text">Read More</a>
+                      </div>
+
+                    </div>
+                  </div>
+
+
+
+                </div>
+                <!-- Card Body END -->
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+         <!-- CARD Infromation  - Show More Options -->
+         <div id="more_options">             
+          <div class="row">                  
+           <div class="col s6">
+             <a onclick="watchListHandling()" class="waves-effect waves-light btn red rcorners" style="width: 100%;"><i class="material-icons left">favorite</i>Wishlist</a>
+           </div>
+           <div class="col s6">
+             <a onclick="copyLinkToShare()" class="waves-effect waves-light btn orange rcorners" style="width: 100%;"><i class="material-icons left">share</i>Share</a>
+           </div>
+         </div> 
+       </div>
+
+        <!-- CARD Infromation 2 Useful Links -->
+        <div id="destcard_links" class="col s12" style="display: none;">
+          <div class="card" style="border-radius: 10px;">
+            <div class="card-content black-text">
+              <span id="card_link_header_sec" class="card-title"><b id="dest_header_6">Links</b></span>
+
+              <!-- Card Body START -->
+              <div>
+                <!-- Address --> 
+                <div id="dest_address_sec" class="row">                                       
+                  <div class="col s12">
+                    <p id="dest_header_10" class="grey-text">Address</p>
+                    <b id="dest_address">1-2 Hours</b>
+                  </div>                   
+              </div>
+
+              <!-- Links --> 
+              <div id="dest_links_sec" class="row">                                       
+               <div class="col s12">
+                 <p id="dest_header_11" class="grey-text">Website</p>
+                 <b id="dest_links">1-2 Hours</b>
+               </div>                   
+           </div>
+
+           <!-- Phone --> 
+           <div id="dest_phone_sec" class="row">                                       
+            <div class="col s12">
+              <p id="dest_header_12" class="grey-text">Phone</p>
+              <b id="dest_phone">1-2 Hours</b>
+            </div>                   
+        </div>
+
+              </div>
+
+              <!-- Card Body END -->
+
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD Infromation 3 How to Reach -->
+        <div id="destcard_reach" class="col s12" style="display: none;">
+          <div style="margin-left: 10px;">
+            <p id="reach_title" style="font-size: 25px;">Header</p>
+            <p id="reach_desc" class="long-text grey-text" style="font-size: 15px; margin-top: -25px;">Sub Header</p>
+
+            <div id="reach_content_btn" class="right-align" style="margin-top: 0px;">
+              <a onclick="viewReachDetails('content')" class="waves-effect waves-teal btn-flat blue-text">Read More</a>
+            </div>
+
+          </div>
+
+          <div class="row" style="margin-top: 5px;">
+
+            <!-- By Air -->
+            <div id="destcard_air" class="col s12 m4">
+
+              <div class="card" style="border-radius: 10px;">
+                <div class="card-content black-text">
+                  <span class="card-title">
+                    <p id="dest_header_by_air" style="font-size: 20px;">By Air</p>
+                  </span>
+
+                  <!-- Card Body START -->
+                  <div>
+                    <p id="dest_by_air" class="long-text grey-text">#</p>
+                  </div>
+
+                  <div class="right-align" style="margin-top: 4%;">
+                    <a onclick="viewReachDetails('air')" class="waves-effect waves-teal btn-flat blue-text">Read
+                      More</a>
+                  </div>
+
+                  <!-- Card Body END -->
+
+                </div>
+              </div>
+
+            </div>
+
+            <!-- By Train -->
+            <div id="destcard_train" class="col s12 m4">
+
+              <div class="card" style="border-radius: 10px;">
+                <div class="card-content black-text">
+                  <span class="card-title">
+                    <p id="dest_header_by_train" style="font-size: 20px;">By Train</p>
+                  </span>
+
+                  <!-- Card Body START -->
+                  <div>
+                    <p id="dest_by_train" class="long-text grey-text">#</p>
+                  </div>
+
+                  <div class="right-align" style="margin-top: 4%;">
+                    <a onclick="viewReachDetails('train')" class="waves-effect waves-teal btn-flat blue-text">Read
+                      More</a>
+                  </div>
+                  <!-- Card Body END -->
+
+                </div>
+              </div>
+
+            </div>
+
+
+            <!-- By Road -->
+            <div id="destcard_road" class="col s12 m4">
+
+              <div class="card" style="border-radius: 10px;">
+                <div class="card-content black-text">
+                  <span class="card-title">
+                    <p id="dest_header_by_road" style="font-size: 20px;">By Road</p>
+                  </span>
+
+                  <!-- Card Body START -->
+                  <div>
+                    <p id="dest_by_road" class="long-text grey-text">#</p>
+                  </div>
+
+                  <div class="right-align" style="margin-top: 4%;">
+                    <a onclick="viewReachDetails('road')" class="waves-effect waves-teal btn-flat blue-text">Read
+                      More</a>
+                  </div>
+                  <!-- Card Body END -->
+
+                </div>
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+        <!-- CARD Infromation Services -->
+        <div id="card_service" class="col s12" style="display: block;">
+          <!-- Script Code -->
+        </div>
+
+
+        <!-- CARD Infromation ADMIN -->
+        <div id="card_admin" class="col s12" style="display: none;">
+
+          <ul class="collapsible">
+            <li>
+              <div class="collapsible-header"><i class="material-icons">account_circle</i>Admin Section</div>
+              <div class="collapsible-body"> 
+              <!-- Card Body START -->
+              <div id="admin_sec">
+                <!-- Script Code -->
+              </div>
+              <!-- Card Body END -->
+              </div>
+            </li>            
+          </ul>         
+
+        </div>
+
+      </div>
+
+
+      <!--images -->
+      <div id="images_dest">
+
+        <!-- Row Section 1 -->
+        <div id="hdr_image_card" class="row" style="margin: -100px 0px 0px 0px;">
+          <!-- CARD Infromation Images -->
+          <div id="dest_image_view_section" class="col s12">
+            <div class="card" style="border-radius: 25px;">
+              <div class="card-content black-text">
+                <span class="card-title"><b>Gallery</b></span>
+
+                <!-- Card Body START -->
+                <div id="dest_image_view" class="row">
+
+                </div>
+                <!-- Card Body END -->
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+
+
+    </div>
+
+    <!-- List Ref Section -- -->
+    <div id="dest_listref_section">
+
+    <div id="all_cities_list_ref">
+      <!-- **************************************** -->
+      <!--   Script Code  -->
+      <!-- **************************************** -->
+    </div>
+
+    <!-- Filter Btn -->
+    <div id="listref_filter_btn" class="row" style="display:none;">
+
+      <div class="center-align">
+
+        <div id="listref_filter_btn_sec" class="container">
+          <!-- Script Code -->   
+      </div>
+
+    </div>
+  </div>
+
+    <div id="all_packages_list_ref">
+      <!-- **************************************** -->
+      <!--   Script Code  -->
+      <!-- **************************************** -->
+    </div>
+
+    <div id="all_packages_list_2_ref">
+      <!-- **************************************** -->
+      <!--   Script Code  -->
+      <!-- **************************************** -->
+    </div>
+
+    <div id="all_packages_list_3_ref">
+      <!-- **************************************** -->
+      <!--   Script Code  -->
+      <!-- **************************************** -->
+    </div>
+
+    <div id="all_places_list_ref">
+      <!-- **************************************** -->
+      <!--   Script Code  -->
+      <!-- **************************************** -->
+    </div>
+
+    <div id="all_todo_places_list_ref">
+      <!-- **************************************** -->
+      <!--   Script Code  -->
+      <!-- **************************************** -->
+    </div>
+
+    <div id="all_stories_list_ref">
+      <!-- **************************************** -->
+      <!--   Script Code  -->
+      <!-- **************************************** -->
+    </div>
+
+    <div id="all_reviews_list_ref">
+      <!-- **************************************** -->
+      <!--   Script Code  -->
+      <!-- **************************************** -->
+    </div>
+
+  </div>
+
+    <!-- FAQ Section -->
+    <div id="dest_faq_sec" class="row" style="display: none; margin: 5% 10px 10px 10px;">
+       <!-- -------------------------- -->
+        <!-- Script Code -->
+         <!-- -------------------------- -->    
+    </div>
+
+     <!-- Ratings Section -->
+     <div id="ratings_sec" class="row" style="display: block; margin: 5% 10px 10px 10px;">
+      <!-- -------------------------- -->
+       <!-- Script Code -->
+        <!-- -------------------------- -->    
+     </div>
+
+  </div>
+
+  <!-- ***************** END ******************* -->
+
+ <!-- **************************************** -->
+  <!-- Message Display Section -->
+  <!-- **************************************** -->
+
+  <div id="message_display_container" class="container row" style="display: none;">
+    <div>
+      <p id="msg_header" style="font-size: 30px;">Header</p>
+      <p id="msg_sub_header" class="grey-text long-text" style="margin-top: -20px;">SUB Header</p>
+      <p id="msg_content" >Complete Details</p>
+    </div> 
+  </div>
+
+  <div id="close_fl_btn" class="fixed-action-btn" style="display: none;">
+    <a href="#!" onclick="hideFullMessageDialog()" class="btn-floating btn-large  red">
+      <i class="large material-icons">close</i>
+    </a>
+  </div>
+
+  <!-- ***************** END ******************* -->
+
+
+  <!-- ***************** END ******************* -->
+
+
+  <!-- **************************************** -->
+  <!-- Footer -->
+  <!-- **************************************** -->
+  <div id="main_footer_sec" style="display: none; ">
+    <footer id="footer_sec" style="display: none; " class="page-footer footer-shade  white-text">
+      <div class="container">
+        <div class="row">
+          <div class="col l6 s12">
+            <h5 class="white-text">Company Bio</h5>
+            <!--
+              <p class="grey-text text-lighten-4">We are a team of college students working on this project like it's our
+                full time job. Any amount would help support and continue development on this project and is greatly
+                appreciated.</p>
+                -->
+
+
+          </div>
+          <div class="col l3 s12">
+            <!-- <h5 class="white-text">Settings</h5> -->
+            <ul>
+              <li><a class="white-text" href="about_us.html">About</a></li>
+              <li><a class="white-text" href="terms_and_conditions.html">Terms & Conditions</a></li>
+              <li><a class="white-text" href="privacy_police.html">Privacy and Cookie Police</a></li>
+            </ul>
+          </div>
+          <div class="col l3 s12">
+            <!--
+              <h5 class="white-text">Connect</h5>
+              <ul>
+                <li><a class="white-text" href="#!">Facebook</a></li>
+                <li><a class="white-text" href="#!">Instgram</a></li>
+              </ul>
+             -->
+          </div>
+        </div>
+      </div>
+      <div class="footer-copyright">
+        <div class="container">
+          Made by <a class="brown-text text-lighten-3" href="#!" id="role_message">KivTech</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- **************************************** -->
+  <!--  Scripts-->
+  <!-- **************************************** -->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="external/js/materialize.js"></script>
+  <script src="external/js/init.js"></script>
+
+
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-storage.js"></script>
+  <script src="app/firestore.js"></script>
+  <script src="scripts/listDataSet.js"></script>
+  <script src="scripts/common.js"></script>
+  <script src="scripts/edestination.js"></script>
+
+
+</body>
+
+</html>

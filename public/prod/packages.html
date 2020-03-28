@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title id="page_title">Package</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="external/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link href="external/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link href="css/style.css" type="text/css" rel="stylesheet" />
+</head>
+
+
+<body>
+
+  <div class="bg">
+
+  <!-- **************************************** -->
+  <!-- Navigation Sectione -->
+  <!-- **************************************** -->
+  
+   <!--=========== NAV SECTION ================= -->
+   <div class="navbar-fixed">
+
+    <!-- Dropdown Structure -->
+    <ul id="nav_dropdown" class="dropdown-content">
+      <li><a href="history.html">History</a></li>     
+      <li><a href="forum/index.html?pt=COMMONFORUM&id=NA&fl=NA">Forum</a></li>       
+    </ul>
+
+    <nav id="main_nav_bar" class="white z-depth-2" role="navigation" style="display: none;">
+      <div class="nav-wrapper container">
+  
+        <!-- Logo Container -->
+        <a id="logo-container" href="index.html" class="brand-logo">KivTravels</a>
+  
+        <!-- Navigation List -->
+        <ul class="right hide-on-med-and-down">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="destinations.html?fl=NA">Destinations</a></li>
+          <li  class="active"><a href="packages.html?fl=NA">Packages</a></li>
+          <li><a href="login.html">Profile</a></li>
+
+           <!-- Dropdown Trigger -->
+         <li><a class="dropdown-trigger" href="#!" data-target="nav_dropdown">More<i class="material-icons right">arrow_drop_down</i></a></li>
+
+        </ul>
+       
+        <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+  
+        <div id="main_progress" class="progress">
+          <div class="indeterminate red"></div>
+        </div>
+
+      </div>
+  
+  
+  
+    </nav>
+  
+     </div>
+  
+      <!-- Mobile Navigation List -->
+      <ul id="nav-mobile" class="sidenav">
+         
+        <div class="container-fluid">
+            <div class="fb-profile">            
+              <img class="fb-image-lg left-align z-depth-2" src="Images/nav_mobile.jpg" alt="Snow" style="height: 200px; margin-bottom: 10px;">            
+            </div>
+          </div>
+  
+  
+        <li><a href="index.html">Home</a></li>
+        <li ><a href="destinations.html?fl=NA">Destinations</a></li>
+        <li  class="active"><a href="packages.html?fl=NA">Packages</a></li>
+        <li  id='nav_profile' ><a href="login.html">Profile</a></li>
+        <li class="divider"></li>
+    <li id='nav_history'><a href="history.html">History</a></li> 
+    <li><a href="forum/index.html?pt=COMMONFORUM&id=NA&fl=NA">Forum</a></li>
+        <li class="divider"></li>    
+        <li style="margin-top: 10px;"><a href="terms_and_conditions.html">Terms & Conditions</a></li>  
+        <li><a href="privacy_police.html">Privacy Police</a></li>
+        <li><a href="about_us.html">About Us</a></li>
+    </ul>
+  
+    <!-- ========================================== -->
+
+
+  
+
+  <!-- **************************************** -->
+  <!-- Main Banner -->
+  <!-- **************************************** -->
+
+  <div id="header_section" style="display: none; margin-top: 1px;">
+    <div class="container-fluid">
+      <div class="fb-profile">
+
+        <img id="banner_main_image" class="fb-image-lg left-align z-depth-2" src="Images/default.jpg" alt="Snow">
+
+        <div class="centered">
+          <h1 id="banner_main_header"> </h1>
+          <p id="banner_small_header"> </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <!-- **************************************** -->
+  <!-- Container Section 1 -->
+  <!-- **************************************** -->
+  <div id="main_section" class="container-fluid" style="display: none;">
+    
+     <!-- Main Container -->
+    <div id="main_list_container" class="container row">
+
+      <!-- **************************************** -->
+      <!--   Coloum Section 1  -->
+      <div style="margin: 0px 0px 0px 0px;">
+
+        <div class="row">
+
+          <div class="col s12 m12">
+
+            <div id="hdr_title"> 
+              <h1 class="white-text">Packages</h1> 
+            </div>
+
+             <!-- Filter Tags -->
+             <div id="filter_tags" style="margin-top: 2%">
+              <!-- Script Code -->                
+            </div>
+
+            <div id="pkg_hdr_card" class="card" style="border-radius: 25px; display: none;">
+
+                <div class="blue-card-content white-text z-depth-2" style="border-radius: 25px; height: 150px;">
+                    <div class="card-content">
+                        <span id="heading_title" class="card-title white-text" style="font-size: 30px;"></span> 
+                      </div>
+                </div>
+
+             
+            </div>
+
+            <div id="col_section_1">
+
+                <!-- **************************************** -->
+                <!--   Script Code  -->
+                <!-- **************************************** -->
+
+              </div>
+
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+      <!-- Nothing Found -->
+      <div id="nothing_found_sec" class="container row" style="margin-top: 2%; display: none;">
+        <h4 class="white-text">Nothing found!!</h4>
+      </div>
+
+     <!-- Filter Section -->
+     <div id="filter_section" class="container row" style=" margin-top: 2%; display: none;">
+      <h4 id="filter_hdr" class=" white-text">Filter Options</h4> 
+
+      <!-- All Options -->
+
+      <div id="filter_reset_btn" class=" right-align" style="margin-top: 0px;">
+        <a onclick="resetFilter()" class="waves-effect waves-light btn black rcorners">RESET</a>
+      </div>
+
+      <div class="row">
+
+        <!-- Option 1 -->
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">Categories</span>
+               <!-- Select Options -->
+               <div class="row" style="margin-top: 20px;">   
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_1" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_1_val">Honeymoon</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_2" type="checkbox" class="filled-in"/>
+                      <span  id="chkbx_filter_2_val">Friends</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_21" type="checkbox" class="filled-in"/>
+                      <span  id="chkbx_filter_21_val">Family</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_22" type="checkbox" class="filled-in"/>
+                      <span  id="chkbx_filter_22_val">Nature</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_23" type="checkbox" class="filled-in"/>
+                      <span  id="chkbx_filter_23_val">Adventure</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_24" type="checkbox" class="filled-in"/>
+                      <span  id="chkbx_filter_24_val">Religious</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_29" type="checkbox" class="filled-in"/>
+                      <span  id="chkbx_filter_29_val">Solo</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_30" type="checkbox" class="filled-in"/>
+                      <span  id="chkbx_filter_30_val">Water Activities</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_31" type="checkbox" class="filled-in"/>
+                      <span  id="chkbx_filter_31_val">Wildlife</span>
+                    </label>
+                  </p>
+                </div>
+
+              </div>
+            </div>            
+          </div>
+        </div>
+
+
+        <!-- Option 2 -->
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">Budget (Per Person)</span>
+               <!-- Select Options -->
+               <div class="row" style="margin-top: 20px;">  
+
+                <div class="col s12">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_3" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_3_val">Below 5000</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s12">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_4" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_4_val">5000-10000</span>
+                    </label>
+                  </p>
+                </div>
+
+
+                <div class="col s12">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_5" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_5_val">10000-20000</span>
+                    </label>
+                  </p>
+                </div>
+
+
+                <div class="col s12">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_6" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_6_val">Above 20000</span>
+                    </label>
+                  </p>
+                </div>
+
+              
+
+              </div>
+            </div>            
+          </div>
+        </div>
+
+
+         <!-- Option 3 -->
+         <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">Duration (Days)</span>
+               <!-- Select Options -->
+               <div class="row" style="margin-top: 20px;">   
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_7" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_7_val">1-3</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_8" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_8_val">4-6</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_9" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_9_val">7-9</span>
+                    </label>
+                  </p>
+                </div>
+
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_10" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_10_val">10-12</span>
+                    </label>
+                  </p>
+                </div>
+
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_11" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_11_val">Above 12</span>
+                    </label>
+                  </p>
+                </div>
+
+
+              </div>
+            </div>            
+          </div>
+        </div>
+
+         <!-- Option 4 -->
+         <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">Activities</span>
+               <!-- Select Options -->
+               <div class="row" style="margin-top: 20px;">   
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_12" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_12_val">Nature</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_13" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_13_val">Beach</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_14" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_14_val">Historical</span>
+                    </label>
+                  </p>
+                </div>
+
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_15" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_15_val">Religious</span>
+                    </label>
+                  </p>
+                </div>
+
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_16" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_16_val">Lifestyle</span>
+                    </label>
+                  </p>
+                </div>
+
+
+              </div>
+            </div>            
+          </div>
+        </div>
+
+         <!-- Option 5 -->
+         <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">Month of travel</span>
+               <!-- Select Options -->
+               <div class="row" style="margin-top: 20px;">   
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_17" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_17_val">Jan-Mar</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_18" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_18_val">Apr-Jun</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_19" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_19_val">Jul-Sep</span>
+                    </label>
+                  </p>
+                </div>
+
+
+                <div class="col s6 m6">
+                  <p>
+                    <label>
+                      <input id="chkbx_filter_20" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_20_val">Oct-Dec</span>
+                    </label>
+                  </p>
+                </div>
+
+
+              </div>
+            </div>            
+          </div>
+        </div>
+
+        <!-- Option 6 -->
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">Hotel Star Ratings</span>
+               <!-- Select Options -->
+               <div class="row" style="margin-top: 20px;">  
+
+                <div class="col s12">
+                  <p>
+                    <label>
+                      <span><i class="small material-icons orange-text">star</i><i class="small material-icons orange-text">star</i>
+                        <i class="small material-icons orange-text">star</i><i class="small material-icons orange-text">star</i>
+                        <i class="small material-icons orange-text">star</i></span><br>
+                      <input id="chkbx_filter_25" type="checkbox" class="filled-in"/>                     
+                      <span id="chkbx_filter_25_val">5 Star</span>
+                    </label>
+                  </p>
+                </div>
+
+                <div class="col s12">
+                  <p>
+                    <label>
+                      <span><i class="small material-icons orange-text">star</i>
+                        <i class="small material-icons orange-text">star</i><i class="small material-icons orange-text">star</i>
+                        <i class="small material-icons orange-text">star</i></span><br>
+                      <input id="chkbx_filter_26" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_26_val">4 Star</span>
+                    </label>
+                  </p>
+                </div>
+
+
+                <div class="col s12">
+                  <p>
+                    <label>
+                      <span><i class="small material-icons orange-text">star</i><i class="small material-icons orange-text">star</i>
+                        <i class="small material-icons orange-text">star</i></span><br>
+                      <input id="chkbx_filter_27" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_27_val">3 Star</span>
+                    </label>
+                  </p>
+                </div>
+
+
+                <div class="col s12">
+                  <p>
+                    <label>
+                      <span><i class="small material-icons orange-text">star</i>
+                        <i class="small material-icons orange-text">star</i></span><br>
+                      <input id="chkbx_filter_28" type="checkbox" class="filled-in"/>
+                      <span id="chkbx_filter_28_val">2 Star</span>
+                    </label>
+                  </p>
+                </div>
+
+              
+
+              </div>
+            </div>            
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="center-align" style="margin-top: 0px;">
+        <a onclick="applyFilter()" class="waves-effect waves-light btn-large red rcorners">Apply Filter</a>
+      </div>
+
+    </div>
+
+
+
+    <!-- **************************************** -->
+    <!-- Floating Action Button -->
+    <!-- **************************************** -->
+
+    <div id="flb_open_filter" class="fixed-action-btn">
+      <a href="#!" onclick="openFilterSection()" class="btn-floating btn-large  blue">
+        <i class="large material-icons">filter_list</i>
+      </a>
+    </div>
+
+    <div id="flb_close_filter" class="fixed-action-btn" style="display: none;">
+      <a href="#!" onclick="closeFilterSection()" class="btn-floating btn-large  red">
+        <i class="large material-icons">close</i>
+      </a>
+    </div>
+
+
+    <!-- ***************** END ******************* -->
+
+
+    <!-- **************************************** -->
+    <!-- Footer -->
+    <!-- **************************************** -->
+    <footer id="main_footer_sec" class="page-footer footer-shade  white-text" style="display: none;">
+        <div class="container">
+            <div class="row">
+              <div class="col l6 s12">
+                <h5 class="white-text">Company Bio</h5>
+                <!--
+                <p class="grey-text text-lighten-4">We are a team of college students working on this project like it's our
+                  full time job. Any amount would help support and continue development on this project and is greatly
+                  appreciated.</p>
+                  -->
+    
+    
+              </div>
+              <div class="col l3 s12">
+                <!-- <h5 class="white-text">Settings</h5> -->
+                <ul>
+                  <li><a class="white-text" href="about_us.html">About</a></li>
+                  <li><a class="white-text" href="terms_and_conditions.html">Terms & Conditions</a></li>
+                  <li><a class="white-text" href="privacy_police.html">Privacy and Cookie Police</a></li>              
+                </ul>
+              </div>
+              <div class="col l3 s12">
+              <!--
+                <h5 class="white-text">Connect</h5>
+                <ul>
+                  <li><a class="white-text" href="#!">Facebook</a></li>
+                  <li><a class="white-text" href="#!">Instgram</a></li>
+                </ul>
+               -->
+              </div>
+            </div>
+          </div>
+          <div class="footer-copyright">
+            <div class="container">
+              Made by <a class="brown-text text-lighten-3" href="#!" id="role_message">KivTech</a>
+            </div>
+          </div>
+    </footer>
+
+  </div>
+
+
+</div>
+
+
+
+  <!-- **************************************** -->
+  <!--  Scripts-->
+  <!-- **************************************** -->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="external/js/materialize.js"></script>
+  <script src="external/js/init.js"></script>
+
+
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-storage.js"></script>
+  <script src="app/firestore.js"></script>
+  <script src="scripts/listDataSet.js"></script>
+  <script src="scripts/common.js"></script>
+  <script src="scripts/packages.js"></script>
+
+
+</body>
+
+</html>
