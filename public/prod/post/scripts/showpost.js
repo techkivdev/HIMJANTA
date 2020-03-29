@@ -94,6 +94,11 @@ function checkLoginData(){
     userLoginData = getLoginUserData()
     //displayOutput(userLoginData)
 
+    // Check for ROLE
+    if(userLoginData['ROLE'] != 'USER') {
+      document.getElementById("manage_post_menu").style.display = 'block';
+    }
+
     // Display Other Options also
     document.getElementById("my_topics_menu").style.display = 'block';
     document.getElementById("my_list_menu").style.display = 'block';
@@ -171,7 +176,7 @@ function updateHTMLPage() {
       $('#main_filter_section').html('<div class="chip">' + id + '</div>')
     } else {
       $('#message_content').html('Filter Applied on Category !!')
-      $('#main_filter_section').html('<div class="chip">' + getCatg1DataMapping(id) + '</div>')
+      $('#main_filter_section').html('<div class="chip">' + getCatgDataMapping(id) + '</div>')
     }
     
   }
@@ -274,7 +279,7 @@ function readAllForums() {
  
      if (snapshot.size == 0) {
        // ------ No Details Present -------------  
-       displayOutput('No Ratings Record Found !!') 
+       displayOutput('No Record Found !!') 
 
        let htmlContent = ''
        htmlContent += '<h1 class="black-text">No Post Found !!</h1>'
@@ -330,7 +335,7 @@ function getQuery() {
     .orderBy('CREATEDON', 'desc');
   } else if(fl == 'catg') {
     normalqueryref = collectionRef.where('DELETESTATUS', '==', false)
-    .where('CATEGORY1', '==', id)
+    .where('CATEGORY', '==', id)
     .orderBy('CREATEDON', 'desc');
   } else {
     normalqueryref = collectionRef.where('DELETESTATUS', '==', false)
@@ -361,7 +366,7 @@ function getFilterQuery() {
       }
 
       if(filter_selection_status['CATG']) {
-        normalqueryref = normalqueryref.where('CATEGORY1', '==', filter_selection_data['CATG'])
+        normalqueryref = normalqueryref.where('CATEGORY', '==', filter_selection_data['CATG'])
       }
 
       if(filter_selection_status['TAG']) {
@@ -528,7 +533,7 @@ function createEachDocumentCard(data,docid) {
             <div style="margin-top: 5px;">\
             <p class="long-text grey-text" >'+data['DESC']+'</p>\
           </div> \
-          <div class="left-align" style="margin-top: 5px;"> <a href="#!" onclick="chipClickHandling(\'' + data['CATEGORY1'] +'#catg' + '\')" ><div class="chip">'+data['CATEGORY1DIS']+'</div></a> </div>\
+          <div class="left-align" style="margin-top: 5px;"> <a href="#!" onclick="chipClickHandling(\'' + data['CATEGORY'] +'#catg' + '\')" ><div class="chip">'+data['CATEGORYDIS']+'</div></a> </div>\
               <div  style="margin-top: 2px; z-index: -1">\
                 '+getChipWithBorderFromListLoc(data['TAGS'])+'\
               </div>\
@@ -580,7 +585,7 @@ function viewEachTopic(details) {
 
   $("#u_name").html(data['UNAME']);
   $("#u_date").html(data['DATE']);
-  $("#category").html('<a href="#!" onclick="chipClickHandling(\'' + data['CATEGORY1'] +'#catg' + '\')" ><div class="chip">'+data['CATEGORY1DIS']+'</div></a>');
+  $("#category").html('<a href="#!" onclick="chipClickHandling(\'' + data['CATEGORY'] +'#catg' + '\')" ><div class="chip">'+data['CATEGORYDIS']+'</div></a>');
   $("#title").html(data['TITLE']);
   $("#publish_date").html('Published on ' + data['DATE']);
  
@@ -928,7 +933,7 @@ function viewAllComments() {
   
       if (snapshot.size == 0) {
         // ------ No Details Present -------------  
-        displayOutput('No Ratings Record Found !!') 
+        displayOutput('No Record Found !!') 
         //document.getElementById("ratings_sec").style.display = 'none'; 
         $("#all_user_comments").html('<p>No Comment !!</p>');
 
@@ -1139,7 +1144,7 @@ function editTopic() {
 
 // Share topic
 function shareTopic() {
-  let link = 'https://kivtravels.com/prod/forum/' + main_page +'?pt='+main_path+'&id='+currentTopicID+'&fl=only' 
+  let link = 'https://kivtravels.com/prod/post/' + main_page +'?pt='+main_path+'&id='+currentTopicID+'&fl=only' 
 
   var textArea = document.createElement("textarea");
   textArea.value = link;
@@ -1249,7 +1254,7 @@ function bookmarkTopic() {
     bookmarkData['SPACE'] = main_path
     bookmarkData['SPACENAME'] = 'POST'
 
-    var url = 'forum/' + main_page +'?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(currentTopicID) + '&fl=' + encodeURIComponent('only'); 
+    var url = 'post/' + main_page +'?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(currentTopicID) + '&fl=' + encodeURIComponent('only'); 
     bookmarkData['LINK'] = url
 
 
@@ -1466,7 +1471,7 @@ function applyFilter() {
 
   // Read Filter details
 
-   let catgOption = getCatg1DataMapping('LIST') 
+   let catgOption = getCatgDataMapping('LIST') 
    let catDropValue = document.getElementById("catg_options").value
    let cateData = ''  
 
@@ -1526,7 +1531,7 @@ function applyFilter() {
    }
 
    if(filter_selection_status['CATG']) {
-    chip_html += '<div class="chip">' + 'Category : ' +  getCatg1DataMapping(filter_selection_data['CATG']) + '</div>'
+    chip_html += '<div class="chip">' + 'Category : ' +  getCatgDataMapping(filter_selection_data['CATG']) + '</div>'
    }
 
    if(filter_selection_status['TAG']) {
@@ -1585,7 +1590,7 @@ function createFilterTagsDetails() {
 function createFilterCategoryDetails() {
   $("#all_Category_details").html('');
 
-  let catg_list = getCatg1DataMapping('LIST')
+  let catg_list = getCatgDataMapping('LIST')
 
   let html_line = ''
   for(each_idx in catg_list) {
@@ -1593,7 +1598,7 @@ function createFilterCategoryDetails() {
 
     let catg_name = catg_list[each_idx]
 
-    html_line += '<a href="#!" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" ><div class="chip">'+ getCatg1DataMapping(catg_name)  +'</div></a>'
+    html_line += '<a href="#!" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" ><div class="chip">'+ getCatgDataMapping(catg_name)  +'</div></a>'
   }
 
   $("#all_Category_details").html(html_line);

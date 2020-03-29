@@ -181,22 +181,42 @@ function authDetails() {
         // User Data        
         userData['NAME'] = displayName
         userData['EMAIL'] = email
+        userData['EMAILVERIFIED'] = emailVerified
+        userData['PROVIDERDATA'] = providerData
         userData['UUID'] = uuid
         userData['PHOTOURL'] = photoURL
+
         userData['ROLE'] = 'USER'
         userData['ROLE2'] = 'USER'
+
         userData['MOBILE'] = ''
-        userData['COUNTRY'] = ''
-        userData['STATE'] = ''
-        userData['DISTRICT'] = ''
+
+        userData['COUNTRY'] = 'INDIA'
+        userData['STATE'] = 'HIMACHAL PRADESH'
+        userData['DISTRICT'] = 'HIMACHAL'
+        userData['BLOCK'] = 'HIMACHAL'
+
         userData['BIO'] = ''
-        userData['NICKNAME'] = ''  
-        userData['EXTRA'] = {
-          CONFIG: 'NA'
+        userData['DISPNAME'] = displayName 
+
+        userData['AGEGROUP'] = 'CHILDREN'
+
+        userData['ADDRESS'] = ''
+        userData['MAPLOCATION'] = ''
+
+        userData['LANG'] = 'ENG'
+
+        userData['SHOWSETTINGS'] = {
+          PROFILE: true,
+          MOBILE: true,
+          ADDRESS: true,
+          AGEGROUP: true,
+          LOCATION: true
         }      
 
         // Update User Details into Database
         updateUserDetails(uuid, userData)
+
       });
     } else {
       // User is signed out.
@@ -209,6 +229,7 @@ function authDetails() {
       document.getElementById("spinner").style.display = 'none';
 
     }
+
   }, function (error) {
     displayOutput(error);
   });
@@ -290,12 +311,47 @@ function updateSessionData() {
   localStorageData('ISUSER',true)
   localStorageData('UUID',userData['UUID'])
   localStorageData('NAME',userData['NAME'])
+  localStorageData('DISPNAME',userData['DISPNAME'])
   localStorageData('EMAIL',userData['EMAIL'])
   localStorageData('MOBILE',userData['MOBILE'])
   localStorageData('ROLE',userData['ROLE']) 
+  localStorageData('ROLE2',userData['ROLE2'])
   localStorageData('PHOTO',userData['PHOTOURL'])
+  localStorageData('COUNTRY',userData['COUNTRY'])
+  localStorageData('STATE',userData['STATE'])
+  localStorageData('DISTRICT',userData['DISTRICT'])
+  localStorageData('BLOCK',userData['BLOCK'])
+  localStorageData('ADDRESS',userData['ADDRESS'])
+  localStorageData('MAPLOCATION',userData['MAPLOCATION'])
+  localStorageData('AGEGROUP',userData['AGEGROUP'])
   
   displayOutput('Session Data Updated ...')
+}
+
+// Sync Provider Details
+function syncProvideDetails() {
+
+  firebase.auth().onAuthStateChanged(function (user) {
+
+
+      // User is signed in.
+      var displayName = user.displayName;
+      var photoURL = user.photoURL;
+      uuid = user.uid;
+      
+      db.collection(userDataPath).doc(uuid).update({
+        NAME: displayName,
+        PHOTOURL: photoURL
+      }).then(function () {
+        displayOutput("Provider Date Updated ..");  
+        toastMsg('Data Updated !!')
+        location.reload();
+      });
+
+}, function (error) {
+  displayOutput(error);
+});
+
 }
 
 
@@ -324,10 +380,49 @@ function updateHTMLPage() {
   document.getElementById("user_profile_image").src = userData['PHOTOURL']
   document.getElementById("user_profile_image_mb").src = userData['PHOTOURL']
 
-  // Profile Details
+  // --------------------------------------------------------
+  // -------------- Profile Details -------------------------
+  // --------------------------------------------------------
+   
+  document.getElementById("u_img").src = userData['PHOTOURL']
+
+  $("#u_name").html(userData['NAME']);
+  $("#u_email").html(userData['EMAIL']);
+
   document.getElementById("user_name").value = userData['NAME']
   document.getElementById("user_email").value = userData['EMAIL']
   document.getElementById("user_mobile").value = userData['MOBILE']
+
+  document.getElementById("display_user_name").value = userData['DISPNAME']
+  document.getElementById("user_bio").value = br2nl(userData['BIO'])
+  M.textareaAutoResize($('#user_bio'));
+
+  document.getElementById(userData['AGEGROUP']).selected = true
+
+  document.getElementById(userData['DISTRICT']+'_'+userData['BLOCK']).selected = true
+  if(userData['BLOCK'] == 'HIMACHAL'){
+    $('#u_district_details').html(userData['BLOCK'] + ' - Please update it.')
+  } else {
+    $('#u_district_details').html(userData['DISTRICT']+','+userData['BLOCK'])
+  }
+  
+
+  document.getElementById("user_address").value = br2nl(userData['ADDRESS'])
+  M.textareaAutoResize($('#user_address'));
+
+  // Update Settings
+  document.getElementById("user_profile_chk").checked = userData['SHOWSETTINGS']['PROFILE']
+  document.getElementById("user_mobile_chk").checked = userData['SHOWSETTINGS']['MOBILE']
+  document.getElementById("user_address_chk").checked = userData['SHOWSETTINGS']['ADDRESS']
+
+  document.getElementById(userData['LANG']).selected = true
+
+  $(document).ready(function(){
+    $('select').formSelect();
+  });
+
+
+  // -----------------------------------------------------------
 
 
   document.getElementById("spinner").style.display = 'none';
@@ -380,10 +475,6 @@ function updateHTMLPage() {
 }
 
 
-  
-
-
-
 }
 
 
@@ -408,39 +499,6 @@ function divBlockHandling(value) {
 
       document.getElementById("profile_section").style.display = 'block';
       document.getElementById("close_fl_btn").style.display = 'block';
-
-    break;
-
-    case "bookings":     
-
-      if (isMobileBrowser()) {
-        document.getElementById("profile_header_section_mb").style.display = 'none';
-      } else {
-        document.getElementById("profile_header_section").style.display = 'none';
-      }
-      document.getElementById("options_card_section").style.display = 'none';
-
-      document.getElementById("booking_section").style.display = 'block';
-      document.getElementById("close_fl_btn").style.display = 'block';
-
-      collectBookingDetails()
-
-    break;
-
-
-    case "wishlist":
-
-      if (isMobileBrowser()) {
-        document.getElementById("profile_header_section_mb").style.display = 'none';
-      } else {
-        document.getElementById("profile_header_section").style.display = 'none';
-      }
-      document.getElementById("options_card_section").style.display = 'none';
-
-      document.getElementById("wishlist_section").style.display = 'block';
-      document.getElementById("close_fl_btn").style.display = 'block';
-
-      openWishlistContent()
 
     break;
 
@@ -499,9 +557,7 @@ function hideFullMessageDialog(){
 
   window.scrollTo(0, 0);
 
-  document.getElementById("profile_section").style.display = 'none';
-  document.getElementById("booking_section").style.display = 'none';
-  document.getElementById("wishlist_section").style.display = 'none';
+  document.getElementById("profile_section").style.display = 'none'; 
   document.getElementById("bookmark_section").style.display = 'none';
   document.getElementById("mylist_section").style.display = 'none';
   document.getElementById("options_section").style.display = 'none';
@@ -546,7 +602,9 @@ function startupcalls() {
 
   $('.dropdown-trigger').dropdown();
 
-  M.textareaAutoResize($('#user_review_comment'));
+  $(document).ready(function(){
+    $('select').formSelect();
+  });
 
 }
 
@@ -561,7 +619,7 @@ function saveprofiledata() {
 
   displayOutput(userData)
 
-  var mobileno = document.getElementById("user_mobile").value;
+  var mobileno = document.getElementById("user_mobile").value.trim();
   displayOutput('Mobile Number : ' + mobileno)
 
   if(isStrEmpty(mobileno)) {
@@ -578,13 +636,63 @@ function saveprofiledata() {
   }
 }
 
+var user_accept_terms_checkbox = document.getElementById("user_accept_terms_checkbox").checked
+if(!user_accept_terms_checkbox){
+  validation = false
+  hidePleaseWaitModel()
+  toastMsg('Please accept terms and conditions !!')
+}
+
+
+// Read Other Details
+var user_name = document.getElementById("user_name").value.trim();
+var display_user_name = document.getElementById("display_user_name").value.trim();
+if(isStrEmpty(display_user_name)) {
+  display_user_name = user_name
+}
+
+var user_bio = document.getElementById("user_bio").value.trim();
+user_bio = nl2br(user_bio)
+var user_age_group = document.getElementById("user_age_group").value.trim();
+var user_district_and_block = document.getElementById("user_district_and_block").value.trim();
+var user_address = document.getElementById("user_address").value.trim();
+user_address = nl2br(user_address)
+
+// Read Other Settings Details
+var user_profile_chk = document.getElementById("user_profile_chk").checked
+var user_mobile_chk = document.getElementById("user_mobile_chk").checked
+var user_address_chk = document.getElementById("user_address_chk").checked
+
+var user_language = document.getElementById("user_language").value.trim();
+
+var settings_privacy = {
+  PROFILE: user_profile_chk,
+  MOBILE: user_mobile_chk,
+  ADDRESS: user_address_chk,
+  AGEGROUP: true,
+  LOCATION: true
+}
 
 
   if (validation) {
     userData['MOBILE'] = mobileno
+    userData['DISPNAME'] = display_user_name
+    userData['BIO'] = user_bio
+    userData['AGEGROUP'] = user_age_group
+    userData['DISTRICT'] = user_district_and_block.split('_')[0]
+    userData['BLOCK'] = user_district_and_block.split('_')[1]
+    userData['ADDRESS'] = user_address
 
     db.collection(userDataPath).doc(uuid).update({
-      MOBILE: mobileno
+      MOBILE: mobileno,
+      DISPNAME: display_user_name,
+      BIO: user_bio,
+      AGEGROUP: user_age_group,
+      DISTRICT: user_district_and_block.split('_')[0],
+      BLOCK: user_district_and_block.split('_')[1],
+      ADDRESS: user_address,
+      LANG: user_language,
+      SHOWSETTINGS: settings_privacy
     }).then(function () {
       displayOutput("Mobile details Updated ..");
       hidePleaseWaitModel()
@@ -593,6 +701,14 @@ function saveprofiledata() {
 
       // Update Session Data Also
       localStorageData('MOBILE',mobileno)
+      localStorageData('DISPNAME',display_user_name)
+      localStorageData('BIO',user_bio)
+      localStorageData('AGEGROUP',user_age_group)
+      localStorageData('DISTRICT',user_district_and_block.split('_')[0])
+      localStorageData('BLOCK',user_district_and_block.split('_')[1])
+      localStorageData('ADDRESS',user_address)
+
+      location.reload();
 
 
     });
@@ -600,573 +716,6 @@ function saveprofiledata() {
   }
 
 }
-
-
-// =================================================================
-// Collect Bookings Details
-// =================================================================
-function collectBookingDetails() {
-
-  var userBookingPath = coll_base_path + 'USER/ALLUSER/' + uuid + '/BOOKINGS'
-  $("#user_bookings").html('')
-
-  showPleaseWaitModel()
-
-  var totaldocCount = 0;
-
-  db.collection(userBookingPath).get().then((querySnapshot) => {
-    displayOutput("SIZE : " + querySnapshot.size);
-
-    if (querySnapshot.size == 0) {
-      // ------ No Details Present -------------  
-      displayOutput('No Record Found !!')
-
-      hidePleaseWaitModel()
-
-      // Show No Booking Details
-      let emptyMsg= '<div class="row" style="margin-top:1%;"><div class="col s12 m6"><div class="card" style="border-radius: 25px;">\
-      <div class="red-card-content white-text z-depth-2" style="border-radius: 25px 25px 0px 0px; height: 100px;">\
-      <p class="card-content" style="font-size: 40px;">Booking</p>\
-      </div><div class="card-content"><div class="row">\
-      <h5 class="grey-text">No Booking.</h5>\
-      </div></div></div></div></div>'
-
-      $("#user_bookings").html(emptyMsg);
-      
-    } else {
-
-      totaldocCount = querySnapshot.size
-      var docCount = 0;
-
-      // Read Each Documents
-      querySnapshot.forEach((doc) => {
-        displayOutput(doc.id);
-
-        allDocCmpData[doc.id] = doc.data()
-
-        // Check Document count
-        docCount++;
-        if (totaldocCount == docCount) {         
-
-          hidePleaseWaitModel()
-          // Update HTML Page
-          updateBookingHTMLPage()
-        }
-
-      });
-
-    }
-
-  });
-
-}
-
-function updateBookingHTMLPage() {
-  displayOutput('Update Booking Page ..')
-
-  var allCardDetails = ''
-
-  for (eachid in allDocCmpData) {
-    var eachData = allDocCmpData[eachid]
-    allCardDetails += createCard(eachid, eachData)
-    //displayOutput(eachData)
-  }
-
-  // Update HTML Page
-  $("#user_bookings").html(allCardDetails);
-
-
-}
-
-// Create card details
-function createCard(id, data) {
-
-  // Create Details
-  let details = ''
-
-  let status = data['EXTRA']['ADMINSTATUS']
-
-  let carb_back_color = 'blue-card-content'
-
-  if(status == 'CANCEL') {
-    carb_back_color = 'red-card-content'
-  } else if(status == 'SUCCESS') {
-    carb_back_color = 'green-card-content'
-  }
-  
-
-  details += '<div class="left-align ' + carb_back_color + '  white-text z-depth-2" style="border-radius: 25px 25px 0px 0px;">\
-  <div class="card-content">\
-  <div class="right-align"><b style="font-size: 20px;">' + data['EXTRA']['ADMINSTATUS']+ '</b></div>\
-  <div class="row" style="margin-left:10%;">\
-  <div class="col s12 m3"><b style="font-size: 30px;">'+ data['FROM'] + '</b><p>'+ data['STARTDATE'] + '</p></div>\
-  <div class="col s12 m3" style="margin-top: 20px;"><i class="material-icons circle white black-text" style="font-size: 40px;">chevron_right</i></div>\
-  <div class="col s12 m3"><b style="font-size: 30px;">'+ data['DESTINATION'] + '</b><p>'+ data['ENDDATE'] + '</p></div>\
-  </div>\
-  </div></div>'
-
-  let message = data['EXTRA']['FINALMESSAGE']
-
-  if(message == 'NA') {
-    details += '<div class="card-content"><b class="grey-text">No Message</b></div>'
-  } else {
-    details += '<div class="card-content"><b class="grey-text">Message</b><p>' + data['EXTRA']['FINALMESSAGE']+ '</p>\</div>'
-  }
-  
-
-
-  var cardDetails = '<div class="col s12 m6">\
-  <div class="card" style="border-radius: 25px;">\
-    <div>\
-      ' + details
-
-      if(data['EXTRA']['ADMINSTATUS'] != 'CANCEL') {
-        //cardDetails += '<div class="card-content"><a onclick="openViewDialog(\'' + id + '\')" class="waves-effect waves-light btn blue">View</a></div>'
-        
-        cardDetails += '<div class="card-content right-align"><a href="#!" onclick="openViewDialog(\'' + id + '\')"><i class="material-icons circle blue white-text z-depth-2" style="font-size: 40px;">arrow_drop_down</i></a></div>'
-     
-      }
-
-      cardDetails += '</div> </div></div>'
-    
-  return cardDetails
-
-}
-
-
-// Open Booking Details in Model
-function openViewDialog(id) {
-  displayOutput(id)
-
-  showPleaseWaitModel()
-   
-  let quotPath = allDocCmpData[id]['BOOKINGID']
-
-  
-  // Read Data from DB
-  let docRef = db.doc(quotPath);
-  docRef.get()
-  .then(doc => {
-    if (!doc.exists) {
-      displayOutput('No such document!');
-      hidePleaseWaitModel()
-
-      viewModel('Message','No Details Found !!')
-    } else {
-      displayOutput('Document data');
-
-      // Show Complete Details
-
-      let data = doc.data()
-      bookingData = data
-      bookingID = id
-      //displayOutput(data)
-
-      // Create Content
-      let mdlContent = ''   
-     
-
-     // mdlContent += '<br><b class="grey-text">Message to You</b><p>' + data['FINALMESSAGE'] + '</p><br>'
-
-     let status = data['ADMINSTATUS']
-
-     let carb_back_color = 'blue-card-content'
-
-     document.getElementById("user_review_section").style.display = 'none';
-   
-     if(status == 'CANCEL') {
-       carb_back_color = 'red-card-content'
-     } else if(status == 'SUCCESS') {
-       carb_back_color = 'green-card-content'
-     } else if(status == 'COMPLETE') {
-      carb_back_color = 'green-card-content'
-      document.getElementById("user_review_section").style.display = 'block';
-     }
-
-     // User Explore Option
-     let userExploreOption = 'I do not want to explore Destination'
-     if(data['EXPLORE']) {userExploreOption = 'I want to explore Destination'}
-
-     // User content
-     let userContent = '<p class="grey-text">' + userExploreOption + '</p>\
-     <p>' + data['NAME']+ '</p>\
-     <p>' + data['MOBILENO']+ '</p>\
-     <p>' + data['EMAILID']+ '</p>\
-     '
-
-     // Create Card
-     let details = '<div class="card" style="border-radius: 10px;"><div class="left-align ' + carb_back_color + '  white-text z-depth-2" style="border-radius: 10px;">\
-     <div class="card-content">\
-     <div class="right-align"><b style="font-size: 20px;">' + data['ADMINSTATUS']+ '</b></div>\
-     <div class="row">\
-     <div class="col s12 m3"><b style="font-size: 30px;">'+ data['FROM'] + '</b><p>'+ data['STARTDATE'] + '</p></div>\
-     <div class="col s12 m3" style="margin-top: 20px;"><i class="material-icons circle white black-text" style="font-size: 40px;">chevron_right</i></div>\
-     <div class="col s12 m3"><b style="font-size: 30px;">'+ data['DESTINATION'] + '</b><p>'+ data['ENDDATE'] + '</p></div>\
-     </div>\
-     <div class="left-align">'+ userContent +'\
-     </div></div></div></div>'
-
-     details += '<div class="card" style="border-radius: 10px;">\
-     <div class="card-content">\
-     <div class="input-field col s12">\
-         <i class="material-icons prefix blue-text">message</i>\
-         <textarea value="'+ data['USERCOMMENT'] + '" id="user_comment" class="materialize-textarea"></textarea>\
-         <label class="active" for="user_comment">Your Comment</label>\
-       </div>'
-
-       details += '<div class="right-align"><a onclick="updateBooking(\'' + id + '#' + quotPath + '\')" class="waves-effect waves-teal btn blue rcorners">Update</a></div>'
-
-       details += '</div>'
-
-       details += '</div></div>'
-
-       if(status != 'COMPLETE') {
-       details += '<div class="center-align" style="margin-top: 0px;"><a onclick="validateCancelBooking(\'' + id + '#' + quotPath + '\')" class="waves-effect waves-teal btn-large red rcorners">Cancel Booking</a></div>'
-       //details += '<div class="right-align"><a onclick="closeModel()" class="waves-effect waves-teal btn black white-text rcorners">Close</a></div>'
-       }
-       
-
-     mdlContent += '<div class="col s12 m12">\
-     <div class="card">\
-       <div>\
-         ' + details
-
-         mdlContent += '</div> </div></div>'    
-
-       
-      // Display Content
-      window.scrollTo(0, 0);
-      $('#user_bookings_view').html(details)
-
-      document.getElementById("user_bookings_view_section").style.display = 'block';
-      document.getElementById("user_bookings").style.display = 'none';
-
-      hidePleaseWaitModel()
-    
-      // Display in model
-      //viewModelCustom('',mdlContent)
-
-      $('#user_comment').val(data['USERCOMMENT']);
-      M.textareaAutoResize($('#user_comment'));
-
-
-      // Update Rating Section
-      updateRatingsSection()
-
-
-    }
-
-  })
-  .catch(err => {
-    displayOutput('Error getting document');
-    hidePleaseWaitModel()
-    viewModel('Message','No Details Found !!')
-  }); 
-
-
-}
-
-// Submit Ratings
-function submitRatings() {
-  displayOutput('Submit Ratings')
-
-  var user_review_comment = 'NA'
-
-  user_review_comment = document.getElementById("user_review_comment").value;
-  
-  var ratings = '5'
-  if(document.getElementById("star_5").checked) {
-    ratings = 5
-  } else if(document.getElementById("star_4").checked) {
-    ratings = 4
-  } else if(document.getElementById("star_3").checked) {
-    ratings = 3
-  } else if(document.getElementById("star_2").checked) {
-    ratings = 2
-  } else {
-    ratings = 1
-  }
-
-  //displayOutput(user_review_comment)
-  //displayOutput(ratings)
-
-  //displayOutput(bookingData)
-  //displayOutput(bookingID)
-  
-
-  // Submit Details Into Database
-  var ratingsData = {}
-  ratingsData['BOOKINGID'] = bookingID
-  ratingsData['RATINGS'] = ratings
-  ratingsData['COMMENT'] = user_review_comment
-
-  ratingsData['USERUUID'] = bookingData['USERUUID']
-  ratingsData['NAME'] = bookingData['NAME']
-  ratingsData['USERPHOTO'] = bookingData['USERPHOTO']
-
-  ratingsData['DATE'] = getTodayDate()
-
-  //displayOutput(ratingsData)
-
-  var reviewCollPath = coll_base_path + 'RATINGS/' + bookingData['COLLNAME'] + '_' + bookingData['DOCID']
-
-  if(first_time_operation) {
-      setNewDocument(coll_base_path,'RATINGS',{NAME: 'RATINGS'},'NA')
-  }
-
-  // Update Document
-  setNewDocument(reviewCollPath,bookingID,ratingsData,'Rating Submitted !!')
-
-
-}
-
-// Update Ratings Section
-function updateRatingsSection(){
-
-  document.getElementById("star_5").checked = true
-  $('#user_review_comment').val('');
-  M.textareaAutoResize($('#user_review_comment'));
-
-
-  var reviewCollPath = coll_base_path + 'RATINGS/' + bookingData['COLLNAME'] + '_' + bookingData['DOCID']+'/'+bookingID
-
-  // Read Ratings Details
-  db.doc(reviewCollPath).get()
-  .then(doc => {
-    if (!doc.exists) {
-      displayOutput('No such document!');
-
-      document.getElementById("star_5").checked = true
-      document.getElementById("user_review_comment").value = ''
-
-    } else {
-      displayOutput(doc.data());
-      let data = doc.data()      
-      
-      $('#user_review_comment').val(data['COMMENT']);
-      M.textareaAutoResize($('#user_review_comment'));
-      
-      if(data['RATINGS'] == '5'){
-        document.getElementById("star_5").checked = true
-      } else if(data['RATINGS'] == '4') {
-        document.getElementById("star_4").checked = true
-      } else if(data['RATINGS'] == '3') {
-        document.getElementById("star_3").checked = true
-      } else if(data['RATINGS'] == '2') {
-        document.getElementById("star_2").checked = true
-      } else {
-        document.getElementById("star_1").checked = true
-      }
-
-    }
-  })
-  .catch(err => {
-    displayOutput('Error getting document');
-
-    document.getElementById("star_5").checked = true
-    $('#user_review_comment').val('');
-    M.textareaAutoResize($('#user_review_comment'));
-
-  });
-
-
-}
-
-
-// Cancel Booking
-function cancelBooking() {
-  
-  let id = cancelDetails.split('#')[0]
-  let quotePath = cancelDetails.split('#')[1]
-
-  displayOutput(id)
-  var userBookingPath = coll_base_path + 'USER/ALLUSER/' + uuid + '/BOOKINGS'
-  
-  let status = true
-
-  if(status) {
-
-     // Update User Section also
-     db.collection(userBookingPath).doc(id).update({
-      EXTRA: {
-        ADMINSTATUS: 'CANCEL',
-        FINALMESSAGE: bookingData['FINALMESSAGE']
-      }  
-    }).then(function () {
-      displayOutput("Updated user booking..");
-  
-      // Update Status in main Booking also
-
-      db.doc(quotePath).update({
-          ADMINSTATUS: 'CANCEL',
-          USERCANCEL: true
-      }).then(function () {
-        displayOutput("Main booking ..");
-        toastMsg('You booking has been canceled !!')
-
-        askNO()
-
-        allDocCmpData[id]['BOOKINGID'] = 'CANCEL'
-
-        location.reload();
-
-      });      
-
-    });
-
-
-  } else {
-    displayOutput("Admin has disabled Booking Cancel Process !!")
-    askNO()
-  }
-
-}
-
-// Validate Cancel Booking
-function validateCancelBooking(details) {
-
-  closeModel()
-
-  cancelDetails = details
-
-  let id = cancelDetails.split('#')[0]
-  let quotePath = cancelDetails.split('#')[1]
-
-   // Open Ask Dialog
-  askModel('red-card-content','Cancel Booking','Are you sure you want to cancel your Booking.<br>Booking Ref. Number : '+id,'cancelBooking')
-
-}
-
-
-// Update Booking
-function updateBooking(details) {
-
-  showPleaseWaitModel()
-
-  let id = details.split('#')[0]
-  let quotePath = details.split('#')[1]
-
-  var user_comment = document.getElementById("user_comment").value;
-  displayOutput('User Comment : ' + user_comment)
-
-  // Update Status in main Booking also
-
-  db.doc(quotePath).update({
-      USERCOMMENT: user_comment
-  }).then(function () {
-    displayOutput("Main booking ..");
-    hidePleaseWaitModel()
-    toastMsg('You booking has been Updated !!')
-  });
-
-  
-
-
-}
-
-// --------------- Wishlist Handling -----------------
-// Open WishList details
-function openWishlistContent() {
-
-  let content = '<ul class="collection">'
-
-  // Get Bookmark Details    
-  showPleaseWaitModel()
-
-    db.collection(userDataPath+'/'+uuid+'/WISHLIST').get().then((querySnapshot) => {
-      displayOutput("SIZE : " + querySnapshot.size);
-  
-      if (querySnapshot.size == 0) {
-        // ------ No Details Present -------------  
-        displayOutput('No Record Found !!')
-        hidePleaseWaitModel()    
-        //viewModel('My Wishlist','<h1>Empty List</h1>'); 
-        $('#user_wishlist').html('<h1>Empty List</h1>')
-  
-      } else {
-  
-        totaldocCount = querySnapshot.size
-        var docCount = 0;
-  
-        // Read Each Documents
-        querySnapshot.forEach((doc) => {
-          let mark_data = doc.data()
-          //displayOutput(mark_data);
-
-          let markname = mark_data['DETAILS'].split('#')[1]
-         let markid = mark_data['DETAILS'].split('#')[0]  
-         
-         if((mark_data['COLLNAME'] == wishlistFilter) || (wishlistFilter == 'ALL')) {
-
-         // epackage.html?id=DOC0&fl=NA
-         let link =''
-         if(mark_data['COLLNAME'] == 'PACKAGES') {
-          link = 'epackage.html?id='+mark_data['DOCID']+'&fl=NA' 
-          markid = 'Package'        
-         } else if(mark_data['COLLNAME'] == 'DESTINATIONS')    {
-          link = 'edestination.html?id='+mark_data['DOCID']+'&fl=NA' 
-          markid = 'Destination'
-         } else {
-          link = 'eplace.html?id='+mark_data['DOCID']+'&fl=NA' 
-          markid = 'Place'
-         }
-                  
-          content += '<a href="'+link+'"><li class="collection-item avatar black-text hoverable">\
-          <img src="'+mark_data['IMAGE']+'" alt="" class="circle">\
-          <span class="title black-text"><b>'+markname+'</b></span>\
-          <p class="grey-text">'+markid+'</p>\
-          <a href="#!" onclick="removeWishlist(\'' + doc.id  + '\')" class="secondary-content"><i class="material-icons">delete</i></a>\
-        </li></a>'  
-
-         }
-
-          // Check Document count
-          docCount++;
-          if (totaldocCount == docCount) {
-           
-           hidePleaseWaitModel()
-           content += '</ul>'
-           //viewModel('My Wishlist',content);           
-           $('#user_wishlist').html(content)  
-
-           document.getElementById("filter_drop_sec").style.display = 'block';
-
-          }
-  
-        }); 
-        
-  
-      }
-  
-    });
-
-}
-
-// Filter WishList Content 
-function filterWishList(details) {
-
-  wishlistFilter = details
-  $('#wishlist_filter_drop_down').html('<i class="material-icons left">filter_list</i>' + details)
-
-  openWishlistContent()
-
-}
-
-// Remove Wishlist
-function removeWishlist(details) {
-    displayOutput(details)
-
-    db.collection(userDataPath+'/'+uuid+'/WISHLIST').doc(details).delete().then(function () {
-      displayOutput("Wishlist Deleted !!");  
-
-      closeModel()
-      openWishlistContent()
-    });
-
-
-}
-
-
 
 // --------------- Bookmark Handling -----------------
 // Open Bookmark details

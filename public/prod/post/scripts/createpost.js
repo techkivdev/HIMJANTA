@@ -255,7 +255,7 @@ function showCurrentTopicContent() {
       });
 
       // Update CATEGORY
-      document.getElementById(data['CATEGORY1']).selected = true
+      document.getElementById(data['CATEGORY']).selected = true
 
       $(document).ready(function(){
         $('select').formSelect();
@@ -368,7 +368,7 @@ function addNewTopic() {
      toastMsg('Post Description is empty!!')
    }
  
-   let catgOption = getCatg1DataMapping('LIST')  
+   let catgOption = getCatgDataMapping('LIST')  
 
    let catDropValue = document.getElementById("catg_options").value
    let cateData = ''
@@ -381,7 +381,7 @@ function addNewTopic() {
      validateInput = false
    } else {
      cateData = catgOption[catDropValue]
-     cateData_display = getCatg1DataMapping(cateData)
+     cateData_display = getCatgDataMapping(cateData)
    } 
    displayOutput('cateData : ' + cateData)
    displayOutput('cateData_display : ' + cateData_display)
@@ -406,8 +406,8 @@ function addNewTopic() {
      forumData['TAGS'] =  tagsData
  
      // ---- Category --------------
-     forumData['CATEGORY1'] =  cateData
-     forumData['CATEGORY1DIS'] =  cateData_display
+     forumData['CATEGORY'] =  cateData
+     forumData['CATEGORYDIS'] =  cateData_display
  
      forumData['DESC'] =  description
      forumData['DATE'] =  getTodayDate()
@@ -430,7 +430,7 @@ function addNewTopic() {
  
      //forumData['MULTICONFIG'] = ['NA']
  
-     forumData['DOCTYPE'] = 'TOPIC'  // Chnage It according to the Item
+     forumData['DOCTYPE'] = 'POST'  // Chnage It according to the Item
      forumData['DOCVER'] = 'V1'
      
      forumData['ISMAIN'] = false
@@ -497,8 +497,8 @@ function generateNDocuments() {
      let catgListD = ['INFO','TIPS','QRY','INFO','TIPS','QRY']
      let catgList = ['General Infromation','Important Travel Tips','Any Query','General Infromation','Important Travel Tips','Any Query']
      let catgnum = Math.floor(Math.random() * 5)
-     forumData['CATEGORY1DIS'] =  catgList[catgnum]
-     forumData['CATEGORY1'] =  catgListD[catgnum]
+     forumData['CATEGORYDIS'] =  catgList[catgnum]
+     forumData['CATEGORY'] =  catgListD[catgnum]
  
      forumData['DESC'] =  'We suggest that seawater δ18O may have decreased through time, in contrast to the large increases seen in marine chemical sediments. To explain this possibility, we construct an oxygen isotope exchange model of the geologic water cycle, which suggests that the initiation of continental weathering in the late Archaean, between 3 and 2.5 billion years ago, would have drawn down an 18O-enriched early Archaean ocean to δ18O values similar to those of modern seawater,” say the co-authors in the paper.<br><br>\
                            The co-authors believe that the Panorama has what was the hard, outer shell of the planet. “There are no samples of really ancient ocean water lying around, but we do have rocks that interacted with that seawater and remembered that interaction,” says Johnson. The process, he says, is like analyzing coffee grounds to gather information about the water that poured through it. To do that, the researchers analyzed data from more than 100 rock samples from across the dry terrain.'
@@ -734,7 +734,7 @@ function updateMyList(data,docid) {
   myListData['SPACE'] = main_path
   myListData['SPACENAME'] = 'POST'
 
-  var url = 'forum/'+main_page+'?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(docid) + '&fl=' + encodeURIComponent('only'); 
+  var url = 'post/'+main_page+'?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(docid) + '&fl=' + encodeURIComponent('only'); 
   myListData['LINK'] = url
 
 

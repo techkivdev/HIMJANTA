@@ -20,7 +20,7 @@
 
 <body>   
 
-  <div class="bg">
+  <div class="">
 
  
   <!-- **************************************** -->
@@ -28,30 +28,19 @@
   <!-- **************************************** -->
   
    <!--=========== NAV SECTION ================= -->
-   <div id="main_nav_bar" class="navbar-fixed">
-
-    <!-- Dropdown Structure -->
-    <ul id="nav_dropdown" class="dropdown-content">
-      <li><a href="history.html">History</a></li>     
-      <li><a href="forum/index.html?pt=COMMONFORUM&id=NA&fl=NA">Forum</a></li>       
-    </ul>
+   <div id="main_nav_bar" class="navbar-fixed">   
 
     <nav  class="white z-depth-2" role="navigation">
       <div class="nav-wrapper container">
   
         <!-- Logo Container -->
-        <a id="logo-container" href="index.html" class="brand-logo">KivTravels</a>
+        <a id="logo-container" href="index.html" class="brand-logo">HimJan</a>
   
         <!-- Navigation List -->
         <ul class="right hide-on-med-and-down">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="destinations.html?fl=NA">Destinations</a></li>
-          <li><a href="packages.html?fl=NA">Packages</a></li>
+          <li><a href="index.html">Home</a></li>        
           <li class="active"><a href="login.html">Profile</a></li>
-
-           <!-- Dropdown Trigger -->
-         <li><a class="dropdown-trigger" href="#!" data-target="nav_dropdown">More<i class="material-icons right">arrow_drop_down</i></a></li>
-
+         
         </ul>
        
         <a href="#" data-target="main_nav_bar_mb" class="sidenav-trigger"><i class="material-icons">menu</i></a>
@@ -84,7 +73,7 @@
         <li  id='nav_profile' class="active"><a href="login.html">Profile</a></li> 
         <li class="divider"></li>
     <li id='nav_history'><a href="history.html">History</a></li>
-    <li><a href="forum/index.html?pt=COMMONFORUM&id=NA&fl=NA">Forum</a></li>
+    <li><a href="index.html?pt=COMMONFORUM&id=NA&fl=NA">Forum</a></li>
         <li class="divider"></li>    
         <li style="margin-top: 10px;"><a href="terms_and_conditions.html">Terms & Conditions</a></li>  
         <li><a href="privacy_police.html">Privacy Police</a></li>
@@ -126,7 +115,7 @@
 
           <div class="row">
             
-            <div class="col s12 m12" style="margin-top: 100px;">
+            <div class="col s12 m12" style="margin-top: 30px;">
                 <div class="card" style="border-radius: 25px;">
                     <div class="red-card-content white-text z-depth-2" style="border-radius: 25px 25px 0px 0px;
                     height: 100px;">
@@ -170,7 +159,7 @@
         <!-- Header Section -->
         <div id="profile_header_section" class="row" style="margin-top: 80px; margin-left: 1%; margin-right: 1%;"> 
           
-            <div class="card red-2-card-content" style="border-radius: 10px; height: 140px;">
+            <div class="card orange-card-content" style="border-radius: 10px; height: 140px;">
               <div class="card-content">
                 <span class="card-title"></span>
                 
@@ -188,14 +177,9 @@
                 <div class="col s12 m8">
                   <div id="user_content" class="left-align" style="margin-top: -30px;">                   
                    <b id="profile_name" style="font-size: 30px;">Name</b>
-                    <p id="profile_email" style="font-size: 15px; margin-top: -10px;" class="white-text">Email</p>
-                    <p id="profile_mobile" style="font-size: 15px; margin-top: -20px;" class="white-text">Mobile</p>
-                  </div>                 
-                  <br><br><br>
-                  <div class="right-align" style="margin-top: 0px;">
-                    <a onclick="signout()" class="waves-effect waves-light btn-large red rcorners">logout</a>
-                  </div>
-
+                    <p id="profile_email" style="font-size: 15px; margin-top: -5px;" class="white-text">Email</p>
+                    <p id="profile_mobile" style="font-size: 15px; margin-top: -5px;" class="white-text">Mobile</p>
+                  </div> 
                 </div>
 
               </div>
@@ -212,7 +196,7 @@
         <!-- Header Section for mobile -->
         <div id="profile_header_section_mb" class="row" style="margin-top: 80px; margin-left: 2%; margin-right: 2%; display: none;"> 
           
-          <div class="card red-2-card-content" style="border-radius: 10px; height: 210px;">
+          <div class="card orange-card-content" style="border-radius: 10px; height: 210px;">
             <div >
               <span class="card-title"></span>
               
@@ -230,14 +214,9 @@
               <div class="col s12">
                 <div id="user_content_mb" class="center-align" style="margin-top: 0px;">                    
                     <b id="profile_name_mb" style="font-size: 30px;">Name</b>
-                    <p id="profile_email_mb" style="font-size: 15px; margin-top: -10px;" class="white-text">Email</p>
-                    <p id="profile_mobile_mb" style="font-size: 15px; margin-top: -20px;" class="white-text">Mobile</p>
+                    <p id="profile_email_mb" style="font-size: 15px; margin-top: -8px;" class="white-text">Email</p>
+                    <p id="profile_mobile_mb" style="font-size: 15px; margin-top: -10px;" class="white-text">Mobile</p>
                 </div> 
-                <br><br>
-                <div class="right-align" style="margin-top: -5px;">
-                  <a onclick="signout()" class="waves-effect waves-light btn-large red rcorners">logout</a>
-                </div>
-
               </div> 
             </div>      
               </div>
@@ -253,92 +232,73 @@
 
             <div class="row">
 
+
               <!-- Option 1 -->
               <div class="col s12 m6">
                 <a href="#!" onclick="divBlockHandling('profile')" >
-                <div class="card hoverable" style="border-radius: 10px; height: 130px;">
-                  <div class="bg-card" style="border-radius: 10px;">
-                  <div class="card-content">                    
-                    <span class="card-title black-text">Profile</span>
-                    <p class="black-text">Update Profile</p>
-                  </div>
-                  </div>                 
+                  <div class="card hoverable" style="border-radius: 10px;">
+                  <ul class="collection" style="border-radius: 10px;">
+                    <li class="collection-item avatar">
+                      <i class="material-icons circle red">person</i>
+                      <span class="title black-text"><b>Profile</b></span>
+                      <p class="grey-text" style="font-size: 13px;">Update Profile Content</p>
+                      </li>
+                  </ul>
                 </div>
               </a>
               </div>
-
 
                <!-- Option 2 -->
                <div class="col s12 m6">
-                <a href="#!" onclick="divBlockHandling('bookings')" >
-                <div class="card hoverable" style="border-radius: 10px; height: 130px;">
-                  <div class="bg-card" style="border-radius: 10px;">
-                  <div class="card-content">                    
-                    <span class="card-title black-text">Manage Bookings</span>
-                    <p class="black-text">Manage your all bookings.</p>
-                  </div>
-                  </div>                 
-                </div>
-              </a>
-              </div>
-
-
-              <!-- Option 3 -->
-              <div class="col s12 m6">
-                <a href="#!" onclick="divBlockHandling('wishlist')" >
-                <div class="card hoverable" style="border-radius: 10px; height: 130px;">
-                  <div class="bg-card" style="border-radius: 10px;">
-                  <div class="card-content">                    
-                    <span class="card-title black-text">Wishlist</span>
-                    <p class="black-text">Manage your wishlist.</p>
-                  </div>
-                  </div>                 
-                </div>
-              </a>
-              </div>
-
-              <!-- Option 4 -->
-              <div class="col s12 m6">
                 <a href="#!" onclick="divBlockHandling('bookmark')" >
-                <div class="card hoverable" style="border-radius: 10px; height: 130px;">
-                  <div class="bg-card" style="border-radius: 10px;">
-                  <div class="card-content">                    
-                    <span class="card-title black-text">Bookmark</span>
-                    <p class="black-text">Manage your Bookmark.</p>
-                  </div>
-                  </div>                 
+                  <div class="card hoverable" style="border-radius: 10px;">
+                  <ul class="collection" style="border-radius: 10px;">
+                    <li class="collection-item avatar">
+                      <i class="material-icons circle blue">bookmark</i>
+                      <span class="title black-text"><b>Bookmark</b></span>
+                      <p class="grey-text" style="font-size: 13px;">My Bookmark Details</p>
+                      </li>
+                  </ul>
                 </div>
               </a>
               </div>
 
-              <!-- Option 5 -->
-              <div class="col s12 m6">
+               <!-- Option 3 -->
+               <div class="col s12 m6">
                 <a href="#!" onclick="divBlockHandling('mylist')" >
-                <div class="card hoverable" style="border-radius: 10px; height: 130px;">
-                  <div class="bg-card" style="border-radius: 10px;">
-                  <div class="card-content">                    
-                    <span class="card-title black-text">My List</span>
-                    <p class="black-text">Manage your List.</p>
-                  </div>
-                  </div>                 
+                  <div class="card hoverable" style="border-radius: 10px;">
+                  <ul class="collection" style="border-radius: 10px;">
+                    <li class="collection-item avatar">
+                      <i class="material-icons circle green">format_list_bulleted</i>
+                      <span class="title black-text"><b>My List</b></span>
+                      <p class="grey-text" style="font-size: 13px;">My List Details</p>
+                      </li>
+                  </ul>
                 </div>
               </a>
               </div>
 
-
-              <!-- Option 6 -->
-              <div id="extra_options_card" class="col s12 m6" style="display: none;">
+               <!-- Option 4 -->
+               <div id="extra_options_card" class="col s12 m6">
                 <a href="#!" onclick="divBlockHandling('options')" >
-                <div class="card hoverable" style="border-radius: 10px; height: 130px;">
-                  <div class="bg-card" style="border-radius: 10px;">
-                  <div class="card-content">                    
-                    <span class="card-title black-text">Options</span>
-                    <p class="black-text">Extra Options.</p>
-                  </div>
-                  </div>                 
+                  <div class="card hoverable" style="border-radius: 10px;">
+                  <ul class="collection" style="border-radius: 10px;">
+                    <li class="collection-item avatar">
+                      <i class="material-icons circle orange">apps</i>
+                      <span class="title black-text"><b>Option</b></span>
+                      <p class="grey-text" style="font-size: 13px;">Other Option's</p>
+                      </li>
+                  </ul>
                 </div>
               </a>
               </div>
+
+              <div class="row col s12 m12" style="margin-top: 50px;">
+              <div class="center-align" >
+                <a onclick="signout()" class="waves-effect waves-light btn-large red rcorners" style="width: 200px;">logout</a>
+              </div>
+            </div>
+              
 
 
             </div>
@@ -348,18 +308,40 @@
           <!-- Other Section -->
 
           <!-- Profile Section -->
-          <div id="profile_section" class="row" style="margin-top: 0%; display: none;">
+          <div id="profile_section" class="row" style="margin-top: 0%; display: none; margin-bottom: 30px;">
           
             <div class="row" style="margin-top:1%;">
               <div class="col s12">
-                <div class="card" style="border-radius: 25px;">
+
+                  <!-- Header Section -->
+                  <div>
+                    <ul class="collection" style="border-radius: 10px 10px 10px 10px;">
+                      <li class="collection-item avatar">
+                        <img id="u_img" src="" alt="" class="circle">
+                        <span class="title"><b id="u_name">Name</b></span>
+                        <p class="grey-text" style="font-size: 13px;" id="u_email">Email</p><br>
+
+                        <div class="right-align">
+                          <p class="right-align grey-text" style="font-size: 13px; margin-top: -15px;" >Provide by Google</p>
+                          <a onclick="syncProvideDetails()" class="waves-effect waves-teal btn-flat blue-text" style="margin-top: -15px;">Sync Details</a>
+                        </div>
+                               
+                           
+                        </li>
+                    </ul>
+
+                  </div>
+
+          
+                 <!-- Profile -->
+              <div style="border-radius: 10px; margin-top: 30px;">
+                <ul class="collapsible">
+                  <li>
+                    <div class="collapsible-header"><i class="material-icons">perm_contact_calendar</i>Profile Information</div>
+                    <div class="collapsible-body">
                   
-                    <div class="red-card-content white-text z-depth-2" style="border-radius: 25px 25px 0px 0px; height: 100px;">
-                      <p class="card-content" style="font-size: 40px;">Profile</p>
-                    </div>
-                     
-                    <div class="card-content">
                       <div class="row">
+
                         <form class="col s12">
                           <div class="row">
                             <div class="input-field col s12">
@@ -370,6 +352,15 @@
                           </div>
                         </form>
 
+                        <form class="col s12">
+                          <div class="row">
+                            <div class="input-field col s12">
+                              <i class="material-icons prefix">account_circle</i>
+                              <input value="  " id="display_user_name" type="text" class="validate">
+                              <label for="display_user_name">Profile Name</label>
+                            </div>
+                          </div>
+                        </form>
 
                         <form class="col s12">
                           <div class="row">
@@ -392,135 +383,197 @@
                           </div>
                         </form>
 
+                        <div class="row col s12">
+                          <p class="container grey-text long-text-nor" style="font-size: 15px; margin-top: -35px; margin-left: 30px;">Note : It's your own choice to share you mobile number.</p>
+                        </div>
+
                         <form class="col s12">
                           <div class="row">
-                            <div class="left-align" style="margin-left: 2%;">
-                              <a onclick="saveprofiledata()" class="waves-effect waves-light btn blue rcorners z-depth-2" style="width: 150px; font-size: 20px;">Update</a>
+                            <div class="input-field col s12">
+                              <i class="material-icons prefix">info</i>                             
+                              <textarea placeholder="Please update bio, But not mandatory" id="user_bio" class="materialize-textarea"></textarea>
+                              <label for="user_bio">Bio</label>
                             </div>
                           </div>
                         </form>
 
+                        <form class="col s12">
+                          <div class="row">    
+                              <div class="input-field" style="margin-right: 10px; margin-left: 10px;">
+                                <i class="material-icons prefix">group</i>
+                                <select id="user_age_group">    
+                                  <option id="CHILDREN" value="CHILDREN">CHILDREN ( less then 17 )</option>
+                                  <option id="ADULTS" value="ADULTS">ADULTS  ( 18+ )</option>
+                                  <option id="ELDERLY" value="ELDERLY">ELDERLY ( 50+ )</option>
+                                </select>
+                                <label>Age Group</label>
+                              </div>                           
+                          </div>
+                        </form>
+
                       </div>
-
+                    
                     </div>
+                  </li>                 
+                </ul>
+              </div>
 
+              <!-- Location and Address -->
+              <div style="border-radius: 10px; margin-top: 30px;">
+                <ul class="collapsible">
+                  <li>
+                    <div class="collapsible-header"><i class="material-icons">person_pin</i>Location & Address</div>
+                    <div class="collapsible-body">
+
+                      <div class="row"> 
+                      
+                        <form class="col s12">
+                          <div class="row">
+                            <div class="input-field col s12">                           
+                              <input disabled value="INDIA" id="user_country" type="text" class="validate">
+                              <label for="user_country">Country</label>
+                            </div>
+                          </div>
+                        </form> 
+  
+                        <form class="col s12">
+                          <div class="row">
+                            <div class="input-field col s12">                           
+                              <input disabled value="HIMACHAL PRADESH" id="user_state" type="text" class="validate">
+                              <label for="user_state">State</label>
+                            </div>
+                          </div>
+                        </form>                    
+                      
+  
+                        <form class="col s12">
+                          <div class="row">
+                            <div class="input-field col s12">
+                              <select id="user_district_and_block">
+                                <optgroup label="HIMACHAL">
+                                  <option id="HIMACHAL_HIMACHAL" value="HIMACHAL_HIMACHAL" disabled>HIMACHAL</option>                                
+                                </optgroup>
+                                <optgroup label="SHIMLA">
+                                  <option id="SHIMLA_BLOCK1" value="SHIMLA_BLOCK1">BLOCK1</option>
+                                  <option id="SHIMLA_BLOCK2" value="SHIMLA_BLOCK2">BLOCK2</option>
+                                  <option id="SHIMLA_BLOCK3" value="SHIMLA_BLOCK3">BLOCK2</option>
+                                </optgroup>
+                                <optgroup label="HAMIRPUR">
+                                  <option id="HAMIRPUR_BLOCK1" value="HAMIRPUR_BLOCK1">BLOCK1</option>
+                                  <option id="HAMIRPUR_BLOCK2" value="HAMIRPUR_BLOCK2">BLOCK2</option>
+                                </optgroup>
+                                <optgroup label="MANDI">
+                                  <option id="MANDI_BLOCK1" value="MANDI_BLOCK1">BLOCK1</option>
+                                  <option id="MANDI_BLOCK2" value="MANDI_BLOCK2">BLOCK2</option>
+                                  <option id="MANDI_BLOCK3" value="MANDI_BLOCK3">BLOCK2</option>
+                                </optgroup>
+                              </select>
+                              <label>District & Block</label>
+                            </div>                         
+                          </div>
+                        </form>
+  
+                        <div class="row col s12">
+                          <p id="u_district_details" class="container grey-text long-text-nor" style="margin-top: -35px; margin-left: 2px;"></p>
+                        </div>
+  
+                        <form class="col s12">
+                          <div class="row">
+                            <div class="input-field col s12"> 
+                              <textarea placeholder="Please update address, But not mandatory" id="user_address" class="materialize-textarea"></textarea>
+                              <label for="user_address">Address</label>
+                            </div>
+                          </div>
+                        </form> 
+  
+                      </div>
+                    
+                    </div>
+                  </li>                 
+                </ul>
+              </div>
+
+              <!-- Settings 1 -->
+              <div style="border-radius: 10px; margin-top: 30px;">
+                <ul class="collapsible">
+                  <li>
+                    <div class="collapsible-header"><i class="material-icons">verified_user</i>Privacy Settings</div>
+                    <div class="collapsible-body">
+                      <form action="#">
+                        
+                        <p>
+                          <label>
+                            <input id="user_profile_chk" type="checkbox" />
+                            <span>Profile visible to all.</span>
+                          </label>
+                        </p>
+
+                        <p>
+                          <label>
+                            <input id="user_mobile_chk" type="checkbox" />
+                            <span>Mobile Number visible to all.</span>
+                          </label>
+                        </p>
+
+                        <p>
+                          <label>
+                            <input id="user_address_chk" type="checkbox" />
+                            <span>Address visible to all.</span>
+                          </label>
+                        </p>                       
+
+                      </form>
+                    </div>
+                  </li>                 
+                </ul>
+              </div>
+
+                <!-- Settings 2 -->
+                <div style="border-radius: 10px; margin-top: 30px;">
+                  <ul class="collapsible">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">settings_applications</i>Extra Settings</div>
+                      <div class="collapsible-body">
+
+                        <div class="input-field">
+                          <select id="user_language">                           
+                            <option id="ENG" value="ENG">English</option>                          
+                          </select>
+                          <label>Language</label>
+                        </div>
+                      
+                      </div>
+                    </li>                 
+                  </ul>
+                </div>
+
+
+               <!-- Check for Term and conditions -->
+               <div class="row col s12" style="margin-top: 10px;">
+                <p>
+                  <label>
+                    <input id="user_accept_terms_checkbox" type="checkbox" />
+                    <span>I accept <a href="terms_and_conditions.html">terms and conditions</a>.</span>
+                  </label>
+                </p>
+              </div>
+                
+              <!-- Save Details -->
+              <div style="margin-top: 15px;">
+                <form class="col s12">
+                  <div class="row">
+                    <div class="center-align" style="margin-left: 2%;">
+                      <a onclick="saveprofiledata()" class="waves-effect waves-light btn-large green rcorners z-depth-2" style="width: 200px;">SAVE</a>
+                    </div>
                   </div>
+                </form>
+
+              </div>
+
+
                 </div>
               </div>
 
-          </div>
-
-
-          <!-- Booking Section -->
-          <div id="booking_section" class="row" style="margin-top: 0%; display: none;">           
-            
-            <div id="user_bookings" style="margin-top:1%;">
-              <!-- Script Code -->
-            </div>
-
-            <!-- Show Booking message in complete view -->
-            <div class="container" id="user_bookings_view_section" style="margin-top:3%; display: none;">
-
-              <div class="left-align" style="margin-top: 0px;">
-                <a onclick="hideUserBookingView()" class="waves-effect waves-light btn-large blue rcorners">back</a>
-              </div>
-
-              <div id="user_bookings_view" style="margin-top:1%;">
-                <!-- Script Code -->
-              </div>
-
-              <!-- Review Section -->
-              <div id="user_review_section" style="display:none; margin-top:1%;">
-
-                  <div class="card" style="border-radius: 10px;">
-                    <div class="card-content">
-                      <span class="card-title">Please rate us</span>
-                        <!-- Section -->
-                      <div>
-
-                        <form action="#">
-                          <p>
-                            <label>
-                              <input id="star_5" class="with-gap" name="group1" type="radio" checked />
-                              <span><i class="material-icons orange-text">star</i><i class="material-icons orange-text">star</i>
-                                <i class="material-icons orange-text">star</i><i class="material-icons orange-text">star</i>
-                                <i class="material-icons orange-text">star</i></span>
-                            </label>
-                          </p>
-                          <p>
-                            <label>
-                              <input id="star_4" class="with-gap" name="group1" type="radio" />
-                              <span><i class="material-icons orange-text">star</i><i class="material-icons orange-text">star</i>
-                                <i class="material-icons orange-text">star</i><i class="material-icons orange-text">star</i></span>
-                            </label>
-                          </p>
-                          <p>
-                            <label>
-                              <input id="star_3" class="with-gap" name="group1" type="radio"  />
-                              <span><i class="material-icons orange-text">star</i><i class="material-icons orange-text">star</i>
-                                <i class="material-icons orange-text">star</i></span>
-                            </label>
-                          </p>
-
-                          <p>
-                            <label>
-                              <input id="star_2" class="with-gap" name="group1" type="radio"  />
-                              <span><i class="material-icons orange-text">star</i><i class="material-icons orange-text">star</i>
-                                </span>
-                            </label>
-                          </p>
-
-                          <p>
-                            <label>
-                              <input id="star_1" class="with-gap" name="group1" type="radio"  />
-                              <span><i class="material-icons orange-text">star</i></span>
-                            </label>
-                          </p>
-                          
-                        </form>
-
-
-                        <div class="input-field">
-                          <i class="material-icons prefix blue-text">message</i>
-                          <textarea value='' id="user_review_comment" class="materialize-textarea"></textarea>
-                          <label class="active" for="user_review_comment">Comment</label>
-                        </div>
-
-                        <div class="right-align"><a onclick="submitRatings()" class="waves-effect waves-teal btn green rcorners">Submit</a></div>
-
-                      </div>
-
-                    </div>
-                    
-                  </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-           <!-- Wishlist Section -->
-           <div id="wishlist_section" class="row" style="margin-top: 0%; display: none;">
-
-            <div id="filter_drop_sec" class="center-align" style="display: none; margin-top: 25px;">
-             <!-- Dropdown Trigger -->
-            <a id="wishlist_filter_drop_down" class='dropdown-trigger btn pink rcorners' href='#' data-target='filter_btn'><i class="material-icons left">filter_list</i>All</a>
-
-            <!-- Dropdown Structure -->
-            <ul id='filter_btn' class='dropdown-content'>
-              <li><a onclick="filterWishList('ALL')" href="#!">All</a></li>
-              <li><a onclick="filterWishList('PACKAGES')" href="#!">Package</a></li>
-              <li><a onclick="filterWishList('DESTINATIONS')" href="#!">Destination</a></li>
-              <li><a onclick="filterWishList('PLACES')" href="#!">Place</a></li>
-            </ul>
-
-          </div>
-
-
-            <div id="user_wishlist" class="container" style="margin-top:10px;">
-              <!-- Script Code -->
-            </div> 
           </div>
 
            <!-- bookmark Section -->

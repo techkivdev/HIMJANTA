@@ -1,5 +1,5 @@
 // *******************************************************************************
-// SCRIPT : manageforum.js
+// SCRIPT : managepost.js
 //
 //
 // Author : Vivek Thakur
@@ -26,7 +26,7 @@ function checkTotalDocuments() {
   $("#total_document_status").html('IN Progress ....')
 
   // Read details
-  let path = coll_base_path + 'FORUM/COMMONFORUM' 
+  let path = coll_base_path + 'FORUM/POST' 
   let collectionRef = db.collection(path)
   let queryRef = collectionRef.where('DELETESTATUS', '==', true)
 
@@ -65,7 +65,7 @@ function deleteAllDocuments() {
   document.getElementById("delete_documents_btn").style.display = 'none';
 
   // Read details
-  let path = coll_base_path + 'FORUM/COMMONFORUM' 
+  let path = coll_base_path + 'FORUM/POST' 
   let collectionRef = db.collection(path)
   let queryRef = collectionRef.where('DELETESTATUS', '==', true)
 
@@ -83,7 +83,7 @@ function deleteAllDocuments() {
      snapshot.forEach(doc => { 
        let data = doc.data() 
        let currentTopicID = doc.id
-       let main_path = 'COMMONFORUM'
+       let main_path = 'POST'
 
        displayOutput('Delete Topic : ' + currentTopicID)  
 
@@ -153,7 +153,7 @@ function collectAllTagsDetails() {
   let allTagsData = []
 
   // Read details
-  let path = coll_base_path + 'FORUM/COMMONFORUM' 
+  let path = coll_base_path + 'FORUM/POST' 
   let collectionRef = db.collection(path)
   let  queryRef = collectionRef.where('DELETESTATUS', '==', false)
   .orderBy('CREATEDON', 'desc');
