@@ -32,6 +32,10 @@
   background: linear-gradient(-45deg,#ec8f52,#6e401a);
 }
 
+.purple-card-content{
+  background: linear-gradient(-45deg,#ad4bb6,#6b1074);
+}
+
 .yellow-card-content{
   background: linear-gradient(-45deg,#eff15f,#e9da10);
 }
@@ -152,7 +156,7 @@ body
 
 .fb-image-profile
 {
-    margin: -100px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
     z-index: 9;    
     max-width: 200px;
     max-height: 200px;
@@ -162,13 +166,16 @@ body
 
 .fb-image-profile-mb
 {
-    margin: -70px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
     z-index: 9;    
     max-width: 150px;
     max-height: 150px;
     border: solid white 5px;
     border-radius: 50%;
 }
+
+/* Some Image Handling css Links */
+/* Resize Images : http://jsfiddle.net/QRU4w/ */
 
 /* Round Corner */
 .rcorners {

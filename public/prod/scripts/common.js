@@ -1240,6 +1240,150 @@ function updateDocument(path,data,message) {
 }
 
 
+// ============= Image Upload Handling ===============
+
+// Start Image Upload Handling
+function startImageUploadHandling() {
+
+  let content = '<input type="file" id="inputImageFile" name="image" accept="image/*" onchange="readImageDetails(this);" />\
+          <br><br><img id="selectedImage" src="#" style="display : none"></img><br>'
+
+  var model = '<!-- Modal Structure -->\
+  <div id="image_model" class="modal modal-fixed-footer">\
+    <div class="modal-content">\
+      <div style="margin-left: 10px; margin-right: 10px;">'+ content + '</div>\
+    </div>\
+    <div class="modal-footer">\
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>\
+      <a href="#!" onclick="uploadImageIntoDatabase()" class="waves-effect waves-green btn-flat">Upload</a>\
+    </div>\
+  </div>'
+
+  var elem = document.getElementById('image_model');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+  $('#image_model').modal('open');
+
+}
+
+// Process Selected Image
+function readImageDetails(input) {
+
+  if (input.files && input.files[0]) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+          document.getElementById("selectedImage").style.display = 'block';
+          $('#selectedImage').attr('src', e.target.result)          
+          imageHandlingDataSet['IMAGE_READY_TO_UPLOAD'] = true
+      };
+
+      reader.readAsDataURL(input.files[0]);
+  } else {
+      document.getElementById("selectedImage").style.display = 'none';
+      $('#selectedImage').attr('src', '#')
+      imageHandlingDataSet['IMAGE_READY_TO_UPLOAD'] = false
+  }
+
+}
+
+// Upload Image process
+function uploadImageIntoDatabase() {
+
+  $("#image_model").modal("close");
+
+  displayOutput(imageHandlingDataSet)
+
+  if (imageHandlingDataSet['IMAGE_READY_TO_UPLOAD']) {      
+
+      const file = $('#inputImageFile').get(0).files[0]
+      //const name = (+new Date()) + '-' + file.name;
+      const name = imageHandlingDataSet['IMAGE_NAME'] + '.' + file.type.split('/')[1];
+      
+      displayOutput(name)
+
+      var result = true
+
+      if (result) {
+
+          const metadata = {
+              contentType: file.type
+          };
+
+          showPleaseWaitModel()
+
+          // Uploading process
+          var storageRef = storage.ref()
+          const uploadTask = storageRef.child(imageHandlingDataSet['IMAGE_DB_PATH'] + name).put(file, metadata);
+
+          // Register three observers:
+          // 1. 'state_changed' observer, called any time the state changes
+          // 2. Error observer, called on failure
+          // 3. Completion observer, called on successful completion
+          uploadTask.on('state_changed', function (snapshot) {
+              // Observe state change events such as progress, pause, and resume
+              // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+              var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              displayOutput('Upload is ' + progress + '% done');
+
+              switch (snapshot.state) {
+                  case firebase.storage.TaskState.PAUSED: // or 'paused'
+                      displayOutput('Upload is paused');
+                      break;
+                  case firebase.storage.TaskState.RUNNING: // or 'running'
+                      displayOutput('Upload is running');
+                      break;
+              }
+          }, function (error) {
+              // Handle unsuccessful uploads
+             
+              toastMsg("Image Upload : FAILED !!");
+              hidePleaseWaitModel();
+
+          }, function () {
+              // Handle successful uploads on complete
+              // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+              uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {                  
+                  updateNewImageRefintoDoc(downloadURL,name);
+              });
+          });
+
+      }
+
+
+
+  } else {
+      toastMsg("No Image file Selected !!")
+  }
+
+}
+
+// DELETE Image 
+function deleteImageFromDb(imagedbdetails) {
+  if (imagedbdetails != 'NA') {
+      // Create a reference to the file to delete
+      var storageRef = storage.ref()
+      var desertRef = storageRef.child(imagedbdetails);
+
+      // Delete the file
+      desertRef.delete().then(function () {
+          // File deleted successfully  
+          displayOutput('IMAGE Deleted : ' + imagedbdetails)
+
+      }).catch(function (error) {
+          // Uh-oh, an error occurred!          
+      });
+  }
+}
+
+
 
 
 // *********************************************************

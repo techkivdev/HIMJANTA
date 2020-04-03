@@ -16,6 +16,7 @@ if (check_dev_publish_content) {
 // Global Variables
 let userData = {}
 var userDataPath = coll_base_path + 'USER/ALLUSER'
+var userPoolPath = coll_base_path + 'USER/POOL'
 var uuid = ''
 var allDocCmpData = {}
 
@@ -40,6 +41,24 @@ getParams()
 mobileModeStartupHandling()
 
 modifyPageStyle()
+
+// Complete Location Data 
+function getLocationData() {
+  return {
+    BILASPUR: ['SADAR', 'JHANDUTTA','GHUMARWIN','NAINA DEVI'],
+    CHAMBA: ['MEHLA','CHAMBA','TISSA','SALOONI','BHATIYAT','BHARMOUR','PANGI'],
+    HAMIRPUR: ['SUJANPUR TIHRA','BIJHRI','NADAUN','BHORANJ','HAMIRPUR','BAMSAN'],
+    KANGRA: ['N SURIAN','INDORA','NURPUR','FATEHPUR','PRAGRPUR','DEHRA','BHAWARNA','PANCHRUKHI','LAMBAGAON','BAIJNATH','KANGRA','N BAGWAN','RAIT','SULAH','DHARAMSHALA'],
+    KINNAUR: ['POOH','KALPA','NICHAR'],
+    KULLU: ['KULLU','ANI','BANJAR','NIRMAND','NAGGAR'],
+    LAHAUL_SPITI: ['LAHAUL','SPITI'],
+    MANDI: ['CHAUNTRA','BALH','KARSOG','DHARAMPUR','DRANG','GOPALPUR','SUNDERNAGAR','MANDI SADAR','GOHAR','SERAJ','BALI CHOWKI'],
+    SHIMLA: ['MASHOBRA','BASANTPUR','CHOPAL','CHHOHARA','ROHRU','JUBALKOTKHAI','THEOG','RAMPUR','NANKHARI','NARKANDA','KUPVI'],
+    SIRMOUR: ['PACHHAD','RAJGARH','NAHAN','SANGRAH','SHILLAI','PAONTA'],
+    SOLAN: ['SOLAN','NALAGARH','KUNIHAR','DHARAMPUR','KANDAGHAT']
+    }
+    
+}
 
 // ----------- Read Parameters -------------------
 function getParams() {
@@ -178,32 +197,42 @@ function authDetails() {
 
       user.getIdToken().then(function (accessToken) {
 
+        // Admin Data
+        userData['VERSION'] = 'V1'
+        userData['BLOCKED'] = false
+
         // User Data        
         userData['NAME'] = displayName
         userData['EMAIL'] = email
         userData['EMAILVERIFIED'] = emailVerified
         userData['PROVIDERDATA'] = providerData
         userData['UUID'] = uuid
-        userData['PHOTOURL'] = photoURL
+        userData['BIO'] = ''
+        userData['DISPNAME'] = displayName 
+        userData['AGEGROUP'] = 'CHILDREN'
 
+        // Image 
+        userData['PHOTOURL'] = photoURL       
+
+        // Roles and Permissions 
         userData['ROLE'] = 'USER'
-        userData['ROLE2'] = 'USER'
+        userData['ACCESS'] = 'NA'
+        userData['PERMISSION'] = 'NA'
+        userData['MEMBERSHIP'] = 'NA'
 
+        // Mobile Number
         userData['MOBILE'] = ''
 
+        // Location Information
         userData['COUNTRY'] = 'INDIA'
         userData['STATE'] = 'HIMACHAL PRADESH'
         userData['DISTRICT'] = 'HIMACHAL'
         userData['BLOCK'] = 'HIMACHAL'
-
-        userData['BIO'] = ''
-        userData['DISPNAME'] = displayName 
-
-        userData['AGEGROUP'] = 'CHILDREN'
-
         userData['ADDRESS'] = ''
         userData['MAPLOCATION'] = ''
 
+
+        // Other Settings 
         userData['LANG'] = 'ENG'
 
         userData['SHOWSETTINGS'] = {
@@ -212,7 +241,16 @@ function authDetails() {
           ADDRESS: true,
           AGEGROUP: true,
           LOCATION: true
-        }      
+        } 
+        
+        // Social Links
+        userData['SOCIALINK'] = {
+          FACEBOOK: '',
+          INSTAGRAM: '',
+          YOUTUBE: '',
+          TIKTOK: '',
+          TWITTER: ''
+        }
 
         // Update User Details into Database
         updateUserDetails(uuid, userData)
@@ -282,18 +320,90 @@ function updateUserDetails(uuid, userdata) {
           toastMsg('Your profile created !!')
 
           // Update HTML Page
-          updateHTMLPage()
+          updateHTMLPage(userdata)
 
         });
 
 
       } else {
-        displayOutput('User Data already present.');
+        // ===========================================================
+        // ===========================================================
 
-        userData = doc.data()
+        displayOutput('User Data already present.');        
+        let current_userData = JSON.parse(JSON.stringify(doc.data()));
+       
+        // Check For Version
+        if(current_userData['VERSION'] != userdata['VERSION']) {
 
-        updateHTMLPage()
+           // Compare Both Objects
+          let user_obj_cmp_status = compareKeys(current_userData,userdata)
+          displayOutput('Compare Status : ' + user_obj_cmp_status)
 
+          if(!user_obj_cmp_status) {
+            displayOutput('Version Changed to : ' + current_userData['VERSION'] + ' -> ' + userdata['VERSION'])
+            displayOutput('User DatSet Changed !!')
+            displayOutput('---- Need to Update Only New Chnaged DataSet ------- ')
+            
+            // Get New Data Sets Keys Details
+            let new_keys_details = []
+            for(each_new_key in userdata) {
+              // Check key in current DataSet
+              if(each_new_key in current_userData) {
+                /* Nothing */
+              } else {               
+                new_keys_details.push(each_new_key)
+              }
+            }
+
+            displayOutput('New Keys Details : ' + new_keys_details)
+
+            // Update current Data with New Data Set
+            for(each_idx in new_keys_details) {
+              let new_key_value = new_keys_details[each_idx]              
+              current_userData[new_key_value] = userdata[new_key_value]
+            }
+            current_userData['VERSION'] = userdata['VERSION']
+
+            let final_user_obj_cmp_status = compareKeys(current_userData,userdata)
+            displayOutput('Final Compare Status : ' + final_user_obj_cmp_status)
+
+            // ---------------------------------------------
+            if(final_user_obj_cmp_status) {
+              // Update Latest User Data Set
+              displayOutput('Update Latest Data Set ...')
+
+              displayOutput(current_userData)
+
+              // Create new user data doc
+              db.collection(userDataPath).doc(uuid).set(current_userData).then(function () {
+                displayOutput("User Data Updated !!");
+
+                toastMsg('Your profile created !!')
+
+                // Update HTML Page
+                updateHTMLPage(current_userData)
+
+              });
+
+
+            }
+            // ---------------------------------------
+
+           
+
+          }
+
+        } else {
+
+          // Normal User Operation
+          displayOutput('Normal User Read Operation ...')         
+          updateHTMLPage(JSON.parse(JSON.stringify(current_userData)))
+
+          
+        }       
+
+      // ------------------------------------------------------
+       
       }
     })
     .catch(err => {
@@ -305,25 +415,33 @@ function updateUserDetails(uuid, userdata) {
 
 }
 
+// Compare two Objects Keys
+function compareKeys(a, b) {
+  var aKeys = Object.keys(a).sort();
+  //displayOutput(aKeys)
+  var bKeys = Object.keys(b).sort();
+  //displayOutput(bKeys)
+  return JSON.stringify(aKeys) === JSON.stringify(bKeys);
+}
+
 // Update Session Data
-function updateSessionData() {
+function updateSessionData(updatedUserData) {
   // Update Session Data
   localStorageData('ISUSER',true)
-  localStorageData('UUID',userData['UUID'])
-  localStorageData('NAME',userData['NAME'])
-  localStorageData('DISPNAME',userData['DISPNAME'])
-  localStorageData('EMAIL',userData['EMAIL'])
-  localStorageData('MOBILE',userData['MOBILE'])
-  localStorageData('ROLE',userData['ROLE']) 
-  localStorageData('ROLE2',userData['ROLE2'])
-  localStorageData('PHOTO',userData['PHOTOURL'])
-  localStorageData('COUNTRY',userData['COUNTRY'])
-  localStorageData('STATE',userData['STATE'])
-  localStorageData('DISTRICT',userData['DISTRICT'])
-  localStorageData('BLOCK',userData['BLOCK'])
-  localStorageData('ADDRESS',userData['ADDRESS'])
-  localStorageData('MAPLOCATION',userData['MAPLOCATION'])
-  localStorageData('AGEGROUP',userData['AGEGROUP'])
+  localStorageData('UUID',updatedUserData['UUID'])
+  localStorageData('NAME',updatedUserData['NAME'])
+  localStorageData('DISPNAME',updatedUserData['DISPNAME'])
+  localStorageData('EMAIL',updatedUserData['EMAIL'])
+  localStorageData('MOBILE',updatedUserData['MOBILE'])
+  localStorageData('ROLE',updatedUserData['ROLE'])
+  localStorageData('PHOTO',updatedUserData['PHOTOURL'])
+  localStorageData('COUNTRY',updatedUserData['COUNTRY'])
+  localStorageData('STATE',updatedUserData['STATE'])
+  localStorageData('DISTRICT',updatedUserData['DISTRICT'])
+  localStorageData('BLOCK',updatedUserData['BLOCK'])
+  localStorageData('ADDRESS',updatedUserData['ADDRESS'])
+  localStorageData('MAPLOCATION',updatedUserData['MAPLOCATION'])
+  localStorageData('AGEGROUP',updatedUserData['AGEGROUP'])
   
   displayOutput('Session Data Updated ...')
 }
@@ -338,14 +456,18 @@ function syncProvideDetails() {
       var displayName = user.displayName;
       var photoURL = user.photoURL;
       uuid = user.uid;
+
+      showPleaseWaitModel()
       
       db.collection(userDataPath).doc(uuid).update({
         NAME: displayName,
+        DISPNAME: displayName,
         PHOTOURL: photoURL
       }).then(function () {
         displayOutput("Provider Date Updated ..");  
-        toastMsg('Data Updated !!')
-        location.reload();
+        // Update Pool
+        updateUserPoolContent(uuid,[displayName,photoURL])
+
       });
 
 }, function (error) {
@@ -354,72 +476,127 @@ function syncProvideDetails() {
 
 }
 
+// ==============================================================
+// ----------------- Image Handling -----------------------------
+// ==============================================================
+
+// Update Data Set
+var imageHandlingDataSet = {
+    IMAGE_READY_TO_UPLOAD : false,
+    IMAGE_NAME: '', // Update it when user data loaded
+    IMAGE_DB_PATH: coll_base_path + '/USER/'
+}
+
+// Call Back Function
+// Update New ref. into Document Info field
+function updateNewImageRefintoDoc(newImageRef,imgName) {
+
+  displayOutput(newImageRef)  
+  displayOutput(imgName)
+
+  db.collection(userDataPath).doc(uuid).update({
+    PHOTOURL: newImageRef
+  }).then(function () {   
+    // Update Pool
+    updateUserPoolContent(uuid,[userData['DISPNAME'],newImageRef])
+
+  });
+
+}
+
+
 
 // ==============================================================
 // Update Complete HTML Page
 // ==============================================================
-function updateHTMLPage() {
+function updateHTMLPage(updatedUserData) {
   displayOutput('Update HTML Page ..')
 
-  //displayOutput(userData)
+  //displayOutput(updatedUserData)
 
-  updateSessionData()
+  // Update Data Sets
+  updateSessionData(updatedUserData)
+  imageHandlingDataSet['IMAGE_NAME'] = uuid
 
   displayOutput('fl : ' + fl)
 
   if(fl == 'NA') {
 
-  $("#profile_name").html(userData['NAME'])
-  $("#profile_email").html(userData['EMAIL'])
-  $("#profile_mobile").html(userData['MOBILE'])
-  
-  $("#profile_name_mb").html(userData['NAME'])
-  $("#profile_email_mb").html(userData['EMAIL'])
-  $("#profile_mobile_mb").html(userData['MOBILE'])
+  // Update User Profile Content  
 
-  document.getElementById("user_profile_image").src = userData['PHOTOURL']
-  document.getElementById("user_profile_image_mb").src = userData['PHOTOURL']
+  $("#profile_name").html(updatedUserData['NAME'])
+  $("#profile_email").html(updatedUserData['EMAIL'])
+  if(updatedUserData['MOBILE'] != '') {
+  $("#profile_mobile").html('+91- '+updatedUserData['MOBILE'])
+  }
+  $("#profile_location").html(updatedUserData['BLOCK'] + ' , ' + updatedUserData['DISTRICT'])
+  $("#profile_bio").html(updatedUserData['BIO'])
+
+
+  // For Mobile 
+  $("#profile_name_mb").html(updatedUserData['NAME'])
+  $("#profile_email_mb").html(updatedUserData['EMAIL'])
+  if(updatedUserData['MOBILE'] != '') {
+  $("#profile_mobile_mb").html('+91- '+updatedUserData['MOBILE'])
+  }
+
+  $("#profile_location_mb").html(updatedUserData['BLOCK'] + ' , ' + updatedUserData['DISTRICT'])
+  $("#profile_bio_mb").html(updatedUserData['BIO'])
+
+  
+
+  document.getElementById("user_profile_image").src = updatedUserData['PHOTOURL']
+  document.getElementById("user_profile_image_mb").src = updatedUserData['PHOTOURL']
 
   // --------------------------------------------------------
   // -------------- Profile Details -------------------------
   // --------------------------------------------------------
    
-  document.getElementById("u_img").src = userData['PHOTOURL']
+  document.getElementById("u_img").src = updatedUserData['PHOTOURL']
 
-  $("#u_name").html(userData['NAME']);
-  $("#u_email").html(userData['EMAIL']);
+  // Update Provider Information
+  $("#provider_details").html('Provided By : ' + updatedUserData['PROVIDERDATA'][0]['providerId']);
 
-  document.getElementById("user_name").value = userData['NAME']
-  document.getElementById("user_email").value = userData['EMAIL']
-  document.getElementById("user_mobile").value = userData['MOBILE']
+  $("#u_name").html(updatedUserData['NAME']);
+  $("#u_email").html(updatedUserData['EMAIL']);
 
-  document.getElementById("display_user_name").value = userData['DISPNAME']
-  document.getElementById("user_bio").value = br2nl(userData['BIO'])
+  document.getElementById("user_name").value = updatedUserData['NAME']
+  document.getElementById("user_email").value = updatedUserData['EMAIL']
+  document.getElementById("user_mobile").value = updatedUserData['MOBILE']
+
+  document.getElementById("display_user_name").value = updatedUserData['DISPNAME']
+  document.getElementById("user_bio").value = br2nl(updatedUserData['BIO'])
   M.textareaAutoResize($('#user_bio'));
 
-  document.getElementById(userData['AGEGROUP']).selected = true
+  document.getElementById(updatedUserData['AGEGROUP']).selected = true
 
-  document.getElementById(userData['DISTRICT']+'_'+userData['BLOCK']).selected = true
-  if(userData['BLOCK'] == 'HIMACHAL'){
-    $('#u_district_details').html(userData['BLOCK'] + ' - Please update it.')
-  } else {
-    $('#u_district_details').html(userData['DISTRICT']+','+userData['BLOCK'])
+  document.getElementById("user_district_blocks").value = updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT']
+
+  if(updatedUserData['BLOCK'] == 'HIMACHAL'){
+    $('#u_district_details').html(updatedUserData['BLOCK'] + ' - Please update it.')
   }
   
 
-  document.getElementById("user_address").value = br2nl(userData['ADDRESS'])
+  document.getElementById("user_address").value = br2nl(updatedUserData['ADDRESS'])
   M.textareaAutoResize($('#user_address'));
 
   // Update Settings
-  document.getElementById("user_profile_chk").checked = userData['SHOWSETTINGS']['PROFILE']
-  document.getElementById("user_mobile_chk").checked = userData['SHOWSETTINGS']['MOBILE']
-  document.getElementById("user_address_chk").checked = userData['SHOWSETTINGS']['ADDRESS']
+  document.getElementById("user_profile_chk").checked = updatedUserData['SHOWSETTINGS']['PROFILE']
+  document.getElementById("user_mobile_chk").checked = updatedUserData['SHOWSETTINGS']['MOBILE']
+  document.getElementById("user_address_chk").checked = updatedUserData['SHOWSETTINGS']['ADDRESS']
 
-  document.getElementById(userData['LANG']).selected = true
+  document.getElementById(updatedUserData['LANG']).selected = true
 
   $(document).ready(function(){
     $('select').formSelect();
   });
+
+  // Update Social Link
+  document.getElementById("social_link_facebook").value = updatedUserData['SOCIALINK']['FACEBOOK']
+  document.getElementById("social_link_instagram").value = updatedUserData['SOCIALINK']['INSTAGRAM']
+  document.getElementById("social_link_youtube").value = updatedUserData['SOCIALINK']['YOUTUBE']
+  document.getElementById("social_link_twitter").value = updatedUserData['SOCIALINK']['TWITTER']
+  document.getElementById("social_link_tiktok").value = updatedUserData['SOCIALINK']['TIKTOK']
 
 
   // -----------------------------------------------------------
@@ -447,15 +624,15 @@ function updateHTMLPage() {
         <a href="managedetails.html" class="collection-item blue-text">Booking Managment</a>\
   </div>'
 
-  if (userData['ROLE'] != 'USER') {
+  if (updatedUserData['ROLE'] != 'USER') {
     
     document.getElementById("extra_options_card").style.display = 'block';
 
     let adminOptions = ''
 
-    if(userData['ROLE'] == 'DEV') {
+    if(updatedUserData['ROLE'] == 'DEV') {
       adminOptions = dev_role
-    } else if(userData['ROLE'] == 'ADMIN') {
+    } else if(updatedUserData['ROLE'] == 'ADMIN') {
       adminOptions = admin_role
     }   
 
@@ -477,6 +654,70 @@ function updateHTMLPage() {
 
 }
 
+// ========= Location Selection ===============
+var selectedLocation = 'NA'
+
+// Create and Open Model
+function openLocationSelector(){
+
+  let allLocationData = getLocationData()
+
+  let location_html = ''
+  for(each_dist in allLocationData) {
+    let each_dist_blocks = allLocationData[each_dist]
+
+    let block_html = ''
+    for(each_idx in each_dist_blocks){
+      let each_block = each_dist_blocks[each_idx]
+      block_html += '<li class="collection-item"><a href="#!" onclick="locationSelected(\''+each_block+'@'+each_dist+'\')"  class="black-text">'+each_block+'</a></li>'
+    }
+
+    let dist_htm = '<b style="margin-left: 20px; margin-top: 20px;">'+each_dist+'</b><ul class="collection">' +  block_html + '</ul>'
+
+    location_html += dist_htm
+  }
+
+  let content = '<ul class="collection">\
+  <li class="collection-item"><a href="#!" onclick="locationSelected(\'Alvin\')"  class="black-text">Alvin</a></li>\
+  <li class="collection-item"><a href="#!" onclick="locationSelected(\'Alvin\')"  class="black-text">Alvin</a></li>\
+  <li class="collection-item"><a href="#!" onclick="locationSelected(\'Alvin\')"  class="black-text">Alvin</a></li>\
+  <li class="collection-item"><a href="#!" onclick="locationSelected(\'Alvin\')"  class="black-text">Alvin</a></li>\
+  <li class="collection-item"><a href="#!" onclick="locationSelected(\'Alvin\')"  class="black-text">Alvin</a></li>\
+</ul>'
+
+  var model = '<!-- Modal Structure -->\
+  <div id="location_model" class="modal">\
+    <div class="">\
+      <div style="margin-top: 20px;">'+ location_html + '</div>\
+    </div>\
+    </div>'
+
+  var elem = document.getElementById('location_model');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+  $('#location_model').modal('open');
+
+}
+
+// Location Selected
+function locationSelected(name) {     
+  $('#location_model').modal('close');
+  selectedLocation = name
+  //toastMsg(name)
+
+  document.getElementById("user_district_blocks").value = selectedLocation.replace('@',',')
+  $('#u_district_details').html('You have changed details, Please SAVE it.')
+
+}
+
+
 
 // Div Block Handling
 function divBlockHandling(value) {
@@ -485,6 +726,7 @@ function divBlockHandling(value) {
   window.scrollTo(0, 0);
 
   document.getElementById("main_footer_sec").style.display = 'none';
+  document.getElementById("top_div_header").style.display = 'none';
 
   switch(value) {
     
@@ -571,6 +813,7 @@ function hideFullMessageDialog(){
   
   document.getElementById("options_card_section").style.display = 'block';
   document.getElementById("main_footer_sec").style.display = 'block';
+  document.getElementById("top_div_header").style.display = 'block';
 
 }
 
@@ -654,7 +897,7 @@ if(isStrEmpty(display_user_name)) {
 var user_bio = document.getElementById("user_bio").value.trim();
 user_bio = nl2br(user_bio)
 var user_age_group = document.getElementById("user_age_group").value.trim();
-var user_district_and_block = document.getElementById("user_district_and_block").value.trim();
+var user_district_blocks = document.getElementById("user_district_blocks").value.trim();
 var user_address = document.getElementById("user_address").value.trim();
 user_address = nl2br(user_address)
 
@@ -673,14 +916,29 @@ var settings_privacy = {
   LOCATION: true
 }
 
+// User Social Link Details
+var social_link_facebook = document.getElementById("social_link_facebook").value.trim();
+var social_link_instagram = document.getElementById("social_link_instagram").value.trim();
+var social_link_youtube = document.getElementById("social_link_youtube").value.trim();
+var social_link_twitter = document.getElementById("social_link_twitter").value.trim();
+var social_link_tiktok = document.getElementById("social_link_tiktok").value.trim();
+
+ // Social Links
+ var social_links = {
+  FACEBOOK: social_link_facebook,
+  INSTAGRAM: social_link_instagram,
+  YOUTUBE: social_link_youtube,
+  TIKTOK: social_link_tiktok,
+  TWITTER: social_link_twitter
+}
 
   if (validation) {
     userData['MOBILE'] = mobileno
     userData['DISPNAME'] = display_user_name
     userData['BIO'] = user_bio
     userData['AGEGROUP'] = user_age_group
-    userData['DISTRICT'] = user_district_and_block.split('_')[0]
-    userData['BLOCK'] = user_district_and_block.split('_')[1]
+    userData['DISTRICT'] = user_district_blocks.split(',')[1]
+    userData['BLOCK'] = user_district_blocks.split(',')[0]
     userData['ADDRESS'] = user_address
 
     db.collection(userDataPath).doc(uuid).update({
@@ -688,33 +946,63 @@ var settings_privacy = {
       DISPNAME: display_user_name,
       BIO: user_bio,
       AGEGROUP: user_age_group,
-      DISTRICT: user_district_and_block.split('_')[0],
-      BLOCK: user_district_and_block.split('_')[1],
+      DISTRICT: user_district_blocks.split(',')[1],
+      BLOCK: user_district_blocks.split(',')[0],
       ADDRESS: user_address,
       LANG: user_language,
-      SHOWSETTINGS: settings_privacy
+      SHOWSETTINGS: settings_privacy,
+      SOCIALINK: social_links
     }).then(function () {
       displayOutput("Mobile details Updated ..");
-      hidePleaseWaitModel()
-
-      toastMsg('Profile Updated !!')
 
       // Update Session Data Also
       localStorageData('MOBILE',mobileno)
       localStorageData('DISPNAME',display_user_name)
       localStorageData('BIO',user_bio)
       localStorageData('AGEGROUP',user_age_group)
-      localStorageData('DISTRICT',user_district_and_block.split('_')[0])
-      localStorageData('BLOCK',user_district_and_block.split('_')[1])
+      localStorageData('DISTRICT',user_district_blocks.split(',')[1])
+      localStorageData('BLOCK',user_district_blocks.split(',')[0])
       localStorageData('ADDRESS',user_address)
 
-      location.reload();
-
+      // Update Pool
+      updateUserPoolContent(uuid,[userData['DISPNAME'],userData['PHOTOURL']])
 
     });
 
   }
 
+}
+
+// Update User Pool Details
+function updateUserPoolContent(uuid, dataArray) {
+
+  hidePleaseWaitModel()
+
+  toastMsg('Profile Updated !!')
+
+  location.reload();
+
+  // Check for Possiblilties of cloud function
+
+  /*
+  let data = {
+      DISPNAME: dataArray[0],
+      PHOTOURL: dataArray[1]
+  }
+
+   // Create new user data doc
+   db.collection(userPoolPath).doc(uuid).set(data).then(function () {
+    displayOutput("User Pool Updated !!");
+
+    hidePleaseWaitModel()
+
+    toastMsg('Profile Updated !!')
+
+    location.reload();
+
+  });
+
+  */
 }
 
 // --------------- Bookmark Handling -----------------
