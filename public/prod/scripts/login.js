@@ -20,6 +20,12 @@ var userPoolPath = coll_base_path + 'USER/POOL'
 var uuid = ''
 var allDocCmpData = {}
 
+var selectedCurrentLocation = ''
+var selectedLocation = ''
+
+var defaultLocationConfig = getLocationConfig() 
+var languageContent = {}
+
 // Parameters
 var fl = 'NA'
 var fl2 = 'NA'
@@ -41,24 +47,6 @@ getParams()
 mobileModeStartupHandling()
 
 modifyPageStyle()
-
-// Complete Location Data 
-function getLocationData() {
-  return {
-    BILASPUR: ['SADAR', 'JHANDUTTA','GHUMARWIN','NAINA DEVI'],
-    CHAMBA: ['MEHLA','CHAMBA','TISSA','SALOONI','BHATIYAT','BHARMOUR','PANGI'],
-    HAMIRPUR: ['SUJANPUR TIHRA','BIJHRI','NADAUN','BHORANJ','HAMIRPUR','BAMSAN'],
-    KANGRA: ['N SURIAN','INDORA','NURPUR','FATEHPUR','PRAGRPUR','DEHRA','BHAWARNA','PANCHRUKHI','LAMBAGAON','BAIJNATH','KANGRA','N BAGWAN','RAIT','SULAH','DHARAMSHALA'],
-    KINNAUR: ['POOH','KALPA','NICHAR'],
-    KULLU: ['KULLU','ANI','BANJAR','NIRMAND','NAGGAR'],
-    LAHAUL_SPITI: ['LAHAUL','SPITI'],
-    MANDI: ['CHAUNTRA','BALH','KARSOG','DHARAMPUR','DRANG','GOPALPUR','SUNDERNAGAR','MANDI SADAR','GOHAR','SERAJ','BALI CHOWKI'],
-    SHIMLA: ['MASHOBRA','BASANTPUR','CHOPAL','CHHOHARA','ROHRU','JUBALKOTKHAI','THEOG','RAMPUR','NANKHARI','NARKANDA','KUPVI'],
-    SIRMOUR: ['PACHHAD','RAJGARH','NAHAN','SANGRAH','SHILLAI','PAONTA'],
-    SOLAN: ['SOLAN','NALAGARH','KUNIHAR','DHARAMPUR','KANDAGHAT']
-    }
-    
-}
 
 // ----------- Read Parameters -------------------
 function getParams() {
@@ -195,11 +183,14 @@ function authDetails() {
       var phoneNumber = user.phoneNumber;
       var providerData = user.providerData;
 
-      user.getIdToken().then(function (accessToken) {
+      user.getIdToken().then(function (accessToken) {            
 
         // Admin Data
         userData['VERSION'] = 'V1'
         userData['BLOCKED'] = false
+        userData['DELETESTATUS'] = false
+
+        //userData['TEST'] = false
 
         // User Data        
         userData['NAME'] = displayName
@@ -210,6 +201,7 @@ function authDetails() {
         userData['BIO'] = ''
         userData['DISPNAME'] = displayName 
         userData['AGEGROUP'] = 'CHILDREN'
+        userData['PROFESSION'] = 'FREE@I AM FREE'
 
         // Image 
         userData['PHOTOURL'] = photoURL       
@@ -224,12 +216,14 @@ function authDetails() {
         userData['MOBILE'] = ''
 
         // Location Information
-        userData['COUNTRY'] = 'INDIA'
-        userData['STATE'] = 'HIMACHAL PRADESH'
-        userData['DISTRICT'] = 'HIMACHAL'
-        userData['BLOCK'] = 'HIMACHAL'
+        userData['COUNTRY'] = defaultLocationConfig['COUNTRY']
+        userData['STATE'] = defaultLocationConfig['STATE']
+        userData['DISTRICT'] = defaultLocationConfig['DISTRICT']
+        userData['BLOCK'] = defaultLocationConfig['BLOCK']
         userData['ADDRESS'] = ''
         userData['MAPLOCATION'] = ''
+        userData['CURRADDRSTATUS'] = 'INSIDE'
+        userData['CURRADDRVALUE'] = defaultLocationConfig['DEFAULT_CURRENT_LOC']
 
 
         // Other Settings 
@@ -518,6 +512,8 @@ function updateHTMLPage(updatedUserData) {
   updateSessionData(updatedUserData)
   imageHandlingDataSet['IMAGE_NAME'] = uuid
 
+  updatePageWithLang(updatedUserData['LANG'])
+
   displayOutput('fl : ' + fl)
 
   if(fl == 'NA') {
@@ -569,11 +565,15 @@ function updateHTMLPage(updatedUserData) {
   M.textareaAutoResize($('#user_bio'));
 
   document.getElementById(updatedUserData['AGEGROUP']).selected = true
+  document.getElementById(updatedUserData['PROFESSION'].split('@')[0]).selected = true
 
-  document.getElementById("user_district_blocks").value = updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT']
-
-  if(updatedUserData['BLOCK'] == 'HIMACHAL'){
-    $('#u_district_details').html(updatedUserData['BLOCK'] + ' - Please update it.')
+  
+  selectedLocation = updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT']
+  if(updatedUserData['BLOCK'] == defaultLocationConfig['BLOCK']){
+    document.getElementById("user_district_blocks").value = updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT']
+    $('#u_district_details').html(updatedUserData['BLOCK'] + ' - Please update it.')    
+  } else {
+    document.getElementById("user_district_blocks").value = updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT']
   }
   
 
@@ -597,6 +597,16 @@ function updateHTMLPage(updatedUserData) {
   document.getElementById("social_link_youtube").value = updatedUserData['SOCIALINK']['YOUTUBE']
   document.getElementById("social_link_twitter").value = updatedUserData['SOCIALINK']['TWITTER']
   document.getElementById("social_link_tiktok").value = updatedUserData['SOCIALINK']['TIKTOK']
+
+  // Update Current Location Status
+  selectedCurrentLocation = updatedUserData['CURRADDRVALUE']
+  if(updatedUserData['CURRADDRSTATUS'] == 'INSIDE') {    
+    document.getElementById("inside_radbtn").checked = true
+  } else {   
+    setHTML('user_current_location_value',updatedUserData['CURRADDRVALUE'] + '<a href="#!" onclick="openOutsideLocationSelector()" class="secondary-content"><i class="material-icons blue-text">chevron_right</i></a>')
+    document.getElementById("outside_radbtn").checked = true
+    document.getElementById("current_outside_location_section").style.display = 'block'; 
+  }
 
 
   // -----------------------------------------------------------
@@ -651,11 +661,141 @@ function updateHTMLPage(updatedUserData) {
   document.getElementById("close_fl_btn_to_forum").style.display = 'block';
 }
 
+userData = updatedUserData
+
+
+}
+
+// Display Profile Details
+function showProfileDetails() {
+
+  let content = ''
+
+  content += '<p class=grey-text style="font-size : 13px;">Name</p><p style="margin-top: -25px;">'+userData['NAME']+'</p>'
+
+  if(userData['MOBILE']){    
+    content += '<p class=grey-text style="font-size : 13px;">Mobile Number</p><p style="margin-top: -25px;">'+userData['MOBILE']+'</p>'
+  } 
+
+  content += '<p class=grey-text style="font-size : 13px;">Age Group</p><p style="margin-top: -25px;">'+userData['AGEGROUP']+'</p>'
+  content += '<p class=grey-text style="font-size : 13px;">Profession</p><p style="margin-top: -25px;">'+userData['PROFESSION'].split('@')[1]+'</p>'
+   
+  content += '<li class="divider" tabindex="-1"></li>'
+
+  if(userData['BLOCK'] == defaultLocationConfig['BLOCK']){
+    content += '<p class=grey-text style="font-size : 13px;">Permanent Location</p><p style="margin-top: -25px;">'+ userData['DISTRICT']+'</p>'
+  } else {
+    content += '<p class=grey-text style="font-size : 13px;">Permanent Location</p><p style="margin-top: -25px;">'+userData['BLOCK']+','+userData['DISTRICT']+'</p>'
+  }  
+ 
+  
+  if(userData['ADDRESS'] != ''){   
+    content += '<p class=grey-text style="font-size : 13px;">Address</p><p class="long-text-nor" style="margin-top: -20px;">'+userData['ADDRESS']+'</p>'
+  } 
+
+  if(userData['CURRADDRSTATUS'] == 'INSIDE') {    
+    content += '<p class=grey-text style="font-size : 13px;">Current Location Status</p><p style="margin-top: -25px;">'+'Inside ' + defaultLocationConfig['STATE'] +'</p>'
+  } else {    
+    content += '<p class=grey-text style="font-size : 13px;">Current Location Status</p><p style="margin-top: -25px;">'+'Outside ' + defaultLocationConfig['STATE'] +'</p>'
+    content += '<p class=grey-text style="font-size : 13px;">Location</p><p style="margin-top: -25px;">'+userData['CURRADDRVALUE']+'</p>'
+  }
+
+  content += '<li class="divider" tabindex="-1"></li>'
+
+  if(userData['BIO'] != ''){   
+    content += '<p class=grey-text style="font-size : 13px;">Bio</p><p class="long-text-nor" style="margin-top: -20px;">'+userData['BIO']+'</p>'
+  } 
+  
+  
+
+ 
+  
+
+  var model = '<!-- Modal Structure -->\
+  <div id="profile_model" class="modal modal-fixed-footer">\
+    <div class="modal-content">\
+      <div style="margin-left: 10px; margin-right: 10px;">'+ content + '</div>\
+    </div>\
+    <div class="modal-footer">\
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>\
+      </div>\
+  </div>'
+
+  var elem = document.getElementById('profile_model');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+  $('#profile_model').modal('open');
+
+}
+
+// Update Page according to Language
+function updatePageWithLang(lang) {
+  // Get Language Details
+
+  languageContent = getLangContent(lang)
+
+  setHTML('card_profile_name',languageContent['PROFILE'])
+  setHTML('card_profile_desc',languageContent['PROFILE_DESC'])
+
+  setHTML('card_bookmark_name',languageContent['BOOKMARK'])
+  setHTML('card_bookmark_desc',languageContent['BOOKMARK_DESC'])
+
+  setHTML('card_list_name',languageContent['LIST'])
+  setHTML('card_list_desc',languageContent['LIST_DESC'])
+
+  setHTML('collps_profile_header','<i class="material-icons blue-text"><b>'+languageContent['PROFILE_HEADER_IMG']+'</i>' + languageContent['PROFILE_HEADER']+'</b>')
+  setHTML('collps_locaddr_header','<i class="material-icons blue-text"><b>'+languageContent['LOCATION_HEADER_IMG']+'</i>' + languageContent['LOCATION_HEADER']+'</b>')
+  setHTML('collps_privacy_header','<i class="material-icons blue-text"><b>'+languageContent['PRIVACY_HEADER_IMG']+'</i>' + languageContent['PRIVACY_HEADER']+'</b>')
+  setHTML('collps_sociallink_header','<i class="material-icons blue-text"><b>'+languageContent['SOCIAL_HEADER_IMG']+'</i>' + languageContent['SOCIAL_HEADER']+'</b>')
+  setHTML('collps_settings_header','<i class="material-icons blue-text"><b>'+languageContent['SETTINGS_HEADER_IMG']+'</i>' + languageContent['SETTINGS_HEADER']+'</b>')
+
+  setHTML('user_profile_chk_hdr',languageContent['PRIVACY_CHK_BTN_1'])
+  setHTML('user_mobile_chk_hdr',languageContent['PRIVACY_CHK_BTN_2'])
+  setHTML('user_address_chk_hdr',languageContent['PRIVACY_CHK_BTN_3'])
+
+  setHTML('accept_content',languageContent['ACCEPT'] + '<a href="terms_and_conditions.html">  terms and conditions</a>.')
+
+
+  
+
+
+}
+
+// Open Profile Help Content
+function openProfileHelp() {
+
+  var model = '<!-- Modal Structure -->\
+  <div id="help_model" class="modal modal-fixed-footer">\
+    <div class="modal-content">\
+      <div style="margin-left: 10px; margin-right: 10px;">'+ languageContent['HELP'] + '</div>\
+    </div>\
+    <div class="modal-footer">\
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>\
+      </div>\
+  </div>'
+
+  var elem = document.getElementById('help_model');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+  $('#help_model').modal('open');
 
 }
 
 // ========= Location Selection ===============
-var selectedLocation = 'NA'
 
 // Create and Open Model
 function openLocationSelector(){
@@ -665,25 +805,22 @@ function openLocationSelector(){
   let location_html = ''
   for(each_dist in allLocationData) {
     let each_dist_blocks = allLocationData[each_dist]
+    each_dist = each_dist.replace('_',' ')
 
     let block_html = ''
     for(each_idx in each_dist_blocks){
       let each_block = each_dist_blocks[each_idx]
-      block_html += '<li class="collection-item"><a href="#!" onclick="locationSelected(\''+each_block+'@'+each_dist+'\')"  class="black-text">'+each_block+'</a></li>'
+      if(selectedLocation == each_block+','+each_dist) {
+        block_html += '<li class="collection-item active"><a href="#!" onclick="locationSelected(\''+each_block+','+each_dist+'\')"  class="black-text">'+each_block+'</a></li>'
+      } else {
+         block_html += '<li class="collection-item"><a href="#!" onclick="locationSelected(\''+each_block+','+each_dist+'\')"  class="black-text">'+each_block+'</a></li>'
+      }
     }
 
     let dist_htm = '<b style="margin-left: 20px; margin-top: 20px;">'+each_dist+'</b><ul class="collection">' +  block_html + '</ul>'
 
     location_html += dist_htm
   }
-
-  let content = '<ul class="collection">\
-  <li class="collection-item"><a href="#!" onclick="locationSelected(\'Alvin\')"  class="black-text">Alvin</a></li>\
-  <li class="collection-item"><a href="#!" onclick="locationSelected(\'Alvin\')"  class="black-text">Alvin</a></li>\
-  <li class="collection-item"><a href="#!" onclick="locationSelected(\'Alvin\')"  class="black-text">Alvin</a></li>\
-  <li class="collection-item"><a href="#!" onclick="locationSelected(\'Alvin\')"  class="black-text">Alvin</a></li>\
-  <li class="collection-item"><a href="#!" onclick="locationSelected(\'Alvin\')"  class="black-text">Alvin</a></li>\
-</ul>'
 
   var model = '<!-- Modal Structure -->\
   <div id="location_model" class="modal">\
@@ -712,9 +849,81 @@ function locationSelected(name) {
   selectedLocation = name
   //toastMsg(name)
 
-  document.getElementById("user_district_blocks").value = selectedLocation.replace('@',',')
+  document.getElementById("user_district_blocks").value = selectedLocation
   $('#u_district_details').html('You have changed details, Please SAVE it.')
 
+}
+
+
+// Current Location Status
+function updateCurrentLocationStatus(details) {
+
+  if(details == 'OUTSIDE') {
+    document.getElementById("current_outside_location_section").style.display = 'block';    
+    selectedCurrentLocation = ''
+    setHTML('user_current_location_value','Please Select Location.'+ '<a href="#!" onclick="openOutsideLocationSelector()" class="secondary-content"><i class="material-icons blue-text">chevron_right</i></a>')
+  } else {
+    document.getElementById("current_outside_location_section").style.display = 'none';   
+    selectedCurrentLocation = defaultLocationConfig['DEFAULT_CURRENT_LOC']
+  }
+
+}
+
+// ---- Outside Location Selector ---
+// Create and Open Model
+function openOutsideLocationSelector(){
+
+  let allLocationData = getOutSideLocationData()
+
+  let location_html = ''
+  for(each_dist in allLocationData) {
+    let each_dist_blocks = allLocationData[each_dist]
+
+    let block_html = ''
+    for(each_idx in each_dist_blocks){
+      let each_block = each_dist_blocks[each_idx]
+      // Compare with Current Value
+      if(selectedCurrentLocation == each_block+','+each_dist) {        
+        block_html += '<li class="collection-item active"><a href="#!" onclick="outsidelocationSelected(\''+each_block+','+each_dist+'\')"  class="black-text">'+each_block+'</a></li>'
+      } else {        
+        block_html += '<li class="collection-item"><a href="#!" onclick="outsidelocationSelected(\''+each_block+','+each_dist+'\')"  class="black-text">'+each_block+'</a></li>'
+      }
+      
+    }
+
+    let dist_htm = '<b style="margin-left: 20px; margin-top: 20px;">'+each_dist+'</b><ul class="collection">' +  block_html + '</ul>'
+
+    location_html += dist_htm
+  }
+
+
+  var model = '<!-- Modal Structure -->\
+  <div id="location_model" class="modal">\
+    <div class="">\
+      <div style="margin-top: 20px;">'+ location_html + '</div>\
+    </div>\
+    </div>'
+
+  var elem = document.getElementById('location_model');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+  $('#location_model').modal('open');
+
+}
+
+// Location Selected
+function outsidelocationSelected(name) {     
+  $('#location_model').modal('close');
+  selectedCurrentLocation = name
+  setHTML('user_current_location_value',selectedCurrentLocation + '<a href="#!" onclick="openOutsideLocationSelector()" class="secondary-content"><i class="material-icons blue-text">chevron_right</i></a>')
+  
 }
 
 
@@ -873,7 +1082,7 @@ function saveprofiledata() {
   if (mbcnt != 10) {
     validation = false
     hidePleaseWaitModel()
-    toastMsg('Your mobile number is not correct !!')
+    toastMsg(languageContent['MESSAGE_MOBILE'])
   } else {
     validation = true
   }
@@ -883,7 +1092,7 @@ var user_accept_terms_checkbox = document.getElementById("user_accept_terms_chec
 if(!user_accept_terms_checkbox){
   validation = false
   hidePleaseWaitModel()
-  toastMsg('Please accept terms and conditions !!')
+  toastMsg(languageContent['MESSAGE_ACCEPT'])
 }
 
 
@@ -897,6 +1106,7 @@ if(isStrEmpty(display_user_name)) {
 var user_bio = document.getElementById("user_bio").value.trim();
 user_bio = nl2br(user_bio)
 var user_age_group = document.getElementById("user_age_group").value.trim();
+var user_profession = document.getElementById("user_profession").value.trim();
 var user_district_blocks = document.getElementById("user_district_blocks").value.trim();
 var user_address = document.getElementById("user_address").value.trim();
 user_address = nl2br(user_address)
@@ -932,6 +1142,22 @@ var social_link_tiktok = document.getElementById("social_link_tiktok").value.tri
   TWITTER: social_link_twitter
 }
 
+
+// Read Current Location Data
+if(isStrEmpty(selectedCurrentLocation)) {
+  validation = false
+  hidePleaseWaitModel()
+  toastMsg(languageContent['MESSAGE_CURRLOC'])
+}
+
+let outside_radbtn = document.getElementById("outside_radbtn").checked
+let current_location_status = 'INSIDE'
+if(outside_radbtn) {
+  current_location_status = 'OUTSIDE'
+}
+
+// ============================================================
+
   if (validation) {
     userData['MOBILE'] = mobileno
     userData['DISPNAME'] = display_user_name
@@ -946,10 +1172,13 @@ var social_link_tiktok = document.getElementById("social_link_tiktok").value.tri
       DISPNAME: display_user_name,
       BIO: user_bio,
       AGEGROUP: user_age_group,
+      PROFESSION: user_profession,
       DISTRICT: user_district_blocks.split(',')[1],
       BLOCK: user_district_blocks.split(',')[0],
       ADDRESS: user_address,
       LANG: user_language,
+      CURRADDRSTATUS: current_location_status,
+      CURRADDRVALUE: selectedCurrentLocation,
       SHOWSETTINGS: settings_privacy,
       SOCIALINK: social_links
     }).then(function () {
@@ -978,7 +1207,7 @@ function updateUserPoolContent(uuid, dataArray) {
 
   hidePleaseWaitModel()
 
-  toastMsg('Profile Updated !!')
+  toastMsg(languageContent['MESSAGE_PROFILE'])
 
   location.reload();
 
@@ -1180,5 +1409,121 @@ function removeMyList(details) {
       openMyListContent()
     });
 
+
+}
+
+// ============= Get Language Content ==============
+
+// Get Language Data
+function getLangContent(lang) {
+
+  switch(lang) {
+    case 'ENG' : {
+      return getENGlangContent()
+    }
+
+    case 'HIN' : {
+      return getHINlangContent()
+    }
+
+    default : {
+      return getENGlangContent()
+    }
+
+  }
+
+}
+
+// LANG : ENGLISH
+function getENGlangContent() {
+
+  return {
+    PROFILE: 'Profile',
+    PROFILE_DESC: 'Update Profile Content',
+
+    BOOKMARK: 'Bookmark',
+    BOOKMARK_DESC: 'My Bookmark Details',
+
+    LIST : 'My List',
+    LIST_DESC: 'My List Details.',
+
+    // Profile Content
+    PROFILE_HEADER: 'Profile Information',
+    PROFILE_HEADER_IMG: 'perm_contact_calendar', // Not Changed
+
+    LOCATION_HEADER: 'Location & Address',
+    LOCATION_HEADER_IMG: 'person_pin', // Not Changed
+
+    PRIVACY_HEADER: 'Privacy Settings',
+    PRIVACY_HEADER_IMG: 'verified_user', // Not Changed
+
+    PRIVACY_CHK_BTN_1: 'Profile Visible to All.',
+    PRIVACY_CHK_BTN_2: 'Mobile Number Visible to All.',
+    PRIVACY_CHK_BTN_3: 'Address Visible to All.',
+
+    SOCIAL_HEADER: 'Social Links',
+    SOCIAL_HEADER_IMG: 'insert_link', // Not Changed
+
+    SETTINGS_HEADER: 'Settings',
+    SETTINGS_HEADER_IMG: 'settings', // Not Changed
+
+    ACCEPT: 'I Accept',
+
+    // Display Message 
+    MESSAGE_MOBILE: 'Your mobile number is not correct !!',
+    MESSAGE_ACCEPT: 'Please accept terms and conditions !!',
+    MESSAGE_CURRLOC: 'Please select current location details !!',
+    MESSAGE_PROFILE: 'Profile Updated !!',
+
+    HELP: 'Help Content'
+
+  }
+
+}
+
+// LANG : HINDI
+function getHINlangContent() {
+
+  return {
+    PROFILE: 'प्रोफ़ाइल',
+    PROFILE_DESC: ' प्रोफ़ाइल सामग्री अपडेट करें',
+
+    BOOKMARK: 'बुकमार्क',
+    BOOKMARK_DESC: 'मेरा बुकमार्क विवरण',
+
+    LIST : 'मेरी सूची',
+    LIST_DESC: 'मेरी सूची विवरण',
+
+    // Profile Content
+    PROFILE_HEADER: 'प्रोफ़ाइल जानकारी',
+    PROFILE_HEADER_IMG: 'perm_contact_calendar', // Not Changed
+
+    LOCATION_HEADER: 'स्थान का पता',
+    LOCATION_HEADER_IMG: 'person_pin', // Not Changed
+
+    PRIVACY_HEADER: 'गोपनीय सेटिंग',
+    PRIVACY_HEADER_IMG: 'verified_user', // Not Changed
+
+    PRIVACY_CHK_BTN_1: 'प्रोफ़ाइल सभी के लिए दृश्यमान है।',
+    PRIVACY_CHK_BTN_2: 'सभी के लिए मोबाइल नंबर।',
+    PRIVACY_CHK_BTN_3: 'सभी के लिए दर्शनीय।',
+
+    SOCIAL_HEADER: 'सामाजिक लिंक',
+    SOCIAL_HEADER_IMG: 'insert_link', // Not Changed
+
+    SETTINGS_HEADER: 'समायोजन',
+    SETTINGS_HEADER_IMG: 'settings', // Not Changed
+
+    ACCEPT: 'मुझे स्वीकार है',
+
+    // Display Message 
+    MESSAGE_MOBILE: 'आपका मोबाइल नंबर सही नहीं है !!',
+    MESSAGE_ACCEPT: 'कृपया नियम और शर्तें स्वीकार करें !!',
+    MESSAGE_CURRLOC: ' कृपया वर्तमान स्थान विवरण का चयन करें !!',
+    MESSAGE_PROFILE: ' प्रोफ़ाइल अपडेट !!',
+
+    HELP: 'सहायता सामग्री'
+
+  }
 
 }

@@ -1854,6 +1854,14 @@ function savePageHistoryContent(name,image,extra){
 
 }
 
+// ============== Document Update API ==============
+
+// Set HTML Text Content
+function setHTML(id,value){
+  //displayOutput(id)
+  $("#"+id).html(value)
+}
+
 // ================================================
 // ------ String FUnctions ------------------------
 // ================================================
@@ -1870,3 +1878,47 @@ function convTagsList() {
   }
   return updatedTagsList
 }
+
+
+// ============= Location DataSet ================
+
+// Location Config
+function getLocationConfig() {
+  return {
+    COUNTRY: 'INDIA',
+    STATE: 'HIMACHAL PRADESH',
+    DISTRICT: 'HIMACHAL',
+    BLOCK: 'HIMACHAL',
+    DEFAULT_CURRENT_LOC: 'HIMACHAL PRADESH,INDIA'
+  }
+}
+
+// Complete Inside Location Data 
+function getLocationData() {
+  return {
+    BILASPUR: ['SADAR', 'JHANDUTTA','GHUMARWIN','NAINA DEVI'],
+    CHAMBA: ['MEHLA','CHAMBA','TISSA','SALOONI','BHATIYAT','BHARMOUR','PANGI'],
+    HAMIRPUR: ['SUJANPUR TIHRA','BIJHRI','NADAUN','BHORANJ','HAMIRPUR','BAMSAN'],
+    KANGRA: ['N SURIAN','INDORA','NURPUR','FATEHPUR','PRAGRPUR','DEHRA','BHAWARNA','PANCHRUKHI','LAMBAGAON','BAIJNATH','KANGRA','N BAGWAN','RAIT','SULAH','DHARAMSHALA'],
+    KINNAUR: ['POOH','KALPA','NICHAR'],
+    KULLU: ['KULLU','ANI','BANJAR','NIRMAND','NAGGAR'],
+    LAHAUL_SPITI: ['LAHAUL','SPITI'],
+    MANDI: ['CHAUNTRA','BALH','KARSOG','DHARAMPUR','DRANG','GOPALPUR','SUNDERNAGAR','MANDI SADAR','GOHAR','SERAJ','BALI CHOWKI'],
+    SHIMLA: ['MASHOBRA','BASANTPUR','CHOPAL','CHHOHARA','ROHRU','JUBALKOTKHAI','THEOG','RAMPUR','NANKHARI','NARKANDA','KUPVI'],
+    SIRMOUR: ['PACHHAD','RAJGARH','NAHAN','SANGRAH','SHILLAI','PAONTA'],
+    SOLAN: ['SOLAN','NALAGARH','KUNIHAR','DHARAMPUR','KANDAGHAT']
+    }
+    
+}
+
+// Complete Outside Location Data 
+function getOutSideLocationData() {
+  return {
+    INDIA: ['PUNJAB', 'TAMIL NADU','KERLA','UTTRAKHAND'],
+    ASIA: ['CHINA', 'SIR LANKA','NEPAL','THILAND'],
+    EUROPE: ['ITALY', 'GERMANY','FRANCE','SPAIN'],
+    AMERCIA: ['USA', 'CANADA']    
+    }    
+}
+
+// ==============================================
