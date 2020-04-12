@@ -46,7 +46,7 @@
         <a href="#" data-target="main_nav_bar_mb" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 
         <div id="spinner" class="progress">
-          <div class="indeterminate red"></div>
+          <div class="indeterminate purple"></div>
         </div>
   
       </div>
@@ -309,7 +309,7 @@
                     <span class="title"><b id="u_name">Name</b></span>
                     <p class="grey-text" style="font-size: 13px;" id="u_email">Email</p><br>
 
-                    <a href="#!" onclick="openProfileHelp()" class="secondary-content"><b><i class="material-icons green-text">help</i></b></a>
+                    <a href="#!" onclick="openProfileHelp()" class="secondary-content"><b><i class="material-icons purple-text">help</i></b></a>
 
                       <div class="right-align">
                         <p id="provider_details" class="right-align grey-text" style="font-size: 13px; margin-top: -15px;" >Provide by Google</p>
@@ -453,7 +453,7 @@
                         </form> 
 
                         <div class="row col s12" style="margin-top: -40px;">
-                          <p class="black-text">What is your permanent address ? </p>
+                          <p id="user_loc_header" class="black-text">What is your permanent address ? </p>
                        </div>
 
                         <form class="col s12" style="margin-top: -15px;">
@@ -466,13 +466,13 @@
                         </form> 
   
                         <div class="row col s12">
-                          <p id="u_district_details" class="container grey-text long-text-nor" style="margin-top: -35px; margin-left: 2px;"></p>
+                          <p id="u_district_details" class="container red-text long-text-nor" style="margin-top: -35px; margin-left: 2px;"></p>
                         </div>
 
                         <form class="col s12" style="margin-top: -10px;">
                           <div class="row"> 
                             <div class="right-align">                          
-                              <a onclick="openLocationSelector()" class="waves-effect btn blue rcorners z-depth-2" style="margin-top: -15px;">Update Location</a>
+                              <a onclick="openDistrictSelectorDialog()" class="waves-effect btn purple rcorners z-depth-2" style="margin-top: -15px;">Update Location</a>
                             </div>                          
                           </div>
                         </form>
@@ -489,7 +489,7 @@
                         <form class="col s12" style="margin-top: -60px;">
                           <div class="row">                            
                             <div class="input-field col s12"> 
-                              <p class="black-text">Where are you now ?</p>
+                              <p id="user_curr_loc_header" class="black-text">Where are you now ?</p>
                              
                               <form action="#">
                                 <p>
@@ -515,7 +515,7 @@
                           <div class="row">                           
                             <div class="card  col s12" style="border-radius: 10px;">
                               <ul class="collection" style="border-radius: 10px;">
-                                <a href="#!" onclick="openOutsideLocationSelector()"><li class="collection-item"><div id="user_current_location_value" >Alvin<a href="#!" onclick="openOutsideLocationSelector()" class="secondary-content"><i class="material-icons blue-text">chevron_right</i></a></div></li></a>                
+                                <a href="#!" onclick="openOutsideLocationSelector()"><li class="collection-item"><div id="user_current_location_value" >Alvin<a href="#!" onclick="openOutsideLocationSelector()" class="secondary-content"><i class="material-icons purple-text">chevron_right</i></a></div></li></a>                
                               </ul>                            
                             </div>                          
                           </div>

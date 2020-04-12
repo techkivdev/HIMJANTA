@@ -55,7 +55,7 @@
         <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
   
         <div id="main_progress" class="progress">
-          <div class="indeterminate red"></div>
+          <div class="indeterminate purple"></div>
         </div>
 
       </div>
@@ -102,7 +102,7 @@
 
          <!-- Create Menu Button -->
          <div id="add_new_item" class="right-align" style="margin-right: 10px;">
-          <a onclick="showMenuOptions()" class="waves-effect waves-light btn pink rcorners" style="margin-right: 20px;"><i class="material-icons left">add</i>Add New</a>        
+          <a onclick="addNewItem('POST')" class="waves-effect waves-light btn purple rcorners" style="margin-right: 20px;"><i class="material-icons left">add</i>Create</a>        
         </div>
 
          <!-- ------------ end ------------- -->
@@ -326,13 +326,14 @@
 
           <div style="margin-left: 5px; margin-right: 5px; margin-top: 10px;">
 
-            <div class="left-align" id="category">
+            <div class="right-align" id="category">
               <!-- Script Code -->                     
             </div>
 
             <div id="tags">
               Tags
-            </div>  
+            </div>           
+           
 
             <div id="social_control" class="left-align" style="margin-top: 20px; height: 70px; margin-bottom: 10px; margin-left: 0px;">
               <span><small><a href="#!" onclick="likeTopic()" style="margin-right: 3px;"><i id="like_btn" class="small  material-icons red-text">favorite_border</i><a></small><small id="total_fav_cnt" class="grey-text" style="font-size: 35px; margin-right: 20px;"></small></span>
@@ -356,6 +357,10 @@
                 <p class="grey-text" style="font-size: 13px;" id="u_date">Date</p>
                 </li>
             </ul>
+
+            <div id="scope_details" style="margin-top: 10px;">
+              Scope
+            </div>
 
           </div>
 

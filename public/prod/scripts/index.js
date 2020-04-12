@@ -229,25 +229,8 @@ function checkUserDetailsAndSTART() {
             let userData = doc.data()
 
             // Update Session Data
-            localStorageData('ISUSER',true)
-            localStorageData('UUID',userData['UUID'])
-            localStorageData('NAME',userData['NAME'])
-            localStorageData('DISPNAME',userData['DISPNAME'])
-            localStorageData('EMAIL',userData['EMAIL'])
-            localStorageData('MOBILE',userData['MOBILE'])
-            localStorageData('ROLE',userData['ROLE']) 
-            localStorageData('ROLE2',userData['ROLE2'])
-            localStorageData('PHOTO',userData['PHOTOURL'])
-            localStorageData('COUNTRY',userData['COUNTRY'])
-            localStorageData('STATE',userData['STATE'])
-            localStorageData('DISTRICT',userData['DISTRICT'])
-            localStorageData('BLOCK',userData['BLOCK'])
-            localStorageData('ADDRESS',userData['ADDRESS'])
-            localStorageData('MAPLOCATION',userData['MAPLOCATION'])
-            localStorageData('AGEGROUP',userData['AGEGROUP'])
-
-            displayOutput('Session Data Updated ...')
-
+            updateSessionData(userData)
+            
             updateHTMLPage()
            
           }

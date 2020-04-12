@@ -20,8 +20,16 @@ var id = 'NA'
 var fl = 'NA'
 var type = 'NA'
 
+var languageContent = {}
+
 var updateExistingContentDetails = false
 var currentData = {}
+
+var selectedCategoryValue = ''
+var selectedScope = 'BLOCK'
+var selectedScopeValue = ''
+
+var chip_color = 'purple'
 
 // Page config
 let main_page = 'showpost.html'
@@ -78,22 +86,25 @@ function checkLoginData(){
 
     // Update User Information Section 
     let htmlContent = ''
-    htmlContent += '<div class="card" style="margin: 0px 0px 0px 0px; border-radius: 5px;"><ul class="collection">\
-    <li class="collection-item avatar orange" style="border-radius: 5px;">\
+    htmlContent += '<div class="card" style="margin: 0px 0px 0px 0px; border-radius: 10px;"><ul class="collection" style="border-radius: 10px;">\
+    <li class="collection-item avatar" >\
       <img src="'+userLoginData['PHOTO']+'" alt="" class="circle">\
       <span class="title"><b>'+userLoginData['NAME']+'</b></span>\
-      <p class="white-text" style="font-size: 15px;">'+userLoginData['EMAIL']+'</p>\
+      <p class="grey-text" style="font-size: 15px;">'+userLoginData['EMAIL']+'</p>\
+      <a href="#!" onclick="openHelp()" class="secondary-content"><b><i class="material-icons '+chip_color+'-text">help</i></b></a>\
     </li></ul></div>'
 
     $("#user_info_sec").html(htmlContent);
 
     if(updateExistingContentDetails) {
-      document.getElementById("main_list_container").style.display = 'none';
-      document.getElementById("hdr_section").style.display = 'none';
+      document.getElementById("main_list_container").style.display = 'none';      
     } else {
-      document.getElementById("main_list_container").style.display = 'block';
-      document.getElementById("hdr_section").style.display = 'block';
+      document.getElementById("main_list_container").style.display = 'block';      
     }
+
+    // Get Language Content
+    displayOutput(userLoginData['LANG'])
+    languageContent = getLangContent(userLoginData['LANG'],'CREATE')
     
   }  else {
     document.getElementById("hdr_section_validation_failed").style.display = 'block';
@@ -133,36 +144,119 @@ function updateHTMLPage() {
   modifyPageStyle()
 
   window.scrollTo(0, 0); 
+  displayOutput('Update HTML Page ..')
 
+  updateLanguageContent()
+
+  
   if(fl == 'ADD') {
     // Check for type
-    if(type == 'TOPIC') {
-      document.getElementById("create_new_topic").style.display = 'block';
-      $("#main_hdr_msg").html('Add New Post');
-
-    } else if(type == 'EVENT') {
-      document.getElementById("create_new_event").style.display = 'block';
-      $("#main_hdr_msg").html('Add New Event');
-    }
+    if(type == 'POST') {
+      document.getElementById("create_new_topic").style.display = 'block'; 
+    } 
 
 
   } else if(fl == 'edit') {
 
     // Check for type
-    if(type == 'TOPIC') {
+    if(type == 'POST') {
+      
       document.getElementById("create_new_topic").style.display = 'block';
-      $("#main_hdr_msg").html('Add New Post');
-
       showCurrentTopicContent()
 
-    } else if(type == 'EVENT') {
-      document.getElementById("create_new_event").style.display = 'block';
-      $("#main_hdr_msg").html('Add New Event');
     }
-
 
     
   }
+
+  // Update other section
+  setHTML('dist_block_details',userLoginData['BLOCK']+','+userLoginData['DISTRICT'])
+  setHTML('state_country_details',userLoginData['STATE']+','+userLoginData['COUNTRY'])
+
+  if(userLoginData['CURRADDRSTATUS'] == 'INSIDE') {
+    setHTML('current_location_status','Inside '+userLoginData['STATE'])
+  } else {
+    setHTML('current_location_status',userLoginData['CURRADDRVALUE'])
+  }
+  
+  // Update Scope
+  updateScope()
+
+}
+
+// Update Scope Section
+function updateScope(){
+  let scope_html = ''
+
+  if(selectedScope == 'BLOCK') {    
+    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'BLOCK'  + '\')" ><div class="chip '+chip_color+' white-text">'+userLoginData['BLOCK']+'</div></a>'
+    selectedScopeValue = userLoginData['BLOCK']
+  } else {
+    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'BLOCK'  + '\')" ><div class="chip">'+userLoginData['BLOCK']+'</div></a>'
+  }
+
+  if(selectedScope == 'DISTRICT') {    
+    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'DISTRICT'  + '\')" ><div class="chip '+chip_color+' white-text" style="margin-left: 10px;">'+userLoginData['DISTRICT']+'</div></a>'
+    selectedScopeValue = userLoginData['DISTRICT']
+  } else {
+    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'DISTRICT'  + '\')" ><div class="chip" style="margin-left: 10px;">'+userLoginData['DISTRICT']+'</div></a>'
+  }
+
+  if(selectedScope == 'STATE') {    
+    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'STATE'  + '\')" ><div class="chip '+chip_color+' white-text" style="margin-left: 10px;">'+userLoginData['STATE']+'</div></a>'
+    selectedScopeValue = userLoginData['STATE']
+  } else {
+    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'STATE'  + '\')" ><div class="chip" style="margin-left: 10px;">'+userLoginData['STATE']+'</div></a>'
+  }
+
+  setHTML('scope_sec',scope_html)
+}
+
+// Updated Scope Handling
+function scopeHandling(details){
+  selectedScope = details
+
+  if(selectedScope == 'BLOCK') {
+    toastMsg('Your Post Visible to ' + userLoginData['BLOCK'] + ' People only.')
+    selectedScopeValue = userLoginData['BLOCK']
+  }
+
+  if(selectedScope == 'DISTRICT') {
+    toastMsg('Your Post Visible to ' + userLoginData['DISTRICT'] + ' People only.')
+    selectedScopeValue = userLoginData['DISTRICT']
+  }
+
+  if(selectedScope == 'STATE') {
+    toastMsg('Your Post Visible to ' + userLoginData['STATE'] + ' People.')
+    selectedScopeValue = userLoginData['STATE']
+  }
+
+  updateScope()
+  
+}
+
+// Update Language Content
+function updateLanguageContent() {
+
+  // Update Language Content
+  setHTML('main_hdr_msg',languageContent['HEADER'])
+  setHTML('tag_info',languageContent['TAG_INFO'])
+  setHTML('i_accept',languageContent['ACCEPT'] + '  <a class="purple-text" href="#!" onclick="termandcondMessage()">terms and conditions</a>')
+
+  setHTML('title_hdr',languageContent['TITLE_HDR'])  
+  document.getElementById("title").placeholder = languageContent['TITLE_PLCHLD'];
+
+  setHTML('tags_hdr',languageContent['TAG_HDR'])
+  setHTML('category_hdr',languageContent['CATG_HDR'])
+  setHTML('category_value',languageContent['CATG_PLCHLD'])
+  setHTML('description_hdr',languageContent['DESC_HDR'])
+  document.getElementById("description").placeholder = languageContent['DESC_PLCHLD'];
+
+  setHTML('loc_header',languageContent['LOC_HEADER'])
+  setHTML('loc_scope_header',languageContent['LOC_SCOPE_HEADER'])
+  setHTML('curr_loc_header',languageContent['CURR_LOC_HEADER'])
+  setHTML('curr_loc_chk_header',languageContent['CURR_LOC_CHK_HEADER'])
+ 
 
 }
 
@@ -254,18 +348,13 @@ function showCurrentTopicContent() {
         data: tagMap,
       });
 
-      // Update CATEGORY
-      document.getElementById(data['CATEGORY']).selected = true
-
-      $(document).ready(function(){
-        $('select').formSelect();
-      });
+      // Update CATEGORY      
+      setHTML('category_value',data['CATEGORYDIS'])
+      selectedCategoryValue = data['CATEGORY']+'#'+data['CATEGORYDIS']
 
       document.getElementById("main_progress").style.display = 'none';
 
-      document.getElementById("main_list_container").style.display = 'block';
-      document.getElementById("hdr_section").style.display = 'block';
-
+      document.getElementById("main_list_container").style.display = 'block';  
 
       //hidePleaseWaitModel()      
     }
@@ -277,6 +366,82 @@ function showCurrentTopicContent() {
 
 }
 
+// ============ Category Selection ==============
+
+// Open Category Selection
+function selectCategory() {
+
+  let allCatgeData = getCategoryDataSet()
+
+  let content = ''
+  for(each_key in allCatgeData){
+    let catg_name = allCatgeData[each_key]
+    if(selectedCategoryValue == each_key +'#' + catg_name) {
+      content += '<a href="#!" onclick="catgSelectHandling(\'' + each_key +'#' + catg_name + '\')" ><div class="chip '+chip_color+' white-text">'+catg_name+'</div></a>'
+    } else {
+      content += '<a href="#!" onclick="catgSelectHandling(\'' + each_key +'#' + catg_name + '\')" ><div class="chip">'+catg_name+'</div></a>'
+    }
+    
+  }
+
+  
+
+  var model = '<!-- Modal Structure -->\
+  <div id="catg_model" class="modal modal-fixed-footer">\
+    <div class="modal-content">\
+      <div style="margin-left: 10px; margin-right: 10px;">'+ content + '</div>\
+    </div>\
+  </div>'
+
+  var elem = document.getElementById('catg_model');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+  $('#catg_model').modal('open');
+
+}
+
+// Category Selection
+function catgSelectHandling(details) {
+  $('#catg_model').modal('close');
+  selectedCategoryValue = details
+
+  setHTML('category_value',selectedCategoryValue.split('#')[1])
+}
+
+// Open Help Section
+function openHelp() {
+
+  let content = languageContent['HELP']
+
+  var model = '<!-- Modal Structure -->\
+  <div id="help_model" class="modal modal-fixed-footer">\
+    <div class="modal-content">\
+      <div style="margin-left: 10px; margin-right: 10px;">'+ content + '</div>\
+    </div>\
+    <div class="modal-footer">\
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">CLOSE</a>\
+      </div>\
+  </div>'
+
+  var elem = document.getElementById('help_model');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+  $('#help_model').modal('open');
+}
 
 // Cancel Details
 function cancelDetails() {
@@ -307,7 +472,7 @@ function submitDetails() {
   
     if(updateExistingContentDetails) {
       // --------- Update Existing --------------
-      if(type == 'TOPIC') {
+      if(type == 'POST') {
         addNewTopic()
       }
   
@@ -315,7 +480,7 @@ function submitDetails() {
   
       // ------- Add New ---------------
       if(fl == 'ADD') {
-        if(type == 'TOPIC') {
+        if(type == 'POST') {
           addNewTopic()
         }
       }
@@ -343,7 +508,7 @@ function addNewTopic() {
    displayOutput('title : ' + title)
    if(title == '') {
      validateInput = false
-     toastMsg('Post Title is empty!!')
+     toastMsg(languageContent['MESSAGE_POST'])
    }
    
    var tagsList= M.Chips.getInstance($('.chips')).chipsData;
@@ -365,31 +530,28 @@ function addNewTopic() {
    displayOutput('description : ' + description)   
    if(description == '') {
      validateInput = false
-     toastMsg('Post Description is empty!!')
+     toastMsg(languageContent['MESSAGE_DESC'])
    }
  
-   let catgOption = getCatgDataMapping('LIST')  
-
-   let catDropValue = document.getElementById("catg_options").value
+   // Category Handling
    let cateData = ''
    let cateData_display = ''
-
-   if(catDropValue == '') {
-     cateData = 'NA'
-     cateData_display = 'NA'
-     toastMsg('Please select Category !!')
-     validateInput = false
+   if(isStrEmpty(selectedCategoryValue)){
+    toastMsg(languageContent['MESSAGE_CATEGORY'])
+    validateInput = false
    } else {
-     cateData = catgOption[catDropValue]
-     cateData_display = getCatgDataMapping(cateData)
-   } 
+    cateData = selectedCategoryValue.split('#')[0]
+    cateData_display = selectedCategoryValue.split('#')[1]
+   }
    displayOutput('cateData : ' + cateData)
    displayOutput('cateData_display : ' + cateData_display)
+
+   let update_post_curr_loc_check = document.getElementById("update_post_curr_loc_check").checked
 
    // Check for Term and conditions
    let terms_check_status = document.getElementById("accept_terms_checkbox").checked
    if(!terms_check_status){
-    toastMsg('Please accept terms and conditions.')
+    toastMsg(languageContent['MESSAGE_ACCEPT'])
     validateInput = false
    }
  
@@ -429,12 +591,33 @@ function addNewTopic() {
      forumData['DELETESTATUS'] = false
  
      //forumData['MULTICONFIG'] = ['NA']
+     
+     // Location Details
+     forumData['LOCSCOPE'] = selectedScopeValue
+     forumData['BLOCK'] = userLoginData['BLOCK']
+     forumData['DISTRICT'] = userLoginData['DISTRICT']
+     forumData['STATE'] = userLoginData['STATE']
+     forumData['COUNTRY'] = userLoginData['COUNTRY']
+
+     if(update_post_curr_loc_check) {
+      forumData['CURRADDRSTATUS'] = userLoginData['CURRADDRSTATUS']
+      forumData['CURRADDRSUBLOC'] = userLoginData['CURRADDRVALUE'].split(',')[0]
+      forumData['CURRADDRLOC'] = userLoginData['CURRADDRVALUE'].split(',')[1]  
+     } else {
+      forumData['CURRADDRSTATUS'] = 'NA'
+      forumData['CURRADDRSUBLOC'] = 'NA'
+      forumData['CURRADDRLOC'] = 'NA'
+     }    
+
  
      forumData['DOCTYPE'] = 'POST'  // Chnage It according to the Item
      forumData['DOCVER'] = 'V1'
      
      forumData['ISMAIN'] = false
      forumData['PAGEID'] = 1
+
+     forumData['IMAGESTATUS'] = false
+     forumData['IMAGELINK'] = 'NA'
  
      /*
      forumData['EXTRA'] = {
@@ -547,7 +730,7 @@ function generateNDocuments() {
  
      //forumData['MULTICONFIG'] = ['NA']
  
-     forumData['DOCTYPE'] = 'TOPIC'  // Chnage It according to the Item
+     forumData['DOCTYPE'] = 'POST'  // Chnage It according to the Item
      forumData['DOCVER'] = 'V1'
      
      forumData['ISMAIN'] = false
@@ -571,6 +754,7 @@ function generateNDocuments() {
     }
 
 }
+
 // ---------------------------------------
 
 // Open Edit Options Modal
@@ -712,7 +896,12 @@ function editOptionBtn(details) {
 
 // Preview Message
 function previewMessage() {
-  viewModel('Content',nl2br(document.getElementById("description").value.trim()))
+  viewModel('',nl2br(document.getElementById("description").value.trim()))
+}
+
+// View Term and Conditions
+function termandcondMessage() {
+  viewModel('',languageContent['TERM_AND_COND'])
 }
 
 // -------------------------

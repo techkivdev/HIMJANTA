@@ -21,7 +21,11 @@ var uuid = ''
 var allDocCmpData = {}
 
 var selectedCurrentLocation = ''
-var selectedLocation = ''
+var selectedCurrLocArea = ''
+var selectedCurrLocSubArea = ''
+
+var selectedDistrict = ''
+var selectedBlock = ''
 
 var defaultLocationConfig = getLocationConfig() 
 var languageContent = {}
@@ -37,6 +41,8 @@ var signinpopup = 'popup'
 var wishlistFilter = 'ALL'
 var bookmarkFilter = 'ALL'
 var myListFilter = 'ALL'
+
+var color = 'purple'
 
 // Startup Call
 startupcalls()
@@ -418,28 +424,6 @@ function compareKeys(a, b) {
   return JSON.stringify(aKeys) === JSON.stringify(bKeys);
 }
 
-// Update Session Data
-function updateSessionData(updatedUserData) {
-  // Update Session Data
-  localStorageData('ISUSER',true)
-  localStorageData('UUID',updatedUserData['UUID'])
-  localStorageData('NAME',updatedUserData['NAME'])
-  localStorageData('DISPNAME',updatedUserData['DISPNAME'])
-  localStorageData('EMAIL',updatedUserData['EMAIL'])
-  localStorageData('MOBILE',updatedUserData['MOBILE'])
-  localStorageData('ROLE',updatedUserData['ROLE'])
-  localStorageData('PHOTO',updatedUserData['PHOTOURL'])
-  localStorageData('COUNTRY',updatedUserData['COUNTRY'])
-  localStorageData('STATE',updatedUserData['STATE'])
-  localStorageData('DISTRICT',updatedUserData['DISTRICT'])
-  localStorageData('BLOCK',updatedUserData['BLOCK'])
-  localStorageData('ADDRESS',updatedUserData['ADDRESS'])
-  localStorageData('MAPLOCATION',updatedUserData['MAPLOCATION'])
-  localStorageData('AGEGROUP',updatedUserData['AGEGROUP'])
-  
-  displayOutput('Session Data Updated ...')
-}
-
 // Sync Provider Details
 function syncProvideDetails() {
 
@@ -568,7 +552,9 @@ function updateHTMLPage(updatedUserData) {
   document.getElementById(updatedUserData['PROFESSION'].split('@')[0]).selected = true
 
   
-  selectedLocation = updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT']
+  selectedDistrict = updatedUserData['DISTRICT']
+  selectedBlock = updatedUserData['BLOCK']
+
   if(updatedUserData['BLOCK'] == defaultLocationConfig['BLOCK']){
     document.getElementById("user_district_blocks").value = updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT']
     $('#u_district_details').html(updatedUserData['BLOCK'] + ' - Please update it.')    
@@ -599,11 +585,15 @@ function updateHTMLPage(updatedUserData) {
   document.getElementById("social_link_tiktok").value = updatedUserData['SOCIALINK']['TIKTOK']
 
   // Update Current Location Status
-  selectedCurrentLocation = updatedUserData['CURRADDRVALUE']
+  selectedCurrLocArea = updatedUserData['CURRADDRVALUE'].split(',')[1]
+  selectedCurrLocSubArea = updatedUserData['CURRADDRVALUE'].split(',')[0]
+
+  selectedCurrentLocation = selectedCurrLocSubArea + ',' + selectedCurrLocArea
+
   if(updatedUserData['CURRADDRSTATUS'] == 'INSIDE') {    
     document.getElementById("inside_radbtn").checked = true
   } else {   
-    setHTML('user_current_location_value',updatedUserData['CURRADDRVALUE'] + '<a href="#!" onclick="openOutsideLocationSelector()" class="secondary-content"><i class="material-icons blue-text">chevron_right</i></a>')
+    setHTML('user_current_location_value',updatedUserData['CURRADDRVALUE'] + '<a href="#!" onclick="openCurrLocAreaSelectorDialog()" class="secondary-content"><i class="material-icons purple-text">chevron_right</i></a>')
     document.getElementById("outside_radbtn").checked = true
     document.getElementById("current_outside_location_section").style.display = 'block'; 
   }
@@ -705,34 +695,9 @@ function showProfileDetails() {
   if(userData['BIO'] != ''){   
     content += '<p class=grey-text style="font-size : 13px;">Bio</p><p class="long-text-nor" style="margin-top: -20px;">'+userData['BIO']+'</p>'
   } 
+
+  viewModel('',content)
   
-  
-
- 
-  
-
-  var model = '<!-- Modal Structure -->\
-  <div id="profile_model" class="modal modal-fixed-footer">\
-    <div class="modal-content">\
-      <div style="margin-left: 10px; margin-right: 10px;">'+ content + '</div>\
-    </div>\
-    <div class="modal-footer">\
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>\
-      </div>\
-  </div>'
-
-  var elem = document.getElementById('profile_model');
-  if (elem) { elem.parentNode.removeChild(elem); }
-
-
-  $(document.body).append(model);
-
-  $(document).ready(function () {
-    $('.modal').modal();
-  });
-
-  $('#profile_model').modal('open');
-
 }
 
 // Update Page according to Language
@@ -750,19 +715,21 @@ function updatePageWithLang(lang) {
   setHTML('card_list_name',languageContent['LIST'])
   setHTML('card_list_desc',languageContent['LIST_DESC'])
 
-  setHTML('collps_profile_header','<i class="material-icons blue-text"><b>'+languageContent['PROFILE_HEADER_IMG']+'</i>' + languageContent['PROFILE_HEADER']+'</b>')
-  setHTML('collps_locaddr_header','<i class="material-icons blue-text"><b>'+languageContent['LOCATION_HEADER_IMG']+'</i>' + languageContent['LOCATION_HEADER']+'</b>')
-  setHTML('collps_privacy_header','<i class="material-icons blue-text"><b>'+languageContent['PRIVACY_HEADER_IMG']+'</i>' + languageContent['PRIVACY_HEADER']+'</b>')
-  setHTML('collps_sociallink_header','<i class="material-icons blue-text"><b>'+languageContent['SOCIAL_HEADER_IMG']+'</i>' + languageContent['SOCIAL_HEADER']+'</b>')
-  setHTML('collps_settings_header','<i class="material-icons blue-text"><b>'+languageContent['SETTINGS_HEADER_IMG']+'</i>' + languageContent['SETTINGS_HEADER']+'</b>')
+  setHTML('collps_profile_header','<i class="material-icons '+color+'-text"><b>'+languageContent['PROFILE_HEADER_IMG']+'</i>' + languageContent['PROFILE_HEADER']+'</b>')
+  setHTML('collps_locaddr_header','<i class="material-icons '+color+'-text"><b>'+languageContent['LOCATION_HEADER_IMG']+'</i>' + languageContent['LOCATION_HEADER']+'</b>')
+  setHTML('collps_privacy_header','<i class="material-icons '+color+'-text"><b>'+languageContent['PRIVACY_HEADER_IMG']+'</i>' + languageContent['PRIVACY_HEADER']+'</b>')
+  setHTML('collps_sociallink_header','<i class="material-icons '+color+'-text"><b>'+languageContent['SOCIAL_HEADER_IMG']+'</i>' + languageContent['SOCIAL_HEADER']+'</b>')
+  setHTML('collps_settings_header','<i class="material-icons '+color+'-text"><b>'+languageContent['SETTINGS_HEADER_IMG']+'</i>' + languageContent['SETTINGS_HEADER']+'</b>')
 
   setHTML('user_profile_chk_hdr',languageContent['PRIVACY_CHK_BTN_1'])
   setHTML('user_mobile_chk_hdr',languageContent['PRIVACY_CHK_BTN_2'])
   setHTML('user_address_chk_hdr',languageContent['PRIVACY_CHK_BTN_3'])
 
-  setHTML('accept_content',languageContent['ACCEPT'] + '<a href="terms_and_conditions.html">  terms and conditions</a>.')
+  setHTML('accept_content',languageContent['ACCEPT'] + '  <a class="purple-text" href="#!" onclick="termandcondMessage()">terms and conditions</a>')
 
 
+  setHTML('user_loc_header',languageContent['LOC_HEADER'])
+  setHTML('user_curr_loc_header',languageContent['CURR_LOC_HEADER'])
   
 
 
@@ -770,18 +737,47 @@ function updatePageWithLang(lang) {
 
 // Open Profile Help Content
 function openProfileHelp() {
+  viewModel('',languageContent['HELP'])
+}
+
+// ========= Location Selection ===============
+
+// Create and Open Model
+function openDistrictSelectorDialog(){
+
+  let seclectedLocation = document.getElementById("user_district_blocks").value.trim()
+  selectedDistrict = seclectedLocation.split(',')[1]
+  selectedBlock = seclectedLocation.split(',')[0]
+
+  let allLocationData = getLocationData()
+
+  let location_html = ''
+  for(each_dist in allLocationData) {
+    let each_dist_blocks = allLocationData[each_dist]
+    each_dist = each_dist.replace('_',' ') 
+    let dist_htm = ''
+
+    if(selectedDistrict == each_dist) {
+      dist_htm += '<li class="collection-item purple center-align active"><a href="#!" onclick="districtSelected(\''+each_dist+'\')"  class="white-text">'+each_dist+'</a></li>'
+    } else {
+      dist_htm += '<li class="collection-item center-align"><a href="#!" onclick="districtSelected(\''+each_dist+'\')"  class="black-text">'+each_dist+'</a></li>'
+    }
+    
+    location_html += dist_htm
+  }
+
+  location_html = '<h5 style="margin-left : 15px;">Select District</h5><ul class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</ul>'
+
+  // Open Model
 
   var model = '<!-- Modal Structure -->\
-  <div id="help_model" class="modal modal-fixed-footer">\
-    <div class="modal-content">\
-      <div style="margin-left: 10px; margin-right: 10px;">'+ languageContent['HELP'] + '</div>\
+  <div id="dist_location_model" class="modal">\
+    <div>\
+      <div>'+ location_html + '</div>\
     </div>\
-    <div class="modal-footer">\
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>\
-      </div>\
-  </div>'
+    </div>'
 
-  var elem = document.getElementById('help_model');
+  var elem = document.getElementById('dist_location_model');
   if (elem) { elem.parentNode.removeChild(elem); }
 
 
@@ -791,16 +787,158 @@ function openProfileHelp() {
     $('.modal').modal();
   });
 
-  $('#help_model').modal('open');
+  $('#dist_location_model').modal('open');
 
 }
 
-// ========= Location Selection ===============
-
-// Create and Open Model
-function openLocationSelector(){
+function openBlockSelectorDialog(){
 
   let allLocationData = getLocationData()
+
+  let location_html = ''
+  for(each_dist in allLocationData) {
+    let each_dist_blocks = allLocationData[each_dist]
+    each_dist = each_dist.replace('_',' ') 
+
+    let block_html = ''
+    if(selectedDistrict == each_dist) {       
+        // Update Block Section
+       
+        for(each_idx in each_dist_blocks){
+          let each_block = each_dist_blocks[each_idx]
+          if(selectedBlock == each_block) {
+            block_html += '<li class="collection-item purple center-align active"><a href="#!" onclick="blockSelected(\''+each_block +'\')"  class="white-text">'+each_block+'</a></li>'
+          } else {
+            block_html += '<li class="collection-item center-align"><a href="#!" onclick="blockSelected(\''+each_block +'\')"  class="black-text">'+each_block+'</a></li>'
+          }
+        }
+    }
+   
+    
+    location_html += block_html
+  }
+
+  location_html = '<h5 style="margin-left : 15px;">Select Block</h5><ul class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</ul>'
+
+
+  // Open Model
+
+  var model = '<!-- Modal Structure -->\
+  <div id="block_location_model" class="modal">\
+    <div>\
+      <div>'+ location_html + '</div>\
+    </div>\
+    </div>'
+
+  var elem = document.getElementById('block_location_model');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+  $('#block_location_model').modal('open');
+
+}
+
+// District Selected
+function districtSelected(name) {
+  $('#dist_location_model').modal('close');
+  selectedDistrict = name
+  //toastMsg(name)
+
+  // Open Block Selecter Dialog
+  openBlockSelectorDialog()
+
+}
+
+// Block Selected
+function blockSelected(name) {
+  $('#block_location_model').modal('close');
+  selectedBlock = name
+  //toastMsg(name)
+
+  document.getElementById("user_district_blocks").value = selectedBlock + ',' + selectedDistrict
+  $('#u_district_details').html('You have changed details, Please SAVE it.')
+
+}
+
+// ------------------------------------------------
+
+// Current Location Status
+function updateCurrentLocationStatus(details) {
+
+  if(details == 'OUTSIDE') {
+    document.getElementById("current_outside_location_section").style.display = 'block';  
+    selectedCurrLocArea = ''
+    selectedCurrLocSubArea = ''
+    
+    setHTML('user_current_location_value','Please Select Location.'+ '<a href="#!" onclick="openCurrLocAreaSelectorDialog()" class="secondary-content"><i class="material-icons purple-text">chevron_right</i></a>')
+  } else {
+    document.getElementById("current_outside_location_section").style.display = 'none';  
+    selectedCurrLocArea = defaultLocationConfig['DEFAULT_CURRENT_LOC'].split(',')[1]
+    selectedCurrLocSubArea = defaultLocationConfig['DEFAULT_CURRENT_LOC'].split(',')[0]
+  }
+
+}
+
+// ---- Outside Location Selector ---
+
+// Create and Open Model
+function openCurrLocAreaSelectorDialog(){
+
+  selectedCurrLocArea = selectedCurrentLocation.split(',')[1]
+  selectedCurrLocSubArea = selectedCurrentLocation.split(',')[0]
+
+
+  let allLocationData = getOutSideLocationData()
+
+  let location_html = ''
+  for(each_dist in allLocationData) {
+    let each_dist_blocks = allLocationData[each_dist]
+    each_dist = each_dist.replace('_',' ') 
+    let dist_htm = ''
+
+    if(selectedCurrLocArea == each_dist) {
+      dist_htm += '<li class="collection-item purple center-align active"><a href="#!" onclick="currLocAreaSelected(\''+each_dist+'\')"  class="white-text">'+each_dist+'</a></li>'
+    } else {
+      dist_htm += '<li class="collection-item center-align"><a href="#!" onclick="currLocAreaSelected(\''+each_dist+'\')"  class="black-text">'+each_dist+'</a></li>'
+    }
+    
+    location_html += dist_htm
+  }
+
+  location_html = '<h5 style="margin-left : 15px;">Select Your Choice</h5><ul class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</ul>'
+
+  // Open Model
+
+  var model = '<!-- Modal Structure -->\
+  <div id="currLocArea_location_model" class="modal">\
+    <div>\
+      <div>'+ location_html + '</div>\
+    </div>\
+    </div>'
+
+  var elem = document.getElementById('currLocArea_location_model');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+  $('#currLocArea_location_model').modal('open');
+
+}
+
+function openCurrLocSubAreaSelectorDialog(){
+
+  let allLocationData = getOutSideLocationData()
 
   let location_html = ''
   for(each_dist in allLocationData) {
@@ -808,28 +946,36 @@ function openLocationSelector(){
     each_dist = each_dist.replace('_',' ')
 
     let block_html = ''
-    for(each_idx in each_dist_blocks){
-      let each_block = each_dist_blocks[each_idx]
-      if(selectedLocation == each_block+','+each_dist) {
-        block_html += '<li class="collection-item active"><a href="#!" onclick="locationSelected(\''+each_block+','+each_dist+'\')"  class="black-text">'+each_block+'</a></li>'
-      } else {
-         block_html += '<li class="collection-item"><a href="#!" onclick="locationSelected(\''+each_block+','+each_dist+'\')"  class="black-text">'+each_block+'</a></li>'
-      }
+    if(selectedCurrLocArea == each_dist) {       
+        // Update Block Section
+       
+        for(each_idx in each_dist_blocks){
+          let each_block = each_dist_blocks[each_idx]
+          if(selectedCurrLocSubArea == each_block) {
+            block_html += '<li class="collection-item purple center-align active"><a href="#!" onclick="currLocSubAreaSelected(\''+each_block +'\')"  class="white-text">'+each_block+'</a></li>'
+          } else {
+            block_html += '<li class="collection-item center-align"><a href="#!" onclick="currLocSubAreaSelected(\''+each_block +'\')"  class="black-text">'+each_block+'</a></li>'
+          }
+        }
     }
-
-    let dist_htm = '<b style="margin-left: 20px; margin-top: 20px;">'+each_dist+'</b><ul class="collection">' +  block_html + '</ul>'
-
-    location_html += dist_htm
+   
+    
+    location_html += block_html
   }
 
+  location_html = '<h5 style="margin-left : 15px;">Select Your Choice</h5><ul class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</ul>'
+
+
+  // Open Model
+
   var model = '<!-- Modal Structure -->\
-  <div id="location_model" class="modal">\
-    <div class="">\
-      <div style="margin-top: 20px;">'+ location_html + '</div>\
+  <div id="currLocSubArea_location_model" class="modal">\
+    <div>\
+      <div>'+ location_html + '</div>\
     </div>\
     </div>'
 
-  var elem = document.getElementById('location_model');
+  var elem = document.getElementById('currLocSubArea_location_model');
   if (elem) { elem.parentNode.removeChild(elem); }
 
 
@@ -839,92 +985,33 @@ function openLocationSelector(){
     $('.modal').modal();
   });
 
-  $('#location_model').modal('open');
+  $('#currLocSubArea_location_model').modal('open');
 
 }
 
-// Location Selected
-function locationSelected(name) {     
-  $('#location_model').modal('close');
-  selectedLocation = name
+// Area Selected
+function currLocAreaSelected(name) {
+  $('#currLocArea_location_model').modal('close');
+  selectedCurrLocArea = name
   //toastMsg(name)
 
-  document.getElementById("user_district_blocks").value = selectedLocation
-  $('#u_district_details').html('You have changed details, Please SAVE it.')
+  // Open Block Selecter Dialog
+  openCurrLocSubAreaSelectorDialog()
 
 }
 
+// Sub Area Selected
+function currLocSubAreaSelected(name) {
+  $('#currLocSubArea_location_model').modal('close');
+  selectedCurrLocSubArea = name
+  //toastMsg(name)
 
-// Current Location Status
-function updateCurrentLocationStatus(details) {
+  selectedCurrentLocation = selectedCurrLocSubArea + ',' + selectedCurrLocArea
+  setHTML('user_current_location_value',selectedCurrentLocation + '<a href="#!" onclick="openCurrLocAreaSelectorDialog()" class="secondary-content"><i class="material-icons purple-text">chevron_right</i></a>')
 
-  if(details == 'OUTSIDE') {
-    document.getElementById("current_outside_location_section").style.display = 'block';    
-    selectedCurrentLocation = ''
-    setHTML('user_current_location_value','Please Select Location.'+ '<a href="#!" onclick="openOutsideLocationSelector()" class="secondary-content"><i class="material-icons blue-text">chevron_right</i></a>')
-  } else {
-    document.getElementById("current_outside_location_section").style.display = 'none';   
-    selectedCurrentLocation = defaultLocationConfig['DEFAULT_CURRENT_LOC']
-  }
 
 }
 
-// ---- Outside Location Selector ---
-// Create and Open Model
-function openOutsideLocationSelector(){
-
-  let allLocationData = getOutSideLocationData()
-
-  let location_html = ''
-  for(each_dist in allLocationData) {
-    let each_dist_blocks = allLocationData[each_dist]
-
-    let block_html = ''
-    for(each_idx in each_dist_blocks){
-      let each_block = each_dist_blocks[each_idx]
-      // Compare with Current Value
-      if(selectedCurrentLocation == each_block+','+each_dist) {        
-        block_html += '<li class="collection-item active"><a href="#!" onclick="outsidelocationSelected(\''+each_block+','+each_dist+'\')"  class="black-text">'+each_block+'</a></li>'
-      } else {        
-        block_html += '<li class="collection-item"><a href="#!" onclick="outsidelocationSelected(\''+each_block+','+each_dist+'\')"  class="black-text">'+each_block+'</a></li>'
-      }
-      
-    }
-
-    let dist_htm = '<b style="margin-left: 20px; margin-top: 20px;">'+each_dist+'</b><ul class="collection">' +  block_html + '</ul>'
-
-    location_html += dist_htm
-  }
-
-
-  var model = '<!-- Modal Structure -->\
-  <div id="location_model" class="modal">\
-    <div class="">\
-      <div style="margin-top: 20px;">'+ location_html + '</div>\
-    </div>\
-    </div>'
-
-  var elem = document.getElementById('location_model');
-  if (elem) { elem.parentNode.removeChild(elem); }
-
-
-  $(document.body).append(model);
-
-  $(document).ready(function () {
-    $('.modal').modal();
-  });
-
-  $('#location_model').modal('open');
-
-}
-
-// Location Selected
-function outsidelocationSelected(name) {     
-  $('#location_model').modal('close');
-  selectedCurrentLocation = name
-  setHTML('user_current_location_value',selectedCurrentLocation + '<a href="#!" onclick="openOutsideLocationSelector()" class="secondary-content"><i class="material-icons blue-text">chevron_right</i></a>')
-  
-}
 
 
 
@@ -1036,6 +1123,11 @@ function hideUserBookingView(){
 // Return to Forum Page
 function returnToForumPage() {
   window.history.back();
+}
+
+// View Term and Conditions
+function termandcondMessage() {
+  viewModel('',languageContent['TERM_AND_COND'])
 }
 
 
@@ -1166,6 +1258,7 @@ if(outside_radbtn) {
     userData['DISTRICT'] = user_district_blocks.split(',')[1]
     userData['BLOCK'] = user_district_blocks.split(',')[0]
     userData['ADDRESS'] = user_address
+    userData['LANG'] = user_language
 
     db.collection(userDataPath).doc(uuid).update({
       MOBILE: mobileno,
@@ -1184,14 +1277,7 @@ if(outside_radbtn) {
     }).then(function () {
       displayOutput("Mobile details Updated ..");
 
-      // Update Session Data Also
-      localStorageData('MOBILE',mobileno)
-      localStorageData('DISPNAME',display_user_name)
-      localStorageData('BIO',user_bio)
-      localStorageData('AGEGROUP',user_age_group)
-      localStorageData('DISTRICT',user_district_blocks.split(',')[1])
-      localStorageData('BLOCK',user_district_blocks.split(',')[0])
-      localStorageData('ADDRESS',user_address)
+      updateSessionData(userData)
 
       // Update Pool
       updateUserPoolContent(uuid,[userData['DISPNAME'],userData['PHOTOURL']])
@@ -1469,13 +1555,19 @@ function getENGlangContent() {
 
     ACCEPT: 'I Accept',
 
+    // Location Section
+    LOC_HEADER: 'What is your permanent address ?',
+    CURR_LOC_HEADER: 'Where are you now ?',
+
     // Display Message 
     MESSAGE_MOBILE: 'Your mobile number is not correct !!',
     MESSAGE_ACCEPT: 'Please accept terms and conditions !!',
     MESSAGE_CURRLOC: 'Please select current location details !!',
     MESSAGE_PROFILE: 'Profile Updated !!',
 
-    HELP: 'Help Content'
+    HELP: 'Help Content',
+
+    TERM_AND_COND: getTermAndCondDetailsEN()
 
   }
 
@@ -1516,13 +1608,19 @@ function getHINlangContent() {
 
     ACCEPT: 'मुझे स्वीकार है',
 
+    // Location Section
+    LOC_HEADER: 'What is your permanent address ?',
+    CURR_LOC_HEADER: 'Where are you now ?',
+
     // Display Message 
     MESSAGE_MOBILE: 'आपका मोबाइल नंबर सही नहीं है !!',
     MESSAGE_ACCEPT: 'कृपया नियम और शर्तें स्वीकार करें !!',
     MESSAGE_CURRLOC: ' कृपया वर्तमान स्थान विवरण का चयन करें !!',
     MESSAGE_PROFILE: ' प्रोफ़ाइल अपडेट !!',
 
-    HELP: 'सहायता सामग्री'
+    HELP: 'सहायता सामग्री',
+
+    TERM_AND_COND: getTermAndCondDetailsHI()
 
   }
 

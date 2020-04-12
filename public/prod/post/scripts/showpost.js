@@ -51,6 +51,8 @@ let comment_vertiScrollPosition = 0
 let main_page = 'showpost.html'
 let create_page = 'createpost.html'
 
+var color='purple'
+
 
 // ***********************************************
 
@@ -482,7 +484,7 @@ function updateForumContent() {
 \
             <!-- Content -->\
             <div class="card-content" style="margin-top: -30px;">\
-            <div class="right-align"> <a href="#!" onclick="chipClickHandling(\'' + data['CATEGORY'] +'#catg' + '\')" ><div class="chip">'+data['CATEGORY']+'</div></a> </div>\
+            <div class="right-align"> <a href="#!" onclick="chipClickHandling(\'' + data['CATEGORY'] +'#catg' + '\')" ><div class="chip '+color+' white-text">'+data['CATEGORY']+'</div></a> </div>\
               <span class="card-title">'+data['TITLE']+'</span>\
               <div>\
                 '+getChipWithBorderFromListLoc(data['TAGS'])+'\
@@ -516,14 +518,15 @@ function createEachDocumentCard(data,docid) {
     // <span class="new badge blue" data-badge-caption="reply">'+data['REPLYCNT']+'</span>
 
       htmlContent  = ' <div class="col s12 m12">\
-      <div class="card" style="border-radius: 5px;">\
+      <div class="card" style="border-radius: 15px;">\
         <div>\
           <!-- Header -->\
-            <ul class="collection" style="border-radius: 5px 5px 0px 0px; border: 0.1px solid grey; height: 60px;">\
+            <ul class="collection" style="border-radius: 15px 15px 0px 0px; border: 0.1px solid grey; height: 60px;">\
               <li class="collection-item avatar">\
                 <img src="'+data['UPHOTO']+'" alt="" class="circle">\
                 <span class="title"><b>'+data['UNAME']+'</b></span>\
                 <p class="grey-text" style="font-size: 13px;">'+data['DATE']+'</p>\
+                <a href="#!" onclick="openMoreOptions(\'' + docid + '\')" class="secondary-content"><b><i class="material-icons grey-text">more_vert</i></b></a>\
                 </li>\
             </ul>\
 \
@@ -533,7 +536,7 @@ function createEachDocumentCard(data,docid) {
             <div style="margin-top: 5px;">\
             <p class="long-text grey-text" >'+data['DESC']+'</p>\
           </div> \
-          <div class="left-align" style="margin-top: 5px;"> <a href="#!" onclick="chipClickHandling(\'' + data['CATEGORY'] +'#catg' + '\')" ><div class="chip">'+data['CATEGORYDIS']+'</div></a> </div>\
+          <div class="left-align" style="margin-top: 15px;"> <a href="#!" onclick="chipClickHandling(\'' + data['CATEGORY'] +'#catg' + '\')" ><div class="chip  '+color+' white-text z-depth-2">'+data['CATEGORYDIS']+'</div></a> </div>\
               <div  style="margin-top: 2px; z-index: -1">\
                 '+getChipWithBorderFromListLoc(data['TAGS'])+'\
               </div>\
@@ -585,10 +588,21 @@ function viewEachTopic(details) {
 
   $("#u_name").html(data['UNAME']);
   $("#u_date").html(data['DATE']);
-  $("#category").html('<a href="#!" onclick="chipClickHandling(\'' + data['CATEGORY'] +'#catg' + '\')" ><div class="chip">'+data['CATEGORYDIS']+'</div></a>');
+  $("#category").html('<a href="#!" onclick="chipClickHandling(\'' + data['CATEGORY'] +'#catg' + '\')" ><div class="chip '+color+' white-text z-depth-2">'+data['CATEGORYDIS']+'</div></a>');
   $("#title").html(data['TITLE']);
   $("#publish_date").html('Published on ' + data['DATE']);
  
+  // Update Scope Value  
+  let scope_line = '<p class="grey-text">Published In : ' + data['LOCSCOPE']
+
+  if(data['CURRADDRSTATUS'] != 'NA') {
+    scope_line += ' and ' + data['CURRADDRSUBLOC'] + ',' + data['CURRADDRLOC']
+  }
+
+  scope_line += '</p>'
+
+  $("#scope_details").html(scope_line);
+
   $("#tags").html(getChipWithBorderFromListLoc(data['TAGS']));
 
   $("#desc").html(data['DESC']);
@@ -613,6 +627,11 @@ function viewEachTopic(details) {
   // Display all comments
   updateCommentMessage('FIRST')
 
+}
+
+// More Option Handing
+function openMoreOptions(details) {
+  displayOutput(details)
 }
 
 // ---------------------------------------
@@ -1598,7 +1617,7 @@ function createFilterCategoryDetails() {
 
     let catg_name = catg_list[each_idx]
 
-    html_line += '<a href="#!" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" ><div class="chip">'+ getCatgDataMapping(catg_name)  +'</div></a>'
+    html_line += '<a href="#!" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" ><div class="chip '+color+' white-text">'+ getCatgDataMapping(catg_name)  +'</div></a>'
   }
 
   $("#all_Category_details").html(html_line);

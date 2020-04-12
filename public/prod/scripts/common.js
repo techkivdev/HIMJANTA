@@ -1747,6 +1747,16 @@ function getLoginUserData() {
     userData['MOBILE'] = sessionStorage.getItem('MOBILE');
     userData['ROLE'] = sessionStorage.getItem('ROLE');
     userData['PHOTO'] = sessionStorage.getItem('PHOTO');
+    userData['COUNTRY'] = sessionStorage.getItem('COUNTRY');
+    userData['STATE'] = sessionStorage.getItem('STATE');
+    userData['DISTRICT'] = sessionStorage.getItem('DISTRICT');
+    userData['BLOCK'] = sessionStorage.getItem('BLOCK');
+    userData['CURRADDRSTATUS'] = sessionStorage.getItem('CURRADDRSTATUS');
+    userData['CURRADDRVALUE'] = sessionStorage.getItem('CURRADDRVALUE');
+    userData['ADDRESS'] = sessionStorage.getItem('ADDRESS');
+    userData['MAPLOCATION'] = sessionStorage.getItem('MAPLOCATION');
+    userData['AGEGROUP'] = sessionStorage.getItem('AGEGROUP');
+    userData['LANG'] = sessionStorage.getItem('LANG');
 
 
     return userData;
@@ -1796,6 +1806,35 @@ function getLocalSessionPkgData() {
     return false
   }
 
+}
+
+// Update Profile local Data
+// Update Session Data
+function updateSessionData(updatedUserData) {
+  // Update Session Data
+  localStorageData('ISUSER',true)
+  localStorageData('UUID',updatedUserData['UUID'])
+  localStorageData('NAME',updatedUserData['NAME'])
+  localStorageData('DISPNAME',updatedUserData['DISPNAME'])
+  localStorageData('EMAIL',updatedUserData['EMAIL'])
+  localStorageData('MOBILE',updatedUserData['MOBILE'])
+  localStorageData('ROLE',updatedUserData['ROLE'])
+  localStorageData('PHOTO',updatedUserData['PHOTOURL'])
+
+  localStorageData('COUNTRY',updatedUserData['COUNTRY'])
+  localStorageData('STATE',updatedUserData['STATE'])
+  localStorageData('DISTRICT',updatedUserData['DISTRICT'])
+  localStorageData('BLOCK',updatedUserData['BLOCK'])
+
+  localStorageData('CURRADDRSTATUS',updatedUserData['CURRADDRSTATUS'])
+  localStorageData('CURRADDRVALUE',updatedUserData['CURRADDRVALUE'])
+
+  localStorageData('ADDRESS',updatedUserData['ADDRESS'])
+  localStorageData('MAPLOCATION',updatedUserData['MAPLOCATION'])
+  localStorageData('AGEGROUP',updatedUserData['AGEGROUP'])
+  localStorageData('LANG',updatedUserData['LANG'])
+  
+  displayOutput('Session Data Updated ...')
 }
 
 
@@ -1877,6 +1916,16 @@ function convTagsList() {
     updatedTagsList[eachTag] = null
   }
   return updatedTagsList
+}
+
+// ============= Common Data Set =================
+
+function getTermAndCondDetailsEN() {
+  return '<h1>Terms of Use</h1><p>This web page represents our Terms of Use and Sale ("Agreement") regarding our website, located at TermsFeed.com, and the tools we provide you (the "Website" or the "Service"). It was last posted on 13 September 2012. The terms, "we" and "our" as used in this Agreement refer to TermsFeed.</p><p>We may amend this Agreement at any time by posting the amended terms on our Website.  We may or may not post notices on the homepage of our Website when such changes occur.</p>p>We refer to this Agreement, our Privacy Policy accessible at <a href="https://www.termsfeed.com/legal/privacy-policy">https://termsfeed.com/legal/privacy-policy</a>, and any other terms, rules, or guidelines on our Website collectively as our "Legal Terms." You explicitly and implicitly agree to be bound by our Legal Terms each time you access our Website. If you do not wish to be so bound, please do not use or access our Website.</p><p><strong>Limited License</strong></p><p>TermsFeed grants you a non-exclusive, non-transferable, revocable license to access and use our Website in order for you to make purchases of electronic documents and related services through our Website, strictly in accordance with our Legal Terms.</p><p><strong>Copyrights and Trademarks</strong></p><p>Unless otherwise noted, all materials including without limitation, logos, brand names, images, designs, photographs, video clips and written and other materials that appear as part of our Website are copyrights, trademarks, service marks, trade dress and/or other intellectual property whether registered or unregistered ("Intellectual Property") owned, controlled or licensed by TermsFeed.  Our Website as a whole is protected by copyright and trade dress.  Nothing on our Website should be construed as granting, by implication, estoppel or otherwise, any license or right to use any Intellectual Property displayed or used on our Website, without the prior written permission of the Intellectual Property owner. TermsFeed aggressively enforces its intellectual property rights to the fullest extent of the law. The names and logos of TermsFeed, may not be used in any way, including in advertising or publicity pertaining to distribution of materials on our Website, without prior, written permission from TermsFeed. TermsFeed prohibits use of any logo of TermsFeed or any of its affiliates as part of a link to or from any Website unless TermsFeed approves such link in advance and in writing. Fair use of TermsFeed’s Intellectual Property requires proper acknowledgment. Other product and company names mentioned in our Website may be the Intellectual Property of their respective owners.</p><p><strong>Links to Third-Party Websites</strong></p><p>Our Website may contain links to Websites owned or operated by parties other than TermsFeed. Such links are provided for your reference only. TermsFeed does not monitor or control outside Websites and is not responsible for their content. TermsFeed’s inclusion of links to an outside Website does not imply any endorsement of the material on our Website or, unless expressly disclosed otherwise, any sponsorship, affiliation or association with its owner, operator or sponsor, nor does TermsFeed’ inclusion of the links imply that TermsFeed is authorized to use any trade name, trademark, logo, legal or official seal, or copyrighted symbol that may be reflected in the linked Website.</p>'
+}
+
+function getTermAndCondDetailsHI() {
+  return '<h1>Terms of Use</h1><p>This web page represents our Terms of Use and Sale ("Agreement") regarding our website, located at TermsFeed.com, and the tools we provide you (the "Website" or the "Service"). It was last posted on 13 September 2012. The terms, "we" and "our" as used in this Agreement refer to TermsFeed.</p><p>We may amend this Agreement at any time by posting the amended terms on our Website.  We may or may not post notices on the homepage of our Website when such changes occur.</p>p>We refer to this Agreement, our Privacy Policy accessible at <a href="https://www.termsfeed.com/legal/privacy-policy">https://termsfeed.com/legal/privacy-policy</a>, and any other terms, rules, or guidelines on our Website collectively as our "Legal Terms." You explicitly and implicitly agree to be bound by our Legal Terms each time you access our Website. If you do not wish to be so bound, please do not use or access our Website.</p><p><strong>Limited License</strong></p><p>TermsFeed grants you a non-exclusive, non-transferable, revocable license to access and use our Website in order for you to make purchases of electronic documents and related services through our Website, strictly in accordance with our Legal Terms.</p><p><strong>Copyrights and Trademarks</strong></p><p>Unless otherwise noted, all materials including without limitation, logos, brand names, images, designs, photographs, video clips and written and other materials that appear as part of our Website are copyrights, trademarks, service marks, trade dress and/or other intellectual property whether registered or unregistered ("Intellectual Property") owned, controlled or licensed by TermsFeed.  Our Website as a whole is protected by copyright and trade dress.  Nothing on our Website should be construed as granting, by implication, estoppel or otherwise, any license or right to use any Intellectual Property displayed or used on our Website, without the prior written permission of the Intellectual Property owner. TermsFeed aggressively enforces its intellectual property rights to the fullest extent of the law. The names and logos of TermsFeed, may not be used in any way, including in advertising or publicity pertaining to distribution of materials on our Website, without prior, written permission from TermsFeed. TermsFeed prohibits use of any logo of TermsFeed or any of its affiliates as part of a link to or from any Website unless TermsFeed approves such link in advance and in writing. Fair use of TermsFeed’s Intellectual Property requires proper acknowledgment. Other product and company names mentioned in our Website may be the Intellectual Property of their respective owners.</p><p><strong>Links to Third-Party Websites</strong></p><p>Our Website may contain links to Websites owned or operated by parties other than TermsFeed. Such links are provided for your reference only. TermsFeed does not monitor or control outside Websites and is not responsible for their content. TermsFeed’s inclusion of links to an outside Website does not imply any endorsement of the material on our Website or, unless expressly disclosed otherwise, any sponsorship, affiliation or association with its owner, operator or sponsor, nor does TermsFeed’ inclusion of the links imply that TermsFeed is authorized to use any trade name, trademark, logo, legal or official seal, or copyrighted symbol that may be reflected in the linked Website.</p>'
 }
 
 
