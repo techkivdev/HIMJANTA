@@ -101,7 +101,7 @@
          <!-- Create New Item -->
 
          <!-- Create Menu Button -->
-         <div id="add_new_item" class="right-align" style="margin-right: 10px;">
+         <div id="add_new_item" class="right-align" style="margin-right: 0px;">
           <a onclick="addNewItem('POST')" class="waves-effect waves-light btn purple rcorners" style="margin-right: 20px;"><i class="material-icons left">add</i>Create</a>        
         </div>
 
@@ -138,8 +138,8 @@
         </div>
 
         <!-- RESET Filter -->
-        <div id="filter_reset_btn_home" class="right-align" style="margin-bottom: 10px; display: none;">
-          <a onclick="resetFilter()" class="waves-effect waves-light btn black rcorners">RESET</a>
+        <div id="filter_reset_btn_home" class="right-align" style="margin-bottom: 10px; margin-bottom: 10px; display: none;">
+          <a onclick="resetFilter()" class="waves-effect waves-light btn-flat red-text">RESET</a>
         </div> 
 
         <li class="divider" tabindex="-1"></li>
@@ -176,99 +176,136 @@
         <a onclick="resetFilter()" class="waves-effect waves-light btn black rcorners">RESET</a>
       </div> 
 
-       <!-- All Filter Options -->             
-        <div style="margin-top: 40px;">
+      <!-- Filter Selection -->
 
-          <li class="divider" tabindex="-1"></li>
+      <h5 class="grey-text" style="margin-left: 20px;">Filter Option's</h5>
 
-          <h5 class="grey-text">Filter Option's</h5>
+      <div class="row" style="margin-top: 20px;">
+        <div class="col s12">
+          <ul class="tabs tabs-fixed-width tab-demo z-depth-1" style="border-radius: 50px;">
+            <li class="tab col s3"><a class="active" href="#quick_opt">Quick</a></li>
+            <li class="tab col s3"><a href="#extra_opt">Extra</a></li>
+          </ul>
+        </div>
 
-          <!-- Category -->         
-            <div class="row" style="margin-top: 40px;">
-                <div class="input-field">                  
-                    <select id="catg_options">
-                      <option value="" disabled selected>Select a Category</option>
-                      <option id="INFO" value="1">General Infromation</option>
-                      <option id="TIPS" value="2">Important Travel Tips</option>
-                      <option id="QRY" value="3">Any Query</option>
-                    </select>
-                    <label>Category</label> 
-                </div>                                  
+        <!-- Quick Filter Option Section -->
+        <div id="quick_opt" class="col s12">
+
+          <div style="margin-top: 40px;">
+
+             <!-- Scope Section -->
+             <div style="margin-top: 5px;">
+              <h5 class="grey-text">Scope</h5>
+              <div id="all_Scope_details" style="margin-top: 10px;">
+                <!-- Script Code -->
+              </div>
+
             </div>
-         
 
-          <!-- Search Tags -->
-          <div class="row">
-            <div class="input-field">
-              <i class="material-icons prefix">textsms</i>
-              <input type="text" id="autocomplete-input" class="autocomplete">
-              <label for="autocomplete-input">Search Tags</label>
-            </div>        
+             <!-- ALl Category Section -->
+             <div style="margin-top: 5px;">
+              <h5 class="grey-text">Category</h5>
+              <div id="all_Category_details" style="margin-top: 10px;">
+                <!-- Script Code -->
+              </div>
+
+            </div>
+
+            <!-- ALl Tags Section -->
+            <div style="margin-top: 5px;">
+              <h5 class="grey-text">Popular Tags</h5>
+              <div id="all_tags_details" style="margin-top: 10px;">
+                <!-- Script Code -->
+              </div>
+
+            </div>   
+
+          </div>
+             
+        </div>
+
+
+        <!-- All Filter Options -->
+
+        <div id="extra_opt" class="col s12">
+
+           <!-- All Filter Options -->             
+            <div style="margin-top: 50px; margin-left: 10px; margin-right: 10px;"> 
+
+              <!-- Category -->         
+                <div class="row" style="margin-top: 40px;">
+                    <div class="input-field">                  
+                        <select id="catg_options">
+                          <option value="" disabled selected>Select a Category</option>
+                          <option id="INFO" value="1">General Infromation</option>
+                          <option id="TIPS" value="2">Important Travel Tips</option>
+                          <option id="QRY" value="3">Any Query</option>
+                        </select>
+                        <label>Category</label> 
+                    </div>                                  
+                </div>
+            
+
+                <!-- Search Tags -->
+                <div class="row">
+                  <div class="input-field">
+                    <i class="material-icons prefix">textsms</i>
+                    <input type="text" id="autocomplete-input" class="autocomplete">
+                    <label for="autocomplete-input">Search Tags</label>
+                  </div>        
+                </div>
+
+
+                <!-- Select Date -->
+              <div class="row">
+                <div class="input-field">
+                  <i class="material-icons prefix">date_range</i>
+                  <input type="text" id="topic_date" class="datepicker">
+                  <label for="topic_date" class="black-text">Post Date</label>
+                </div>
+
+                <!-- Date Filter Options -->
+                <form action="#" style="margin-left: 45px;">
+
+                  <p>
+                    <label>
+                      <input id="selected_date_chkbx" name="group1" type="radio" checked/>
+                      <span>Consider complete date.</span>
+                    </label>
+                  </p>
+
+                  <p>
+                    <label>
+                      <input id="selected_month_chkbx" name="group1" type="radio"/>
+                      <span>Consider only Month from above selected date.</span>
+                    </label>
+                  </p>
+
+                  <p>
+                    <label>
+                      <input id="selected_year_chkbx" name="group1" type="radio"/>
+                      <span>Consider only Year from above selected date.</span>
+                    </label>
+                  </p>
+                
+                </form> 
+
+              </div>
+
           </div>
 
-
-          <!-- Select Date -->
-        <div class="row">
-          <div class="input-field">
-            <i class="material-icons prefix">date_range</i>
-            <input type="text" id="topic_date" class="datepicker">
-            <label for="topic_date" class="black-text">Post Date</label>
+            <!-- Apply Filter --> 
+          <div class="center-align" style="margin-top: 2px;">
+            <a onclick="applyFilter()" class="waves-effect waves-light btn red rcorners">Apply Filter</a>
           </div>
 
-          <!-- Date Filter Options -->
-          <form action="#" style="margin-left: 45px;">
-
-            <p>
-              <label>
-                <input id="selected_date_chkbx" name="group1" type="radio" checked/>
-                <span>Consider complete date.</span>
-              </label>
-            </p>
-
-            <p>
-              <label>
-                <input id="selected_month_chkbx" name="group1" type="radio"/>
-                <span>Consider only Month from above selected date.</span>
-              </label>
-            </p>
-
-            <p>
-              <label>
-                <input id="selected_year_chkbx" name="group1" type="radio"/>
-                <span>Consider only Year from above selected date.</span>
-              </label>
-            </p>
-           
-          </form> 
+          <li class="divider" tabindex="-1" style="margin-top: 10px;"></li>
+              
 
         </div>
 
-      </div>
-
-        <!-- Apply Filter --> 
-      <div class="center-align" style="margin-top: 2px;">
-        <a onclick="applyFilter()" class="waves-effect waves-light btn red rcorners">Apply Filter</a>
-      </div>
-
-      <li class="divider" tabindex="-1" style="margin-top: 10px;"></li>
-
-      <!-- ALl Category Section -->
-      <div style="margin-top: 5px;">
-        <h5 class="grey-text">Category</h5>
-        <div id="all_Category_details" style="margin-top: 10px;">
-          <!-- Script Code -->
-        </div>
 
       </div>
-
-      <!-- ALl Tags Section -->
-      <div style="margin-top: 5px;">
-        <h5 class="grey-text">Popular Tags</h5>
-        <div id="all_tags_details" style="margin-top: 10px;">
-          <!-- Script Code -->
-        </div>
-
-      </div>     
 
       
     </div>
@@ -336,14 +373,14 @@
            
 
             <div id="social_control" class="left-align" style="margin-top: 20px; height: 70px; margin-bottom: 10px; margin-left: 0px;">
-              <span><small><a href="#!" onclick="likeTopic()" style="margin-right: 3px;"><i id="like_btn" class="small  material-icons red-text">favorite_border</i><a></small><small id="total_fav_cnt" class="grey-text" style="font-size: 35px; margin-right: 20px;"></small></span>
+              <span><small><a href="#!" onclick="likeTopic()" style="margin-right: 3px;"><i id="like_btn" class="small  material-icons red-text">favorite_border</i><a></small><small id="total_fav_cnt" class="grey-text" style="font-size: 25px; margin-right: 20px;"></small></span>
               <a href="#!" onclick="bookmarkTopic()"><i id="bookmark_btn" class="small  material-icons orange-text" style="margin-right: 20px;">bookmark_border</i></a> 
               <a href="#!" onclick="shareTopic()"><i id="bookmark_btn" class="small  material-icons blue-text">share</i></a>                     
             </div>
             
             <div id="user_control_section" class="right-align" style="margin-top: 5px; height: 50px; margin-bottom: 10px; margin-right: 0px; display: none;">
-              <a onclick="editTopic()" class="waves-effect waves-light btn blue rcorners" style="margin-right: 20px;"><i class="material-icons left">edit</i>Edit</a>
-              <a onclick="askToDeleteCompleteTopic()" class="waves-effect waves-light btn red rcorners"><i class="material-icons left">delete</i>Delete</a>                      
+              <a onclick="editTopic()" class="waves-effect waves-light btn-flat blue-text style="margin-right: 20px;"><i class="medium material-icons left">edit</i>edit</a>
+              <a onclick="askToDeleteCompleteTopic()" class="waves-effect waves-light btn-flat red-text"><i class="medium material-icons left">delete</i>delete</a>                      
             </div>
 
 
@@ -371,7 +408,7 @@
 
              <!-- Create New Topic -->
              <div class="right-align">
-              <a onclick="openCommentModal('MAIN')" class="waves-effect waves-light btn blue rcorners"><i class="material-icons left">add</i>Add Comment</a>
+              <a onclick="openCommentModal('MAIN')" class="waves-effect waves-light btn purple rcorners"><i class="material-icons left">add</i>Add Comment</a>
              </div> 
 
           </div>

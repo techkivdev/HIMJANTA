@@ -30,6 +30,13 @@ var filter_enable_flag = false
 var filter_selection_status = {}
 var filter_selection_data = {}
 
+// Scope Configuration
+var location_scope = 'HIMACHAL PRADESH'
+var scope_list = []
+scope_list.push(location_scope)
+
+var selected_tag = 'NA'
+var selected_catg = 'NA'
 
 var allForumTopics = {}
 
@@ -91,6 +98,10 @@ function checkLoginData(){
   let status = getLoginUserStatus()
   displayOutput('Check Session Data ...')
   displayOutput(status)
+
+  saveConfig('scope',location_scope)
+  saveConfig('tag','NA')
+  saveConfig('catg','NA')
   
   if(status == 'true') {
     userLoginData = getLoginUserData()
@@ -109,6 +120,10 @@ function checkLoginData(){
     document.getElementById("my_topics_menu_mb").style.display = 'block';
     document.getElementById("my_list_menu_mb").style.display = 'block';
     document.getElementById("my_bookmark_menu_mb").style.display = 'block';
+
+    // Update Location Scope List
+    scope_list.push(userLoginData['BLOCK'])
+    scope_list.push(userLoginData['DISTRICT'])
 
     if(updateTopicHTMLPage) {
       // Read all topic and display content
@@ -146,45 +161,60 @@ updateHTMLPage()
 function updateHTMLPage() {   
   modifyPageStyle()  
 
+  location_scope = readConfig('scope')
+  selected_tag = readConfig('tag')
+  selected_catg = readConfig('catg')
+
   document.getElementById("message_section").style.display = 'none';
 
   // Page Haandling according to Filter value : fl
 
-  if((fl == 'NA') || (fl == 'tag') || (fl == 'catg')){
-    // Read all topic and display content
-    readAllForums()
-  } else if((fl == 'edit') || (fl == 'only')) {
+  if((fl == 'edit') || (fl == 'only')) {
     document.getElementById("flb_open_filter").style.display = 'none';
     // Read only edit topic details and show details
     readOneForum()
   } if(fl == 'own') {
-   // Nothing to do
-   document.getElementById("message_section").style.display = 'block';
-   $('#message_content').html('Your Post only.')
+    // Nothing to do
+    document.getElementById("message_section").style.display = 'block';
+    $('#message_content').html('Your Post only.')
   }
   else {
+    displayOutput('Default Action')
+    readAllForums()
   
   }
 
   // Update Filter section details
   $('#main_filter_section').html('')
-  if((fl == 'tag') || (fl == 'catg')) {
-    
-    document.getElementById("message_section").style.display = 'block';
+
+  let filt_html_line = ''
+
+  if(location_scope != 'NA') {
+    filt_html_line += '<div class="chip green white-text">' + location_scope + '</div>'
+  }
+ 
+  if(selected_catg != 'NA') {
+    filt_html_line += '<div class="chip blue white-text">' + getCatgDataMapping(selected_catg) + '</div>'
+
+    //document.getElementById("message_section").style.display = 'block';
     document.getElementById("filter_reset_btn_home").style.display = 'block';
 
-    if(fl == 'tag') {
-      $('#message_content').html('Filter Applied on Tag !!')
-      $('#main_filter_section').html('<div class="chip">' + id + '</div>')
-    } else {
-      $('#message_content').html('Filter Applied on Category !!')
-      $('#main_filter_section').html('<div class="chip">' + getCatgDataMapping(id) + '</div>')
-    }
-    
   }
+
+  if(selected_tag != 'NA') {    
+    filt_html_line += '<div class="chip orange white-text">' + selected_tag + '</div>'
+
+    //document.getElementById("message_section").style.display = 'block';
+    document.getElementById("filter_reset_btn_home").style.display = 'block';
+  }
+
+
+  $('#main_filter_section').html(filt_html_line)
   
 
   // Update Filter Section 
+
+  createFilterScopeDetails()
 
   createFilterTagsDetails()
 
@@ -327,22 +357,64 @@ function getQuery() {
 
    // Filter query for url
   // For each query you have to create Index in firebase console
-  if(fl == 'own') { 
-    normalqueryref = collectionRef.where('DELETESTATUS', '==', false)
+
+  if(fl == 'own') {
+    displayOutput('Only User Query')
+    // ------------ Only User Query Handling -------------------
+    normalqueryref = collectionRef.where('DELETESTATUS', '==', false)   // OWN Post details
     .where('UUID', '==', userLoginData['UUID'])
     .orderBy('CREATEDON', 'desc');
-  } else if(fl == 'tag') {
-    normalqueryref = collectionRef.where('DELETESTATUS', '==', false)
-    .where('TAGS', 'array-contains',id)
-    .orderBy('CREATEDON', 'desc');
-  } else if(fl == 'catg') {
-    normalqueryref = collectionRef.where('DELETESTATUS', '==', false)
-    .where('CATEGORY', '==', id)
-    .orderBy('CREATEDON', 'desc');
+
   } else {
-    normalqueryref = collectionRef.where('DELETESTATUS', '==', false)
+    
+    // ------------- MAIN SELECTION QUERY HANDLING ------------
+
+  if((selected_catg == 'NA') && (selected_tag == 'NA')) {
+    // Default Operation
+    displayOutput('Default Query')
+    normalqueryref = collectionRef.where('DELETESTATUS', '==', false)       // Default Options
+    .where('LOCSCOPE', '==', location_scope)
     .orderBy('CREATEDON', 'desc');
+
+  } else if((selected_catg != 'NA') && (selected_tag != 'NA')) {
+    displayOutput('All Query')
+    // All Filter Applied 
+    normalqueryref = collectionRef.where('DELETESTATUS', '==', false)     // Category Options
+    .where('LOCSCOPE', '==', location_scope)
+    .where('CATEGORY', '==', selected_catg)
+    .where('TAGS', 'array-contains',selected_tag)
+    .orderBy('CREATEDON', 'desc');
+
+
+  } else {
+
+    // Any One Applied 
+    if(selected_catg != 'NA') {
+      displayOutput('Only Catg Query')
+
+      normalqueryref = collectionRef.where('DELETESTATUS', '==', false)     // Category Options
+       .where('LOCSCOPE', '==', location_scope)
+       .where('CATEGORY', '==', selected_catg)
+       .orderBy('CREATEDON', 'desc');
+     }
+   
+     if(selected_tag != 'NA') {    
+      displayOutput('Only Tags Query')
+
+       normalqueryref = collectionRef.where('DELETESTATUS', '==', false)    // TAG Options
+       .where('LOCSCOPE', '==', location_scope)
+       .where('TAGS', 'array-contains',selected_tag)
+       .orderBy('CREATEDON', 'desc');
+   
+     }
+
+
   }
+
+  // -----------------------------------------------------------
+
+  }
+
 
   return normalqueryref
 
@@ -355,7 +427,7 @@ function getFilterQuery() {
   let path = coll_base_path + 'FORUM/' + main_path 
   let collectionRef = db.collection(path)
 
-  let normalqueryref = collectionRef.where('DELETESTATUS', '==', false)
+  let normalqueryref = collectionRef.where('DELETESTATUS', '==', false).where('LOCSCOPE', '==', location_scope)
 
   // Selected Month Filter
   if(filter_selection_status['MONTH'] || filter_selection_status['YEAR']) {    
@@ -513,7 +585,7 @@ function updateForumContent() {
 function createEachDocumentCard(data,docid) {
 
  
-    //displayOutput(data)     
+    //displayOutput(data)   
            
     // <span class="new badge blue" data-badge-caption="reply">'+data['REPLYCNT']+'</span>
 
@@ -546,7 +618,6 @@ function createEachDocumentCard(data,docid) {
               </div> </div>  </div></div>'
 
 
- 
 let block_to_insert = document.createElement( 'div' );
 block_to_insert.innerHTML = htmlContent ;
  
@@ -593,7 +664,7 @@ function viewEachTopic(details) {
   $("#publish_date").html('Published on ' + data['DATE']);
  
   // Update Scope Value  
-  let scope_line = '<p class="grey-text">Published In : ' + data['LOCSCOPE']
+  let scope_line = '<p class="grey-text">Published In : <br>' + data['LOCSCOPE']
 
   if(data['CURRADDRSTATUS'] != 'NA') {
     scope_line += ' and ' + data['CURRADDRSUBLOC'] + ',' + data['CURRADDRLOC']
@@ -632,6 +703,54 @@ function viewEachTopic(details) {
 // More Option Handing
 function openMoreOptions(details) {
   displayOutput(details)
+
+  let mdlContent = ''   
+  
+  mdlContent += '<ul class="">\
+  <li><a href="#!" onclick="shareTopicFromMain(\'' + details + '\')"><div class="collapsible-header black-text"><i class="medium material-icons blue-text">share</i>Share</div></a></li>\
+  <li><a href="#!" onclick="reportToUs(\'' + details + '\')"><div class="collapsible-header black-text"><i class="medium material-icons red-text">report</i>Report to us</div></a></li>\
+   </ul>'
+
+  var model = '<!-- Modal Structure -->\
+  <div id="more_option_modal" class="modal modal-fixed-footer white">\
+    <div style="margin-top: -1%;">\
+      <div>'+ mdlContent + '</div>\
+    </div>\
+    <div class="modal-footer">\
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>\
+    </div>\
+  </div>'
+
+
+
+  var elem = document.getElementById('more_option_modal');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+
+  $('#more_option_modal').modal('open');
+
+
+}
+
+// Report to us
+function reportToUs(details) {
+
+  $('#more_option_modal').modal('close');
+
+  let path = coll_base_path + 'FORUM/' + 'REPORT'
+  let report_data = {}
+
+  report_data['DOCID'] = details
+  report_data['DOCSPACE'] = main_path
+
+  addNewDocument(path,report_data,'Done')
 }
 
 // ---------------------------------------
@@ -1187,6 +1306,34 @@ function shareTopic() {
 
 }
 
+function shareTopicFromMain(docid) {
+
+  $('#more_option_modal').modal('close');
+
+  let link = 'https://kivtravels.com/prod/post/' + main_page +'?pt='+main_path+'&id='+docid+'&fl=only' 
+
+  var textArea = document.createElement("textarea");
+  textArea.value = link;
+  textArea.display = "none";
+  textArea.style.position="fixed";  //avoid scrolling to bottom
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';    
+    //displayOutput('Fallback: Copying text command was ' + msg);
+    toastMsg('Link Copied !!')
+  } catch (err) {
+    //console.error('Fallback: Oops, unable to copy', err);
+    displayOutput('Oops, unable to copy')
+  }
+
+  document.body.removeChild(textArea);
+
+}
+
 // Like topic
 function likeTopic() {
 
@@ -1346,11 +1493,46 @@ function getChipWithBorderFromListLoc(details){
 function chipClickHandling(details) {
   displayOutput(details)
 
-  // Open URL with tag filter option
-  var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(details.split('#')[0]) + '&fl=' + encodeURIComponent(details.split('#')[1]);
-  window.location.href = url
+  saveConfig(details.split('#')[1],details.split('#')[0])
+  closeFilterSection()
+  updateHTMLPage()
+
+  /*
+  if(details.split('#')[1] == 'scope') {
+    saveConfig('LOCSCOPE',details.split('#')[0])
+
+    closeFilterSection()
+
+    updateHTMLPage()
+
+  } else {
+    // Open URL with tag filter option
+    var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(details.split('#')[0]) + '&fl=' + encodeURIComponent(details.split('#')[1]);
+    window.location.href = url
+  } 
+  */
 
 }
+
+// Save Configuration
+function saveConfig(key,value) {
+  localStorageData(key,value)
+}
+
+// Read Configuration
+function readConfig(key) {
+
+  if (typeof (Storage) !== "undefined") {
+    // Code for localStorage/sessionStorage.
+    return sessionStorage.getItem(key);
+  } else {
+    // Sorry! No Web Storage support..
+    displayOutput('Sorry! No Web Storage support..')
+    return 'NA'
+  }
+
+}
+
 
 // ---------- UI Handling ------------------
 
@@ -1421,6 +1603,10 @@ function startUpCalls() {
     $('input.autocomplete').autocomplete({
       data: convTagsList(),
     });
+  });
+
+  $(document).ready(function(){
+    $('.tabs').tabs();
   });
 
 }
@@ -1588,6 +1774,29 @@ function applyFilter() {
 }
 
 // Create Filter tags details
+
+// Create Scope Section
+function createFilterScopeDetails() {
+
+  $("#all_Scope_details").html('');
+
+  let html_line = ''
+  for(each_idx in scope_list) {   
+    let scope_name = scope_list[each_idx]
+
+    if(scope_name == location_scope) {
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + scope_name +'#scope' + '\')" ><div class="chip green white-text">'+ scope_name  +'</div></a>'
+    } else {
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + scope_name +'#scope' + '\')" ><div class="chip">'+ scope_name  +'</div></a>'
+    }
+
+    
+  }
+
+  $("#all_Scope_details").html(html_line);
+
+}
+
 // Create Tags Section
 function createFilterTagsDetails() {
   $("#all_tags_details").html('');
@@ -1598,7 +1807,12 @@ function createFilterTagsDetails() {
   for(tags_name in tags_list) {
     let tags_count = tags_list[tags_name]
 
-    html_line += '<a href="#!" onclick="chipClickHandling(\'' + tags_name +'#tag' + '\')" ><div class="chip">'+tags_name + ' (' + tags_count +')' +'</div></a>'
+    if(tags_name == selected_tag) {
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + tags_name +'#tag' + '\')" ><div class="chip orange white-text">'+tags_name + ' (' + tags_count +')' +'</div></a>'
+    } else {
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + tags_name +'#tag' + '\')" ><div class="chip">'+tags_name + ' (' + tags_count +')' +'</div></a>'
+    }
+
   }
 
   $("#all_tags_details").html(html_line);
@@ -1617,8 +1831,11 @@ function createFilterCategoryDetails() {
 
     let catg_name = catg_list[each_idx]
 
-    html_line += '<a href="#!" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" ><div class="chip '+color+' white-text">'+ getCatgDataMapping(catg_name)  +'</div></a>'
-  }
+    if(getCatgDataMapping(catg_name) == getCatgDataMapping(selected_catg)) {
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" ><div class="chip blue white-text">'+ getCatgDataMapping(catg_name)  +'</div></a>'
+    } else {
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" ><div class="chip">'+ getCatgDataMapping(catg_name)  +'</div></a>'    }
+    }
 
   $("#all_Category_details").html(html_line);
 
