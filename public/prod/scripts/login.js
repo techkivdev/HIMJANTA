@@ -659,45 +659,10 @@ userData = updatedUserData
 // Display Profile Details
 function showProfileDetails() {
 
-  let content = ''
+  let content = '<div id="top_div_header" class="purple-card-content z-depth-2" style="height: 100px;">\
+  </div><div style="margin-left : 30px; margin-right : 10px;">' + getUserProfileFormat(userData) + '</div>'
 
-  content += '<p class=grey-text style="font-size : 13px;">Name</p><p style="margin-top: -25px;">'+userData['NAME']+'</p>'
-
-  if(userData['MOBILE']){    
-    content += '<p class=grey-text style="font-size : 13px;">Mobile Number</p><p style="margin-top: -25px;">'+userData['MOBILE']+'</p>'
-  } 
-
-  content += '<p class=grey-text style="font-size : 13px;">Age Group</p><p style="margin-top: -25px;">'+userData['AGEGROUP']+'</p>'
-  content += '<p class=grey-text style="font-size : 13px;">Profession</p><p style="margin-top: -25px;">'+userData['PROFESSION'].split('@')[1]+'</p>'
-   
-  content += '<li class="divider" tabindex="-1"></li>'
-
-  if(userData['BLOCK'] == defaultLocationConfig['BLOCK']){
-    content += '<p class=grey-text style="font-size : 13px;">Permanent Location</p><p style="margin-top: -25px;">'+ userData['DISTRICT']+'</p>'
-  } else {
-    content += '<p class=grey-text style="font-size : 13px;">Permanent Location</p><p style="margin-top: -25px;">'+userData['BLOCK']+','+userData['DISTRICT']+'</p>'
-  }  
- 
-  
-  if(userData['ADDRESS'] != ''){   
-    content += '<p class=grey-text style="font-size : 13px;">Address</p><p class="long-text-nor" style="margin-top: -20px;">'+userData['ADDRESS']+'</p>'
-  } 
-
-  if(userData['CURRADDRSTATUS'] == 'INSIDE') {    
-    content += '<p class=grey-text style="font-size : 13px;">Current Location Status</p><p style="margin-top: -25px;">'+'Inside ' + defaultLocationConfig['STATE'] +'</p>'
-  } else {    
-    content += '<p class=grey-text style="font-size : 13px;">Current Location Status</p><p style="margin-top: -25px;">'+'Outside ' + defaultLocationConfig['STATE'] +'</p>'
-    content += '<p class=grey-text style="font-size : 13px;">Location</p><p style="margin-top: -25px;">'+userData['CURRADDRVALUE']+'</p>'
-  }
-
-  content += '<li class="divider" tabindex="-1"></li>'
-
-  if(userData['BIO'] != ''){   
-    content += '<p class=grey-text style="font-size : 13px;">Bio</p><p class="long-text-nor" style="margin-top: -20px;">'+userData['BIO']+'</p>'
-  } 
-
-  viewModel('',content)
-  
+  viewModelCustom(content)  
 }
 
 // Update Page according to Language

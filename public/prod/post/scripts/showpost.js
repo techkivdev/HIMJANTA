@@ -23,21 +23,28 @@ var currentTopicCommentsStatus = true
 var currentTopicLikeStatus = false
 var currentTopicBookmarkStatus = false
 
-var updateTopicHTMLPage = false
-
 // Main Filter
 var filter_enable_flag = false
 var filter_selection_status = {}
 var filter_selection_data = {}
+var searchSelectedOption = 'TAG'
+var searchSelectedValue = 'NA'
 
 // Scope Configuration
 var location_scope = 'HIMACHAL PRADESH'
 var scope_list = []
 scope_list.push(location_scope)
 
-var selected_tag = 'NA'
+var selected_tag = []
 var selected_catg = 'NA'
 
+// User Related variables
+var isUserMode = false
+var useruuid = 'NA'
+var userData = {}
+var userSectionCreated = false
+
+// Collect all Details
 var allForumTopics = {}
 
 // Query Parameters
@@ -84,10 +91,6 @@ function getParams() {
   id = params['id']
   fl = params['fl'].replace('#!','')
 
-  if(fl == 'own') {
-    updateTopicHTMLPage  = true
-  }
-
 
 }
 
@@ -100,8 +103,8 @@ function checkLoginData(){
   displayOutput(status)
 
   saveConfig('scope',location_scope)
-  saveConfig('tag','NA')
-  saveConfig('catg','NA')
+  saveConfig('tag', selected_tag)
+  saveConfig('catg',selected_catg)
   
   if(status == 'true') {
     userLoginData = getLoginUserData()
@@ -125,10 +128,6 @@ function checkLoginData(){
     scope_list.push(userLoginData['BLOCK'])
     scope_list.push(userLoginData['DISTRICT'])
 
-    if(updateTopicHTMLPage) {
-      // Read all topic and display content
-      readAllForums()
-    }
 
   } 
 
@@ -162,10 +161,16 @@ function updateHTMLPage() {
   modifyPageStyle()  
 
   location_scope = readConfig('scope')
-  selected_tag = readConfig('tag')
+  let selected_tag_loc = readConfig('tag')
+  if(isStrEmpty(selected_tag_loc)) {
+    selected_tag = []
+  } else {
+    selected_tag = selected_tag_loc.split(',')
+  }
   selected_catg = readConfig('catg')
 
-  document.getElementById("message_section").style.display = 'none';
+  document.getElementById("top_div_header").style.display = 'none'; 
+  document.getElementById("userinfo_section").style.display = 'none'; 
 
   // Page Haandling according to Filter value : fl
 
@@ -173,10 +178,20 @@ function updateHTMLPage() {
     document.getElementById("flb_open_filter").style.display = 'none';
     // Read only edit topic details and show details
     readOneForum()
-  } if(fl == 'own') {
-    // Nothing to do
-    document.getElementById("message_section").style.display = 'block';
-    $('#message_content').html('Your Post only.')
+
+  } if(fl == 'user') {
+  
+    displayOutput('User Details')
+    document.getElementById("top_div_header").style.display = 'block'; 
+    document.getElementById("userinfo_section").style.display = 'block';
+
+    isUserMode = true
+    useruuid = id
+
+    showUserInfromation()
+
+    readAllForums()
+  
   }
   else {
     displayOutput('Default Action')
@@ -187,27 +202,32 @@ function updateHTMLPage() {
   // Update Filter section details
   $('#main_filter_section').html('')
 
-  let filt_html_line = ''
+  
 
   if(location_scope != 'NA') {
-    filt_html_line += '<div class="chip green white-text">' + location_scope + '</div>'
+    createLocationCard(location_scope)
   }
  
+  let filt_html_line = ''
+
   if(selected_catg != 'NA') {
-    filt_html_line += '<div class="chip blue white-text">' + getCatgDataMapping(selected_catg) + '</div>'
+    filt_html_line += '<div class="chip green white-text z-depth-2" style="margin-bottom : 10px;">' + getCatgDataMapping(selected_catg) + '<i onclick="catgReset()" class="close material-icons">close</i></div>'
 
-    //document.getElementById("message_section").style.display = 'block';
-    document.getElementById("filter_reset_btn_home").style.display = 'block';
-
+    //filt_html_line += createChipLikeCard(getCatgDataMapping(selected_catg) + '#' + 'catg','green')
   }
 
-  if(selected_tag != 'NA') {    
-    filt_html_line += '<div class="chip orange white-text">' + selected_tag + '</div>'
+  if(selected_tag.length > 0) {    
 
-    //document.getElementById("message_section").style.display = 'block';
-    document.getElementById("filter_reset_btn_home").style.display = 'block';
+    for(each_idx in selected_tag) {
+      let tag_name = selected_tag[each_idx]
+
+      filt_html_line += '<div class="chip orange white-text z-depth-2" style="margin-bottom : 10px;">' + tag_name + '<i onclick="tagReset(\'' + tag_name + '\')" class="close material-icons">close</i></div>'
+    }    
+
+    //filt_html_line += createChipLikeCard(selected_tag + '#' + 'tag','orange')
   }
 
+  //filt_html_line  = '<div class="row">' + filt_html_line + '</div>'
 
   $('#main_filter_section').html(filt_html_line)
   
@@ -221,6 +241,22 @@ function updateHTMLPage() {
   createFilterCategoryDetails()
 
  
+}
+
+// RESET Options
+function catgReset() {
+  saveConfig('catg','NA')
+
+  updateHTMLPage()
+}
+
+function tagReset(tag_name) {
+  
+  selected_tag.splice( selected_tag.indexOf(tag_name), 1 );
+
+  saveConfig('tag',selected_tag)
+
+  updateHTMLPage()
 }
 
 // Modify Page style according to the browser
@@ -358,62 +394,165 @@ function getQuery() {
    // Filter query for url
   // For each query you have to create Index in firebase console
 
-  if(fl == 'own') {
-    displayOutput('Only User Query')
-    // ------------ Only User Query Handling -------------------
-    normalqueryref = collectionRef.where('DELETESTATUS', '==', false)   // OWN Post details
-    .where('UUID', '==', userLoginData['UUID'])
-    .orderBy('CREATEDON', 'desc');
+  // Show User Related Details
+  if(isUserMode) {
 
-  } else {
-    
-    // ------------- MAIN SELECTION QUERY HANDLING ------------
+    displayOutput(useruuid)
 
-  if((selected_catg == 'NA') && (selected_tag == 'NA')) {
-    // Default Operation
-    displayOutput('Default Query')
-    normalqueryref = collectionRef.where('DELETESTATUS', '==', false)       // Default Options
-    .where('LOCSCOPE', '==', location_scope)
-    .orderBy('CREATEDON', 'desc');
+    if(location_scope == 'ANY') {
 
-  } else if((selected_catg != 'NA') && (selected_tag != 'NA')) {
-    displayOutput('All Query')
-    // All Filter Applied 
-    normalqueryref = collectionRef.where('DELETESTATUS', '==', false)     // Category Options
-    .where('LOCSCOPE', '==', location_scope)
-    .where('CATEGORY', '==', selected_catg)
-    .where('TAGS', 'array-contains',selected_tag)
-    .orderBy('CREATEDON', 'desc');
+      // ------------- MAIN SELECTION QUERY HANDLING ------------
 
+      if((selected_catg == 'NA') && (selected_tag.length == 0)) {
+        // Default Operation
+        displayOutput('Default User Query')
+        normalqueryref = collectionRef.where('DELETESTATUS', '==', false)       // Default Options
+        .where('UUID', '==', useruuid)
+        .orderBy('CREATEDON', 'desc');
+  
+      } else if((selected_catg != 'NA') && (selected_tag.length > 0)) {
+        displayOutput('All User Query')
+        // All Filter Applied 
+        normalqueryref = collectionRef.where('DELETESTATUS', '==', false)     // Category Options
+        .where('UUID', '==', useruuid)
+        .where('CATEGORY', '==', selected_catg)
+        .where('TAGS', 'array-contains-any',selected_tag)
+        .orderBy('CREATEDON', 'desc');
+  
+  
+      } else {
+  
+        // Any One Applied 
+        if(selected_catg != 'NA') {
+          displayOutput('Only User Catg Query')
+  
+          normalqueryref = collectionRef.where('DELETESTATUS', '==', false)     // Category Options
+          .where('UUID', '==', useruuid)
+          .where('CATEGORY', '==', selected_catg)
+          .orderBy('CREATEDON', 'desc');
+        }
+      
+        if(selected_tag.length > 0) {    
+          displayOutput('Only User Tags Query')
+  
+          normalqueryref = collectionRef.where('DELETESTATUS', '==', false)    // TAG Options
+          .where('UUID', '==', useruuid)
+          .where('TAGS', 'array-contains-any',selected_tag)
+          .orderBy('CREATEDON', 'desc');
+      
+        }
+  
+  
+      }
+  
+      // -----------------------------------------------------------
 
-  } else {
+    // ==========================================================================
 
-    // Any One Applied 
-    if(selected_catg != 'NA') {
-      displayOutput('Only Catg Query')
+    } else {
 
+     // ------------- MAIN SELECTION QUERY HANDLING ------------
+
+     if((selected_catg == 'NA') && (selected_tag.length == 0)) {
+      // Default Operation
+      displayOutput('Default User Query')
+      normalqueryref = collectionRef.where('DELETESTATUS', '==', false)       // Default Options
+      .where('UUID', '==', useruuid)
+      .where('LOCSCOPE', '==', location_scope)
+      .orderBy('CREATEDON', 'desc');
+
+    } else if((selected_catg != 'NA') && (selected_tag.length > 0)) {
+      displayOutput('All User Query')
+      // All Filter Applied 
       normalqueryref = collectionRef.where('DELETESTATUS', '==', false)     // Category Options
-       .where('LOCSCOPE', '==', location_scope)
-       .where('CATEGORY', '==', selected_catg)
-       .orderBy('CREATEDON', 'desc');
-     }
-   
-     if(selected_tag != 'NA') {    
-      displayOutput('Only Tags Query')
+      .where('UUID', '==', useruuid)
+      .where('LOCSCOPE', '==', location_scope)
+      .where('CATEGORY', '==', selected_catg)
+      .where('TAGS', 'array-contains-any',selected_tag)
+      .orderBy('CREATEDON', 'desc');
 
-       normalqueryref = collectionRef.where('DELETESTATUS', '==', false)    // TAG Options
-       .where('LOCSCOPE', '==', location_scope)
-       .where('TAGS', 'array-contains',selected_tag)
-       .orderBy('CREATEDON', 'desc');
-   
-     }
 
+    } else {
+
+      // Any One Applied 
+      if(selected_catg != 'NA') {
+        displayOutput('Only User Catg Query')
+
+        normalqueryref = collectionRef.where('DELETESTATUS', '==', false)     // Category Options
+        .where('UUID', '==', useruuid)
+        .where('LOCSCOPE', '==', location_scope)
+        .where('CATEGORY', '==', selected_catg)
+        .orderBy('CREATEDON', 'desc');
+      }
+    
+      if(selected_tag.length > 0) {    
+        displayOutput('Only User Tags Query')
+
+        normalqueryref = collectionRef.where('DELETESTATUS', '==', false)    // TAG Options
+        .where('UUID', '==', useruuid)
+        .where('LOCSCOPE', '==', location_scope)
+        .where('TAGS', 'array-contains-any',selected_tag)
+        .orderBy('CREATEDON', 'desc');
+    
+      }
+
+
+    }
+
+    // -----------------------------------------------------------
 
   }
 
-  // -----------------------------------------------------------
 
-  }
+  } else {
+     
+      // ------------- MAIN SELECTION QUERY HANDLING ------------
+
+      if((selected_catg == 'NA') && (selected_tag.length == 0)) {
+        // Default Operation
+        displayOutput('Default Query')
+        normalqueryref = collectionRef.where('DELETESTATUS', '==', false)       // Default Options
+        .where('LOCSCOPE', '==', location_scope)
+        .orderBy('CREATEDON', 'desc');
+
+      } else if((selected_catg != 'NA') && (selected_tag.length > 0)) {
+        displayOutput('All Query')
+        // All Filter Applied 
+        normalqueryref = collectionRef.where('DELETESTATUS', '==', false)     // Category Options
+        .where('LOCSCOPE', '==', location_scope)
+        .where('CATEGORY', '==', selected_catg)
+        .where('TAGS', 'array-contains-any',selected_tag)
+        .orderBy('CREATEDON', 'desc');
+
+
+      } else {
+
+        // Any One Applied 
+        if(selected_catg != 'NA') {
+          displayOutput('Only Catg Query')
+
+          normalqueryref = collectionRef.where('DELETESTATUS', '==', false)     // Category Options
+          .where('LOCSCOPE', '==', location_scope)
+          .where('CATEGORY', '==', selected_catg)
+          .orderBy('CREATEDON', 'desc');
+        }
+      
+        if(selected_tag.length > 0) {    
+          displayOutput('Only Tags Query')
+
+          normalqueryref = collectionRef.where('DELETESTATUS', '==', false)    // TAG Options
+          .where('LOCSCOPE', '==', location_scope)
+          .where('TAGS', 'array-contains-any',selected_tag)
+          .orderBy('CREATEDON', 'desc');
+      
+        }
+
+
+      }
+
+           
+    // -------------------------------------------------------------
+ }
 
 
   return normalqueryref
@@ -598,7 +737,7 @@ function createEachDocumentCard(data,docid) {
                 <img src="'+data['UPHOTO']+'" alt="" class="circle">\
                 <span class="title"><b>'+data['UNAME']+'</b></span>\
                 <p class="grey-text" style="font-size: 13px;">'+data['DATE']+'</p>\
-                <a href="#!" onclick="openMoreOptions(\'' + docid + '\')" class="secondary-content"><b><i class="material-icons grey-text">more_vert</i></b></a>\
+                <a href="#!" onclick="openMoreOptions(\'' + docid + '#'+ data['UUID'] + '\')" class="secondary-content"><b><i class="material-icons grey-text">more_vert</i></b></a>\
                 </li>\
             </ul>\
 \
@@ -702,13 +841,14 @@ function viewEachTopic(details) {
 
 // More Option Handing
 function openMoreOptions(details) {
-  displayOutput(details)
+  displayOutput(details)  
 
   let mdlContent = ''   
   
   mdlContent += '<ul class="">\
-  <li><a href="#!" onclick="shareTopicFromMain(\'' + details + '\')"><div class="collapsible-header black-text"><i class="medium material-icons blue-text">share</i>Share</div></a></li>\
-  <li><a href="#!" onclick="reportToUs(\'' + details + '\')"><div class="collapsible-header black-text"><i class="medium material-icons red-text">report</i>Report to us</div></a></li>\
+  <li><a href="#!" onclick="openUserDetails(\'' + details.split('#')[1] + '\')"><div class="collapsible-header black-text"><i class="medium material-icons green-text">person</i>View User Profile</div></a></li>\
+  <li><a href="#!" onclick="shareTopicFromMain(\'' + details.split('#')[0] + '\')"><div class="collapsible-header black-text"><i class="medium material-icons blue-text">share</i>Share</div></a></li>\
+  <li><a href="#!" onclick="reportToUs(\'' + details.split('#')[0] + '\')"><div class="collapsible-header black-text"><i class="medium material-icons red-text">report</i>Report to us</div></a></li>\
    </ul>'
 
   var model = '<!-- Modal Structure -->\
@@ -753,6 +893,125 @@ function reportToUs(details) {
   addNewDocument(path,report_data,'Done')
 }
 
+// ==================================
+// ----- User Profile Handling ------
+// ==================================
+
+// Show User Information
+function showUserInfromation() {
+
+  if(userSectionCreated) {
+    displayOutput('User Section Already Created !!')
+  } else {
+
+    scope_list.push('ANY')
+
+  // Read User Information and Display Details
+  displayOutput('User Section Created !!')
+  db.collection(coll_base_path+'USER/ALLUSER').doc(useruuid).get()
+  .then(doc => {
+    if (!doc.exists) {
+      displayOutput('No User document!');
+      document.getElementById("userinfo_section").style.display = 'none';
+    } else {
+      userData = doc.data()
+
+      $("#userinfo_section").html('');
+
+      // Update User Information Section 
+      let htmlContent = ''
+      htmlContent += '<div class="card" style="margin: 0px 0px 0px 0px; border-radius: 10px;"><ul class="collection" style="border-radius: 10px;">\
+      <li class="collection-item avatar" >\
+        <img src="'+userData['PHOTOURL']+'" alt="" class="circle">\
+        <span class="title"><b>'+userData['NAME']+'</b></span>\
+        <p class="grey-text" style="font-size: 15px;">'+userData['EMAIL']+'</p>\
+        <a onclick="viewUserProfile(\'' + 'profile' + '\')" class="waves-effect waves-teal btn-flat blue-text" style="margin-top: -5px; margin-left: -16px;"><b>Profile</b></a>\
+        <a href="#!" onclick="viewUserProfile(\'' + 'info' + '\')" class="secondary-content"><b><i class="material-icons blue-text">info</i></b></a>\
+      </li></ul></div>'
+
+      $("#userinfo_section").html(htmlContent);
+      document.getElementById("userinfo_section").style.display = 'block';
+
+      userSectionCreated = true
+
+    }
+  })
+  .catch(err => {   
+    displayOutput('Error getting document', err);
+  });
+
+}
+
+}
+
+// View User Complete Profile
+function viewUserProfile(control) {
+  // Data : userData
+
+  let mdlContent = ''  
+
+  if(control == 'profile') {
+  
+  /*
+  let profile_sec_hdr = '<!-- Header Section -->\
+  <div class="row" style="margin-top: -100px; margin-left: 15%; margin-right: 15%;">\
+    <div class="row">\
+    <div class="col s12 m4">\
+        <div class="img_div">\
+          <img id="user_profile_image" class="materialboxed fb-image-profile z-depth-2" src="'+userData['PHOTOURL']+'"\
+            alt="Profile image example" />\
+        </div>\
+     </div>\
+     <div class="col s12 m8">\
+        <div class="right-align" style="margin-top: 10px;">\
+        <b style="font-size: 30px;">'+userData['NAME']+'</b>\
+          <p style="font-size: 15px; margin-top: -5px;" class="white-text">'+userData['EMAIL']+'</p>\
+          </div>\
+          <br><br><i style="font-size: 15px; margin-top: 0px;" class="black-text long-text-nor">'+userData['BIO']+'</i>\
+          </div></div></div>'
+
+          */
+
+  // For Mobile Browser
+  let profile_mb_sec_hdr =  '<div id="profile_header_section_mb" class="row" style="margin-top: -100px;>\
+  <div class="row">\
+  <div class="col s12 m12">\
+        <div class="center-align">\
+          <img id="user_profile_image_mb" class="fb-image-profile-mb z-depth-2" src="'+userData['PHOTOURL']+'"/>\
+        </div>\
+      </div>\
+      <div class="col s12 m12">\
+        <div id="user_content_mb" class="center-align" style="margin-top: 0px;">\
+        <b id="profile_name_mb" style="font-size: 30px;">'+userData['NAME']+'</b>\
+            <p id="profile_email_mb" style="font-size: 15px; margin-top: -8px;" class="grey-text">'+userData['EMAIL']+'</p>\
+            <i style="font-size: 15px; margin-top: -25px;" class="black-text long-text-nor">'+userData['BIO']+'</i>\
+           </div></div></div></div>'
+
+
+
+  
+  mdlContent += '<div id="top_div_header" class="purple-card-content z-depth-2" style="height: 130px;">\
+  </div>' + profile_mb_sec_hdr
+
+  viewModelCustom(mdlContent)
+
+  } else {
+
+    // Show Information Only
+
+    mdlContent += '<div id="top_div_header" class="purple-card-content z-depth-2" style="height: 100px;">\
+  </div><div style="margin-left : 30px; margin-right : 10px;">' + getUserProfileFormat(userData,'user') + '</div>'
+
+  viewModelCustom(mdlContent)
+
+
+  }
+
+
+}
+
+// ==================================
+
 // ---------------------------------------
 // Add new Item
 function addNewItem(details) {
@@ -762,7 +1021,7 @@ window.location.href = url
 
 // Show My Topic Only
 function openMyTopics() {
-  var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent('NA') + '&fl=' + encodeURIComponent('own');
+  var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(userLoginData['UUID']) + '&fl=' + encodeURIComponent('user');
   window.location.href = url
 
 }
@@ -1493,9 +1752,28 @@ function getChipWithBorderFromListLoc(details){
 function chipClickHandling(details) {
   displayOutput(details)
 
-  saveConfig(details.split('#')[1],details.split('#')[0])
-  closeFilterSection()
-  updateHTMLPage()
+  if(details.split('#')[1] == 'tag') {
+
+    selected_tag.push(details.split('#')[0])
+
+    selected_tag = Array.from(new Set(selected_tag));
+
+    saveConfig(details.split('#')[1],selected_tag)
+
+    hideFullMessageDialog()
+    closeFilterSection()
+    updateHTMLPage()
+
+  } else {
+
+    saveConfig(details.split('#')[1],details.split('#')[0])
+
+    hideFullMessageDialog()
+    closeFilterSection()
+    updateHTMLPage()
+
+  }
+  
 
   /*
   if(details.split('#')[1] == 'scope') {
@@ -1512,6 +1790,13 @@ function chipClickHandling(details) {
   } 
   */
 
+}
+
+// Open User Related Details
+function openUserDetails(details) {
+ // Open URL with tag filter option
+  var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(details) + '&fl=' + encodeURIComponent('user');
+  window.location.href = url
 }
 
 // Save Configuration
@@ -1543,17 +1828,18 @@ function hideFullMessageDialog() {
   comment_horizScrollPosition = 0
   comment_vertiScrollPosition = 0
 
-  if((fl == 'NA') || (fl == 'own') || (fl == 'tag') || (fl == 'catg')) {
+  if(fl == 'edit') {
+    var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent('NA') + '&fl=' + encodeURIComponent('NA');
+    window.location.href = url   
+
+  } else {
 
     document.getElementById("show_all_topic_container").style.display = "block";
     document.getElementById("topic_display_container").style.display = "none";
 
     document.getElementById("close_fl_btn").style.display = "none";
 
-  } else {
-
-    var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent('NA') + '&fl=' + encodeURIComponent('NA');
-    window.location.href = url
+    
 
   }
 
@@ -1609,9 +1895,112 @@ function startUpCalls() {
     $('.tabs').tabs();
   });
 
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.fixed-action-btn');
+    var instances = M.FloatingActionButton.init(elems, {
+      direction: 'top',
+      hoverEnabled: false
+    });
+  });
+
 }
 
+// ------------ Search Dialog ----------------
 
+function openSearchDialog() {
+
+  let content =  ''
+
+  if(searchSelectedOption == 'USER') {
+    content += '<a href="#!" onclick="searchSelectionOption(\'' + 'USER' + '\')" class="chip purple white-text z-depth-2">User</a>'
+    content += '<a href="#!" onclick="searchSelectionOption(\'' + 'TAG' + '\')" class="chip" style="margin-left : 10px;">Tag</a>'
+  } else {
+    content += '<a href="#!" onclick="searchSelectionOption(\'' + 'USER' + '\')" class="chip">User</a>'
+    content += '<a href="#!" onclick="searchSelectionOption(\'' + 'TAG' + '\')" class="chip purple white-text z-depth-2" style="margin-left : 10px;">Tag</a>'
+  }
+  
+
+  content += ' <div class="row" style="margin-top: 30px;">\
+  <div class="input-field">\
+    <i class="material-icons red-text prefix">search</i>\
+    <input type="text" id="search_value" class="autocomplete">\
+    <label for="search_value">Keyword</label>\
+  </div>\
+  </div>'
+
+  content += '<div class="center-align" style="margin-top: 2px;">\
+  <a onclick="applySelectedSearch()" class="waves-effect waves-light btn red rcorners">Search</a>\
+</div>'
+
+  
+  var model = '<!-- Modal Structure -->\
+  <div id="searchSectionDialog" class="modal modal-fixed-footer">\
+    <div class="modal-content">\
+    <h4>Search Option</h4>\
+    <p class="long-text-nor">'+ content + '</p>\
+    </div>\
+    <div class="modal-footer">\
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>\
+    </div>\
+  </div>'
+
+  var elem = document.getElementById('searchSectionDialog');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+
+  $('#searchSectionDialog').modal('open');
+
+  // Update Data set
+
+  $(document).ready(function(){
+    $('input.autocomplete').autocomplete({
+      data: convTagsList(),
+    });
+  });
+
+}
+
+// Search Selection
+function searchSelectionOption(details) {
+  //toastMsg(details)
+  searchSelectedOption = details
+
+  $('#searchSectionDialog').modal('close');
+
+  openSearchDialog()
+
+}
+
+// Apply Selected Search 
+function applySelectedSearch() {
+
+  $('#searchSectionDialog').modal('close');
+
+  var search_value = document.getElementById("search_value").value.trim();  
+  if(search_value == '') {
+    searchSelectedValue = 'NA'
+  } else {
+    searchSelectedValue = search_value
+  }
+
+  if(searchSelectedOption == 'TAG') {
+    chipClickHandling(searchSelectedValue+'#tag')
+  } else {
+    toastMsg('User : ' + searchSelectedValue)
+  }
+
+
+
+
+}
 
 // ------------ Filter Handling --------------
 
@@ -1624,7 +2013,7 @@ function openFilterSection() {
   // vertical scrolling amount
   vertiScrollPosition = window.pageYOffset
 
-  //window.scrollTo(0, 0); 
+  window.scrollTo(0, 0); 
 
   document.getElementById("col_section_1").style.display = 'none';
   document.getElementById("flb_open_filter").style.display = 'none';
@@ -1758,7 +2147,7 @@ function applyFilter() {
 
    $('#main_filter_section').html(chip_html)
 
-   document.getElementById("message_section").style.display = 'block';
+   
     $('#message_content').html('Filter Applied !!')
    
 
@@ -1775,7 +2164,7 @@ function applyFilter() {
 
 // Create Filter tags details
 
-// Create Scope Section
+// Create Location Scope Section
 function createFilterScopeDetails() {
 
   $("#all_Scope_details").html('');
@@ -1785,15 +2174,47 @@ function createFilterScopeDetails() {
     let scope_name = scope_list[each_idx]
 
     if(scope_name == location_scope) {
-      html_line += '<a href="#!" onclick="chipClickHandling(\'' + scope_name +'#scope' + '\')" ><div class="chip green white-text">'+ scope_name  +'</div></a>'
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + scope_name +'#scope' + '\')" ><div class="chip blue white-text z-depth-2" style="margin-bottom : 10px;">'+ scope_name  +'</div></a>'
     } else {
-      html_line += '<a href="#!" onclick="chipClickHandling(\'' + scope_name +'#scope' + '\')" ><div class="chip">'+ scope_name  +'</div></a>'
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + scope_name +'#scope' + '\')" ><div class="chip" style="margin-bottom : 10px;">'+ scope_name  +'</div></a>'
     }
 
     
   }
 
   $("#all_Scope_details").html(html_line);
+
+}
+
+// Create Location Card
+function createLocationCard(locName) {
+
+  let location_info = getEachLocationInfo(locName)
+
+  let loc_html = '<div class="card hoverable" style="border-radius: 10px;" >\
+  <div class="card-image waves-effect waves-block waves-light">\
+    <img class="activator" src="'+location_info['IMAGE']+'" style="border-radius: 10px 10px 0px 0px; height: 150px;">\
+  </div>\
+  <div style="padding: 10px;">\
+    <span class="card-title truncate activator grey-text text-darken-4">'+location_info['NAME']+'<i class="material-icons right" style="margin-top: 5px;">more_vert</i></span>\
+  </div>\
+  <div class="card-reveal">\
+    <span class="card-title grey-text text-darken-4">'+location_info['NAME']+'<i class="material-icons right">close</i></span>\
+    <p class="long-hdr-text">'+location_info['INFO']+'</p>\
+    <div class="right-align" style="margin-top: 30px;">\
+    <a onclick="viewEachLocationInfo(\'' + location_info['DOCID'] + '\')" class="waves-effect waves-teal btn-flat blue-text">view More</a>\
+    </div>\
+  </div>\
+</div>'
+
+$('#location_details_sec').html(loc_html)
+
+}
+
+// View each Location Information
+function viewEachLocationInfo(docid) {
+
+  displayOutput(docid)
 
 }
 
@@ -1807,10 +2228,10 @@ function createFilterTagsDetails() {
   for(tags_name in tags_list) {
     let tags_count = tags_list[tags_name]
 
-    if(tags_name == selected_tag) {
-      html_line += '<a href="#!" onclick="chipClickHandling(\'' + tags_name +'#tag' + '\')" ><div class="chip orange white-text">'+tags_name + ' (' + tags_count +')' +'</div></a>'
+    if(selected_tag.indexOf(tags_name) >= 0) {
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + tags_name +'#tag' + '\')" ><div class="chip orange white-text z-depth-2" style="margin-bottom : 10px;">'+tags_name + ' (' + tags_count +')' +'</div></a>'
     } else {
-      html_line += '<a href="#!" onclick="chipClickHandling(\'' + tags_name +'#tag' + '\')" ><div class="chip">'+tags_name + ' (' + tags_count +')' +'</div></a>'
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + tags_name +'#tag' + '\')" ><div class="chip" style="margin-bottom : 10px;">'+tags_name + ' (' + tags_count +')' +'</div></a>'
     }
 
   }
@@ -1832,13 +2253,34 @@ function createFilterCategoryDetails() {
     let catg_name = catg_list[each_idx]
 
     if(getCatgDataMapping(catg_name) == getCatgDataMapping(selected_catg)) {
-      html_line += '<a href="#!" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" ><div class="chip blue white-text">'+ getCatgDataMapping(catg_name)  +'</div></a>'
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" ><div class="chip green white-text z-depth-2" style="margin-bottom : 10px;">'+ getCatgDataMapping(catg_name)  +'</div></a>'
     } else {
-      html_line += '<a href="#!" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" ><div class="chip">'+ getCatgDataMapping(catg_name)  +'</div></a>'    }
+      html_line += '<a href="#!" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" ><div class="chip" style="margin-bottom : 10px;">'+ getCatgDataMapping(catg_name)  +'</div></a>'    }
     }
 
   $("#all_Category_details").html(html_line);
 
+}
+
+// Create chip like card with title and close btn
+function createChipLikeCard(details,color) {
+
+  let card_html = '<div class="col s6 m6">\
+  <a href="#!" onclick="cardChipSelectedHandle(\'' + details + '\')">\
+  <div class="card hoverable '+color+'" style="border-radius: 10px;">\
+    <div style="padding: 10px;" class="white-text">\
+      <span class="card-title truncate">'+details.split('#')[0]+'<i class="material-icons right" style="margin-top: 5px;">close</i></span>\
+      </div>\
+      </div>\
+      </div></a>'
+
+  return card_html
+
+}
+
+// Callback from Card Chip
+function cardChipSelectedHandle(details) {
+  displayOutput(details)
 }
 
 // ------------- Menu Handling -------------------

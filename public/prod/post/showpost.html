@@ -86,6 +86,9 @@
     </ul>
   
     <!-- ========================================== -->
+
+    <div id="top_div_header" class="purple-card-content z-depth-2" style="height: 100px; display: none;">
+    </div>
    
 
   <!-- **************************************** -->
@@ -96,58 +99,83 @@
 
       <!-- **************************************** -->
       <!--   Coloum Section 1  --> 
-      <div id="col_section_1" class="row" style="display: block; margin-bottom: 100px;"> 
-        
-         <!-- Create New Item -->
+      <div id="col_section_1" style="display: block; margin-bottom: 100px;">        
 
-         <!-- Create Menu Button -->
-         <div id="add_new_item" class="right-align" style="margin-right: 0px;">
-          <a onclick="addNewItem('POST')" class="waves-effect waves-light btn purple rcorners" style="margin-right: 20px;"><i class="material-icons left">add</i>Create</a>        
+         <!-- User Section -->
+         <div id="userinfo_section" style="margin-top: -70px; margin-left: 10px; margin-right: 10px; display: block;">
+            <!-- Script Code -->
         </div>
 
-         <!-- ------------ end ------------- -->
 
-         <!-- Create Menu Dropdown Mode -->         
-        <div id="add_new_item_drop_sec" class="right-align" style="margin-right: 10px; display:none;">
-          <!-- Dropdown Trigger -->
-         <a id="add_new_item_drop_down" class='dropdown-trigger btn pink rcorners' href='#' data-target='add_new_item_target'><i class="material-icons left">add</i>Add New</a>
+        <!-- =========== Main Header Section================== -->       
+        <div class="row" style="margin-top: 10px;">
 
-         <!-- Dropdown Structure -->
-         <ul id='add_new_item_target' class='dropdown-content'>
-           <li><a onclick="addNewItem('TOPIC')" href="#!">Post</a></li>
-           <!-- <li><a onclick="addNewItem('EVENT')" href="#!">Event</a></li>
-           <li><a onclick="addNewItem('POLL')" href="#!">Poll</a></li> -->             
-         </ul>
+          <div class="col s12 m6">
 
-       </div> 
-       
-       <!-- ------------- end ---------------------- -->
+            <!-- Create New Post -->
+            <a href="#!" onclick="addNewItem('POST')">
+            <div class="card hoverable purple" style="border-radius: 10px;">
+              <div style="padding: 10px;" class="white-text">
+                <span class="card-title truncate"><i class="material-icons left" style="margin-top: 5px;">add</i>Create</span>               
+              </div>              
+            </div>
+           </a>
 
-        <div style="margin-left: 13px; margin-right: 13px;">
-          
-        <!-- Message -->
-        <div id="message_section" style="margin-top: 10px; display: none;">
-          <ul class="collection">
-            <li id="message_content" class="collection-item">Your message</li>
-          </ul>
+            <div class="row">   
+
+              <div class="col s6 m6">
+
+                <!-- Open Search Option -->
+                <a href="#!" onclick="openSearchDialog()">
+                <div class="card hoverable red" style="border-radius: 10px;">
+                  <div style="padding: 10px;" class="white-text">
+                    <span class="card-title truncate"><i class="material-icons left" style="margin-top: 5px;">search</i>Search</span>               
+                  </div>              
+                </div>
+              </a>
+
+              </div>
+
+              <div class="col s6 m6">
+
+                <!-- Open Filter Option -->
+                <a href="#!" onclick="openFilterSection()">
+                <div class="card hoverable blue" style="border-radius: 10px;">
+                  <div style="padding: 10px;" class="white-text">
+                    <span class="card-title truncate"><i class="material-icons left" style="margin-top: 5px;">filter_list</i>Filter</span>               
+                  </div>              
+                </div>
+              </a>
+
+              </div>
+
+            </div>
+
+
+          </div>
+         
+          <!-- Location Section -->
+            <div id="location_details_sec" class="col s12 m6">  
+              <!-- Script Code -->
+            </div>  
+
+            
+
         </div>
+
 
         <!-- Filter Option -->
-        <div id="main_filter_section" style="margin-top: 10px;"> 
-             <!-- Script Code -->
+        <div style="margin-left: 10px; margin-right: 10px;">
+          <li class="divider" tabindex="-1" style="margin-top: 0px;"></li>
+
+          <div id="main_filter_section" style="margin-top: 10px;"> 
+            <!-- Script Code -->
+          </div>
         </div>
 
-        <!-- RESET Filter -->
-        <div id="filter_reset_btn_home" class="right-align" style="margin-bottom: 10px; margin-bottom: 10px; display: none;">
-          <a onclick="resetFilter()" class="waves-effect waves-light btn-flat red-text">RESET</a>
-        </div> 
 
-        <li class="divider" tabindex="-1"></li>
-
-      </div>
-
-
-        <div id="forum_card_section" class="row" style="margin-top: 30px;">
+      <!-- =============== MAIN FORM ================ -->
+        <div class="row" id="forum_card_section" style="margin-top: 10px;">
           <!-- ----------------------- -->
           <!-- Script Code -->
           <!-- ----------------------- -->
@@ -161,165 +189,195 @@
             <a onclick="morePage()" class="waves-effect waves-light btn blue rcorners" style="margin-right: 20px;"><i class="material-icons right">arrow_drop_down</i>More</a>                               
           </div>
 
-        </div>
-        
+        </div> 
+      
       </div>
+
 
       <!-- ========================================= -->
       <!-- Filter Section -->
-    <div id="filter_section" class="row" style="margin-top: 2%; display: none;">
-      <!-- <h4 id="filter_hdr" class="black-text">Filter Options</h4> -->
+      <div id="filter_section" class="row" style="margin-top: 2%; display: none;">
+        <!-- <h4 id="filter_hdr" class="black-text">Filter Options</h4> -->
 
-      <!-- All Options -->
+        <!-- All Options -->
 
-      <div id="filter_reset_btn" class="right-align" style="margin-top: 0px;">
-        <a onclick="resetFilter()" class="waves-effect waves-light btn black rcorners">RESET</a>
-      </div> 
+        <div id="filter_reset_btn" class="right-align" style="margin-top: 0px;">
+          <a onclick="resetFilter()" class="waves-effect waves-light btn black rcorners">RESET</a>
+        </div> 
 
-      <!-- Filter Selection -->
+        <!-- Filter Selection -->
 
-      <h5 class="grey-text" style="margin-left: 20px;">Filter Option's</h5>
+        <h5 class="grey-text" style="margin-left: 20px; display:none;">Filter Option's</h5>
 
-      <div class="row" style="margin-top: 20px;">
-        <div class="col s12">
-          <ul class="tabs tabs-fixed-width tab-demo z-depth-1" style="border-radius: 50px;">
-            <li class="tab col s3"><a class="active" href="#quick_opt">Quick</a></li>
-            <li class="tab col s3"><a href="#extra_opt">Extra</a></li>
-          </ul>
-        </div>
-
-        <!-- Quick Filter Option Section -->
-        <div id="quick_opt" class="col s12">
-
-          <div style="margin-top: 40px;">
-
-             <!-- Scope Section -->
-             <div style="margin-top: 5px;">
-              <h5 class="grey-text">Scope</h5>
-              <div id="all_Scope_details" style="margin-top: 10px;">
-                <!-- Script Code -->
-              </div>
-
-            </div>
-
-             <!-- ALl Category Section -->
-             <div style="margin-top: 5px;">
-              <h5 class="grey-text">Category</h5>
-              <div id="all_Category_details" style="margin-top: 10px;">
-                <!-- Script Code -->
-              </div>
-
-            </div>
-
-            <!-- ALl Tags Section -->
-            <div style="margin-top: 5px;">
-              <h5 class="grey-text">Popular Tags</h5>
-              <div id="all_tags_details" style="margin-top: 10px;">
-                <!-- Script Code -->
-              </div>
-
-            </div>   
-
+        <!--
+        <div class="row" style="margin-top: 20px;">
+          <div class="col s12">
+            <ul class="tabs tabs-fixed-width tab-demo z-depth-1" style="border-radius: 50px;">
+              <li class="tab col s3"><a class="active" href="#quick_opt">Quick</a></li>
+              <li class="tab col s3"><a href="#extra_opt">Extra</a></li>
+            </ul>
           </div>
-             
-        </div>
+        -->
 
+          <!-- Quick Filter Option Section -->
+          <div id="quick_opt">
 
-        <!-- All Filter Options -->
+            <div style="margin-top: 20px;">
 
-        <div id="extra_opt" class="col s12">
-
-           <!-- All Filter Options -->             
-            <div style="margin-top: 50px; margin-left: 10px; margin-right: 10px;"> 
-
-              <!-- Category -->         
-                <div class="row" style="margin-top: 40px;">
-                    <div class="input-field">                  
-                        <select id="catg_options">
-                          <option value="" disabled selected>Select a Category</option>
-                          <option id="INFO" value="1">General Infromation</option>
-                          <option id="TIPS" value="2">Important Travel Tips</option>
-                          <option id="QRY" value="3">Any Query</option>
-                        </select>
-                        <label>Category</label> 
-                    </div>                                  
-                </div>
-            
-
-                <!-- Search Tags -->
-                <div class="row">
-                  <div class="input-field">
-                    <i class="material-icons prefix">textsms</i>
-                    <input type="text" id="autocomplete-input" class="autocomplete">
-                    <label for="autocomplete-input">Search Tags</label>
-                  </div>        
-                </div>
-
-
-                <!-- Select Date -->
-              <div class="row">
-                <div class="input-field">
-                  <i class="material-icons prefix">date_range</i>
-                  <input type="text" id="topic_date" class="datepicker">
-                  <label for="topic_date" class="black-text">Post Date</label>
-                </div>
-
-                <!-- Date Filter Options -->
-                <form action="#" style="margin-left: 45px;">
-
-                  <p>
-                    <label>
-                      <input id="selected_date_chkbx" name="group1" type="radio" checked/>
-                      <span>Consider complete date.</span>
-                    </label>
-                  </p>
-
-                  <p>
-                    <label>
-                      <input id="selected_month_chkbx" name="group1" type="radio"/>
-                      <span>Consider only Month from above selected date.</span>
-                    </label>
-                  </p>
-
-                  <p>
-                    <label>
-                      <input id="selected_year_chkbx" name="group1" type="radio"/>
-                      <span>Consider only Year from above selected date.</span>
-                    </label>
-                  </p>
-                
-                </form> 
-
-              </div>
-
-          </div>
-
-            <!-- Apply Filter --> 
-          <div class="center-align" style="margin-top: 2px;">
-            <a onclick="applyFilter()" class="waves-effect waves-light btn red rcorners">Apply Filter</a>
-          </div>
-
-          <li class="divider" tabindex="-1" style="margin-top: 10px;"></li>
+              <!-- Scope Section --> 
+              <div class="card" style="border-radius: 10px;">
+                <div class="card-content">
+                  <span class="card-title">Profile Location</span>
+                  <li class="divider" tabindex="-1"></li>                                      
+                    <div id="all_Scope_details" style="margin-top: 20px;">
+                      <!-- Script Code -->
+                    </div>              
               
 
+                </div>
+              </div>
+
+              <!-- ALl Category Section --> 
+              <div class="card" style="border-radius: 10px;">
+                <div class="card-content">
+                  <span class="card-title">Category</span>
+                  <li class="divider" tabindex="-1"></li>                                      
+                <div id="all_Category_details" style="margin-top: 20px;">
+                  <!-- Script Code -->
+                </div>              
+              
+
+                </div>
+              </div>
+
+
+              <!-- ALl Tags Section -->
+              <div style="margin-top: 35px;">
+                <h5 class="grey-text">Popular Tags</h5>
+                <div id="all_tags_details" style="margin-top: 10px;">
+                  <!-- Script Code -->
+                </div>
+
+              </div>   
+
+            </div>
+              
+          </div>
+
+
+          <!-- All Filter Options 
+
+          <div id="extra_opt" class="col s12">
+
+                          
+              <div style="margin-top: 50px; margin-left: 10px; margin-right: 10px;"> 
+
+                    
+                  <div class="row" style="margin-top: 40px;">
+                      <div class="input-field">                  
+                          <select id="catg_options">
+                            <option value="" disabled selected>Select a Category</option>
+                            <option id="INFO" value="1">General Infromation</option>
+                            <option id="TIPS" value="2">Important Travel Tips</option>
+                            <option id="QRY" value="3">Any Query</option>
+                          </select>
+                          <label>Category</label> 
+                      </div>                                  
+                  </div>
+              
+
+                
+                  <div class="row">
+                    <div class="input-field">
+                      <i class="material-icons prefix">textsms</i>
+                      <input type="text" id="autocomplete-input" class="autocomplete">
+                      <label for="autocomplete-input">Search Tags</label>
+                    </div>        
+                  </div>
+
+
+                
+                <div class="row">
+                  <div class="input-field">
+                    <i class="material-icons prefix">date_range</i>
+                    <input type="text" id="topic_date" class="datepicker">
+                    <label for="topic_date" class="black-text">Post Date</label>
+                  </div>
+
+                
+                  <form action="#" style="margin-left: 45px;">
+
+                    <p>
+                      <label>
+                        <input id="selected_date_chkbx" name="group1" type="radio" checked/>
+                        <span>Consider complete date.</span>
+                      </label>
+                    </p>
+
+                    <p>
+                      <label>
+                        <input id="selected_month_chkbx" name="group1" type="radio"/>
+                        <span>Consider only Month from above selected date.</span>
+                      </label>
+                    </p>
+
+                    <p>
+                      <label>
+                        <input id="selected_year_chkbx" name="group1" type="radio"/>
+                        <span>Consider only Year from above selected date.</span>
+                      </label>
+                    </p>
+                  
+                  </form> 
+
+                </div>
+
+            </div>
+
+              
+            <div class="center-align" style="margin-top: 2px;">
+              <a onclick="applyFilter()" class="waves-effect waves-light btn red rcorners">Apply Filter</a>
+            </div>
+
+            <li class="divider" tabindex="-1" style="margin-top: 10px;"></li>
+                
+
+          </div>
+        
+
+
         </div>
 
+        -->
 
+        
       </div>
-
-      
-    </div>
 
 
    <!-- **************************************** -->
     <!-- Floating Action Button -->
     <!-- **************************************** -->
 
-    <div id="flb_open_filter" class="fixed-action-btn">
+    <div id="flb_open_filter" class="fixed-action-btn" style="display: block;">
+
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large purple z-depth-2">
+          <i class="large material-icons">dehaze</i>
+        </a>
+        <ul>
+          <li><a class="btn-floating red" onclick="openSearchDialog()"><i class="material-icons">search</i></a></li>
+          <li><a class="btn-floating blue" onclick="openFilterSection()"><i class="material-icons">filter_list</i></a></li>
+          <!-- <li><a class="btn-floating green" onclick="addNewItem('POST')"><i class="material-icons">add</i></a></li> -->
+        </ul>
+      </div>
+
+      <!--
       <a href="#!" onclick="openFilterSection()" class="btn-floating btn-large  blue">
         <i class="large material-icons">filter_list</i>
       </a>
-    </div>
+    -->
+
+    </div>   
 
     <div id="flb_close_filter" class="fixed-action-btn" style="display: none;">
       <a href="#!" onclick="closeFilterSection()" class="btn-floating btn-large  red">

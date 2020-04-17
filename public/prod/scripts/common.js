@@ -1509,7 +1509,36 @@ function viewModel(header, content) {
 
 }
 
-function viewModelCustom(header, content) {
+function viewBottomModel(content) {
+
+  var model = '<!-- Modal Structure -->\
+  <div id="bottom_modal" class="modal bottom-sheet" style="height : 100%;">\
+    <div>\
+      <div>'+ content + '</div>\
+    </div>\
+    <div class="modal-footer">\
+    </div>\
+  </div>'
+
+  // <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>\
+
+
+  var elem = document.getElementById('bottom_modal');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+
+  $('#bottom_modal').modal('open');
+
+}
+
+function viewModelCustom(content) {
 
   var model = '<!-- Modal Structure -->\
   <div id="messagemodel" class="modal">\
@@ -1918,6 +1947,53 @@ function convTagsList() {
   return updatedTagsList
 }
 
+// Get User Profile Format
+function getUserProfileFormat(userData,mode = "default") {
+
+  let content = ''
+
+  var defaultLocationConfig_loc = getLocationConfig() 
+
+  content += '<p class=grey-text style="font-size : 13px;">Name</p><p style="margin-top: -25px;">'+userData['NAME']+'</p>'
+
+  if(userData['MOBILE']){    
+    content += '<p class=grey-text style="font-size : 13px;">Mobile Number</p><p style="margin-top: -25px;">'+userData['MOBILE']+'</p>'
+  } 
+
+  content += '<p class=grey-text style="font-size : 13px;">Age Group</p><p style="margin-top: -25px;">'+userData['AGEGROUP']+'</p>'
+  content += '<p class=grey-text style="font-size : 13px;">Profession</p><p style="margin-top: -25px;">'+userData['PROFESSION'].split('@')[1]+'</p>'
+   
+  content += '<li class="divider" tabindex="-1"></li>'
+
+  if(userData['BLOCK'] == defaultLocationConfig_loc['BLOCK']){
+    content += '<p class=grey-text style="font-size : 13px;">Permanent Location</p><p style="margin-top: -25px;">'+ userData['DISTRICT']+'</p>'
+  } else {
+    content += '<p class=grey-text style="font-size : 13px;">Permanent Location</p><p style="margin-top: -25px;">'+userData['BLOCK']+','+userData['DISTRICT']+'</p>'
+  }  
+ 
+  
+  if(userData['ADDRESS'] != ''){   
+    content += '<p class=grey-text style="font-size : 13px;">Address</p><p class="long-text-nor" style="margin-top: -20px;">'+userData['ADDRESS']+'</p>'
+  } 
+
+  if(userData['CURRADDRSTATUS'] == 'INSIDE') {    
+    content += '<p class=grey-text style="font-size : 13px;">Current Location Status</p><p style="margin-top: -25px;">'+'Inside ' + defaultLocationConfig_loc['STATE'] +'</p>'
+  } else {    
+    content += '<p class=grey-text style="font-size : 13px;">Current Location Status</p><p style="margin-top: -25px;">'+'Outside ' + defaultLocationConfig_loc['STATE'] +'</p>'
+    content += '<p class=grey-text style="font-size : 13px;">Location</p><p style="margin-top: -25px;">'+userData['CURRADDRVALUE']+'</p>'
+  }
+
+  content += '<li class="divider" tabindex="-1"></li>'
+
+  if(userData['BIO'] != ''){   
+    content += '<p class=grey-text style="font-size : 13px;">Bio</p><p class="long-text-nor" style="margin-top: -20px;">'+userData['BIO']+'</p>'
+  } 
+
+  return content
+
+  
+}
+
 // ============= Common Data Set =================
 
 function getTermAndCondDetailsEN() {
@@ -1958,6 +2034,50 @@ function getLocationData() {
     SOLAN: ['SOLAN','NALAGARH','KUNIHAR','DHARAMPUR','KANDAGHAT']
     }
     
+}
+
+// Each Location Information
+function getEachLocationInfo(location_name) {
+
+  let key = location_name.replace(' ','_')
+
+  let location_info = {}
+
+  location_info['DEFAULT'] = 
+  {
+    NAME: location_name,
+    IMAGE: 'https://img.traveltriangle.com/blog/wp-content/uploads/2019/07/Himachal-Pradesh-cover.jpg',
+    DOCID: 'DEFAULT',
+    PARENT: 'NA',
+    INFO: 'Default Information. sad sadhsa dshad sdhysad sad sadsahd sadsahdsa dsahdsa dsabd sadyshad sabdsadsad'
+  }
+
+  location_info['ANY'] = 
+  {
+    NAME: 'All Locations',
+    IMAGE: 'https://st2.depositphotos.com/3591429/11173/i/950/depositphotos_111739176-stock-photo-beautiful-nature-collage.jpg',
+    DOCID: 'DEFAULT',
+    PARENT: 'NA',
+    INFO: 'All location asd asdjasd sajdas djasd sadasjd asdasjdas dsajd '
+  }
+
+  location_info['HIMACHAL_PRADESH'] = 
+  {
+    NAME: 'HIMACHAL PRADESH',
+    IMAGE: 'https://k6u8v6y8.stackpathcdn.com/blog/wp-content/uploads/2014/07/holidays-in-himachal-pradesh-destinations-that-attract-traveller.png',
+    DOCID: 'HIMACHALPRADESH',
+    PARENT: 'NA',
+    INFO: 'Himachal is best. asd sadsadh sadhsayd sadyuhasd sadyhsad sadsadsahdsa dsadsadsahudsa dsadsadsadsad'
+  }
+
+
+  // ------------------------------
+  if(key in location_info) {
+    return location_info[key]
+  } else {
+    return location_info['DEFAULT']
+  }
+
 }
 
 // Complete Outside Location Data 
