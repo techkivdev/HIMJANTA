@@ -87,7 +87,7 @@
   
     <!-- ========================================== -->
 
-    <div id="top_div_header" class="purple-card-content z-depth-2" style="height: 100px; display: none;">
+    <div id="top_div_header" class="purple-card-content z-depth-2" style="height: 150px; display: none;">
     </div>
    
 
@@ -99,10 +99,10 @@
 
       <!-- **************************************** -->
       <!--   Coloum Section 1  --> 
-      <div id="col_section_1" style="display: block; margin-bottom: 100px;">        
+      <div id="col_section_1" style="display: block; margin-bottom: 100px;"> 
 
          <!-- User Section -->
-         <div id="userinfo_section" style="margin-top: -70px; margin-left: 10px; margin-right: 10px; display: block;">
+         <div id="userinfo_section" style="display: block;">
             <!-- Script Code -->
         </div>
 
@@ -113,8 +113,8 @@
           <div class="col s12 m6">
 
             <!-- Create New Post -->
-            <a href="#!" onclick="addNewItem('POST')">
-            <div class="card hoverable purple" style="border-radius: 10px;">
+            <a href="#!" onclick="addNewItem()">
+            <div id="create_sec" class="card hoverable purple" style="border-radius: 10px;">
               <div style="padding: 10px;" class="white-text">
                 <span class="card-title truncate"><i class="material-icons left" style="margin-top: 5px;">add</i>Create</span>               
               </div>              
@@ -168,9 +168,18 @@
         <div style="margin-left: 10px; margin-right: 10px;">
           <li class="divider" tabindex="-1" style="margin-top: 0px;"></li>
 
-          <div id="main_filter_section" style="margin-top: 10px;"> 
-            <!-- Script Code -->
-          </div>
+          <ul id="main_filter_section" class="collection" style="border-radius: 10px;">
+            <li class="collection-item">
+            <div id="main_filter_section_value" style="margin-top: 0px;"> 
+              <!-- Script Code -->
+            </div>
+            <div class="right-align" style="margin-top: 5px;">
+              <a onclick="resetFilterSoft()" class="waves-effect waves-teal btn-flat red-text" style="margin-right: 5px;">RESET</a>
+              <a onclick="bookmarkFilterOptions()" class="waves-effect waves-teal btn-flat blue-text">SAVE</a>
+            </div>
+          </li>
+        </ul>
+
         </div>
 
 
@@ -421,11 +430,11 @@
 
           <div style="margin-left: 5px; margin-right: 5px; margin-top: 10px;">
 
-            <div class="right-align" id="category">
+            <div class="left-align" id="category">
               <!-- Script Code -->                     
             </div>
 
-            <div id="tags">
+            <div id="tags" style="margin-top: 10px;">
               Tags
             </div>           
            
@@ -516,52 +525,6 @@
 
 
   <!-- **************************************** -->
-  <!-- Show Menu to create new -->
-  <!-- **************************************** -->
-  <div id="menu_section" class="container row" style="display: none; margin-top: 40px;">
-
-    <!-- ------------ Create New Topic ------------------- -->
-    <div class="card">
-      <ul class="collection">
-        <a href="#!" onclick="addNewItem('TOPIC')"><li class="collection-item avatar">
-          <i class="material-icons circle red">assignment</i>
-          <span class="title black-text"><b>Add New Post</b></span>
-          <p class="grey-text">Write what's in your mind!! <br>
-          </p>
-          <div class="secondary-content"><i class="small material-icons">chevron_right</i></div>
-        </li>
-        </a>
-      </ul>
-  </div>
-
-<!-- ------------ Create Event ------------------- -->
-  <div class="card" style="display: none;">
-    <ul class="collection">
-      <a href="#!" onclick="addNewItem('EVENT')"><li class="collection-item avatar">
-        <i class="material-icons circle green">event</i>
-        <span class="title black-text"><b>Add New Event</b></span>
-        <p class="grey-text">Create Event !! <br>
-        </p>
-        <div class="secondary-content"><i class="small material-icons">chevron_right</i></div>
-      </li>
-      </a>
-    </ul>
-</div>
-
-  
-  </div>
-
-  <div id="close_fl_btn_menu" class="fixed-action-btn" style="display: none;">
-    <a href="#!" onclick="hideMenuDialogSection()" class="btn-floating btn-large  red">
-      <i class="large material-icons">close</i>
-    </a>
-  </div>
-
-
-  <!-- ***************** END ******************* -->
-  
-
-  <!-- **************************************** -->
   <!-- Footer -->
   <!-- **************************************** -->
   <footer id="main_footer_sec" class="page-footer footer-shade  black-text" style="display: none;">
@@ -623,12 +586,12 @@
   <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-storage.js"></script>
-  <!-- <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase.js"></script> -->
-<!-- <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-functions.js"></script> -->
+  <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-storage.js"></script>  
   <script src="../app/firestore.js"></script>
   <script src="../scripts/common.js"></script>
   <script src="scripts/datasets.js"></script>
+  <script src="scripts/dochandling.js"></script>
+  <script src="scripts/filterhandling.js"></script>
   <script src="scripts/showpost.js"></script>
  
 

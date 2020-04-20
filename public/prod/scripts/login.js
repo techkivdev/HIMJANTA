@@ -15,8 +15,6 @@ if (check_dev_publish_content) {
 
 // Global Variables
 let userData = {}
-var userDataPath = coll_base_path + 'USER/ALLUSER'
-var userPoolPath = coll_base_path + 'USER/POOL'
 var uuid = ''
 var allDocCmpData = {}
 
@@ -85,17 +83,17 @@ function mobileModeStartupHandling() {
   // Check for Mobile Mode
   if (mobile_mode) {
     // Disable Nav-bar and Footer
-    document.getElementById("main_nav_bar").style.display = 'none';
-    document.getElementById("main_nav_bar_mb").style.display = 'none';    
+    handleBlockView("main_nav_bar");
+    handleBlockView("main_nav_bar_mb");    
 
-    document.getElementById("main_footer_sec").style.display = 'none';
+    handleBlockView("main_footer_sec");
     signinpopup = 'default'
 
   } else {   
-    document.getElementById("main_nav_bar").style.display = 'block';
-    document.getElementById("main_nav_bar_mb").style.display = 'block';
+    handleBlockView("main_nav_bar",'show');
+    handleBlockView("main_nav_bar_mb",'show');
 
-    document.getElementById("main_footer_sec").style.display = 'block';
+    handleBlockView("main_footer_sec",'show');
   }
 
 
@@ -106,17 +104,17 @@ function modifyPageStyle() {
   // Check for mobile browser
   if (isMobileBrowser()) {
     displayOutput('Mobile Browser found!')     
-    document.getElementById("profile_content_section").style.margin = "0px 0px 0px 0px";
+    getHTML("profile_content_section").style.margin = "0px 0px 0px 0px";
 
-    document.getElementById("profile_header_section_mb").style.display = 'block';
-    document.getElementById("profile_header_section").style.display = 'none';
+    handleBlockView("profile_header_section_mb",'show');
+    handleBlockView("profile_header_section");
     
 
   } else {
     displayOutput('Mobile Browser Not found!') 
 
-    document.getElementById("profile_header_section_mb").style.display = 'none';
-    document.getElementById("profile_header_section").style.display = 'block';
+    handleBlockView("profile_header_section_mb");
+    handleBlockView("profile_header_section",'show');
 
   }
 
@@ -176,9 +174,9 @@ function authDetails() {
 
       displayOutput('User login !!')
 
-      //document.getElementById("main_profile_section").style.display = 'block';
-      document.getElementById("login_header_section").style.display = 'none';
-      document.getElementById("spinner").style.display = 'block';
+      //handleBlockView("main_profile_section",'show');
+      handleBlockView("login_header_section");
+      handleBlockView("spinner",'show');
 
       // User is signed in.
       var displayName = user.displayName;
@@ -261,10 +259,10 @@ function authDetails() {
 
       displayOutput('User logout !!')
       localStorageData('ISUSER',false)
-      document.getElementById("main_profile_section").style.display = 'none';
-      document.getElementById("footer_sec").style.display = 'none';
-      document.getElementById("login_header_section").style.display = 'block';
-      document.getElementById("spinner").style.display = 'none';
+      handleBlockView("main_profile_section");
+      handleBlockView("footer_sec");
+      handleBlockView("login_header_section",'show');
+      handleBlockView("spinner");
 
     }
 
@@ -297,24 +295,16 @@ function signout() {
 function updateUserDetails(uuid, userdata) {
 
   // Check User Doc Exist or Not
-  let ref = db.collection(userDataPath).doc(uuid);
+  let ref = db.collection(getCompPath('USER')).doc(uuid);
   let getDoc = ref.get()
     .then(doc => {
 
       if (!doc.exists) {
         displayOutput('No such document!');
-        displayOutput('Create New User Doc.');
-
-        // ----- Remove later --------
-        // Add a new document in collection
-        if(first_time_operation) {
-          db.collection(coll_base_path).doc('USER').set({
-            NAME: 'USER'
-          });
-        }
+        displayOutput('Create New User Doc.');       
 
         // Create new user data doc
-        db.collection(userDataPath).doc(uuid).set(userdata).then(function () {
+        db.collection(getCompPath('USER')).doc(uuid).set(userdata).then(function () {
           displayOutput("User Data Updated !!");
 
           toastMsg('Your profile created !!')
@@ -375,7 +365,7 @@ function updateUserDetails(uuid, userdata) {
               displayOutput(current_userData)
 
               // Create new user data doc
-              db.collection(userDataPath).doc(uuid).set(current_userData).then(function () {
+              db.collection(getCompPath('USER')).doc(uuid).set(current_userData).then(function () {
                 displayOutput("User Data Updated !!");
 
                 toastMsg('Your profile created !!')
@@ -437,7 +427,7 @@ function syncProvideDetails() {
 
       showPleaseWaitModel()
       
-      db.collection(userDataPath).doc(uuid).update({
+      db.collection(getCompPath('USER')).doc(uuid).update({
         NAME: displayName,
         DISPNAME: displayName,
         PHOTOURL: photoURL
@@ -462,7 +452,7 @@ function syncProvideDetails() {
 var imageHandlingDataSet = {
     IMAGE_READY_TO_UPLOAD : false,
     IMAGE_NAME: '', // Update it when user data loaded
-    IMAGE_DB_PATH: coll_base_path + '/USER/'
+    IMAGE_DB_PATH: getCompPath('BASE') + '/USER/'
 }
 
 // Call Back Function
@@ -472,7 +462,7 @@ function updateNewImageRefintoDoc(newImageRef,imgName) {
   displayOutput(newImageRef)  
   displayOutput(imgName)
 
-  db.collection(userDataPath).doc(uuid).update({
+  db.collection(getCompPath('USER')).doc(uuid).update({
     PHOTOURL: newImageRef
   }).then(function () {   
     // Update Pool
@@ -525,14 +515,14 @@ function updateHTMLPage(updatedUserData) {
 
   
 
-  document.getElementById("user_profile_image").src = updatedUserData['PHOTOURL']
-  document.getElementById("user_profile_image_mb").src = updatedUserData['PHOTOURL']
+  getHTML("user_profile_image").src = updatedUserData['PHOTOURL']
+  getHTML("user_profile_image_mb").src = updatedUserData['PHOTOURL']
 
   // --------------------------------------------------------
   // -------------- Profile Details -------------------------
   // --------------------------------------------------------
    
-  document.getElementById("u_img").src = updatedUserData['PHOTOURL']
+  getHTML("u_img").src = updatedUserData['PHOTOURL']
 
   // Update Provider Information
   $("#provider_details").html('Provided By : ' + updatedUserData['PROVIDERDATA'][0]['providerId']);
@@ -540,49 +530,49 @@ function updateHTMLPage(updatedUserData) {
   $("#u_name").html(updatedUserData['NAME']);
   $("#u_email").html(updatedUserData['EMAIL']);
 
-  document.getElementById("user_name").value = updatedUserData['NAME']
-  document.getElementById("user_email").value = updatedUserData['EMAIL']
-  document.getElementById("user_mobile").value = updatedUserData['MOBILE']
+  setHTMLValue("user_name",updatedUserData['NAME'])
+  setHTMLValue("user_email",updatedUserData['EMAIL'])
+  setHTMLValue("user_mobile",updatedUserData['MOBILE'])
 
-  document.getElementById("display_user_name").value = updatedUserData['DISPNAME']
-  document.getElementById("user_bio").value = br2nl(updatedUserData['BIO'])
+  setHTMLValue("display_user_name",updatedUserData['DISPNAME'])
+  setHTMLValue("user_bio",br2nl(updatedUserData['BIO']))
   M.textareaAutoResize($('#user_bio'));
 
-  document.getElementById(updatedUserData['AGEGROUP']).selected = true
-  document.getElementById(updatedUserData['PROFESSION'].split('@')[0]).selected = true
+  selectedHTML(updatedUserData['AGEGROUP'])
+  selectedHTML(updatedUserData['PROFESSION'].split('@')[0])
 
   
   selectedDistrict = updatedUserData['DISTRICT']
   selectedBlock = updatedUserData['BLOCK']
 
   if(updatedUserData['BLOCK'] == defaultLocationConfig['BLOCK']){
-    document.getElementById("user_district_blocks").value = updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT']
+    setHTMLValue("user_district_blocks",updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT'])
     $('#u_district_details').html(updatedUserData['BLOCK'] + ' - Please update it.')    
   } else {
-    document.getElementById("user_district_blocks").value = updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT']
+    setHTMLValue("user_district_blocks",updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT'])
   }
   
 
-  document.getElementById("user_address").value = br2nl(updatedUserData['ADDRESS'])
+  setHTMLValue("user_address",br2nl(updatedUserData['ADDRESS']))
   M.textareaAutoResize($('#user_address'));
 
   // Update Settings
-  document.getElementById("user_profile_chk").checked = updatedUserData['SHOWSETTINGS']['PROFILE']
-  document.getElementById("user_mobile_chk").checked = updatedUserData['SHOWSETTINGS']['MOBILE']
-  document.getElementById("user_address_chk").checked = updatedUserData['SHOWSETTINGS']['ADDRESS']
+  checkedHTML("user_profile_chk",updatedUserData['SHOWSETTINGS']['PROFILE'])
+  checkedHTML("user_mobile_chk",updatedUserData['SHOWSETTINGS']['MOBILE'])
+  checkedHTML("user_address_chk",updatedUserData['SHOWSETTINGS']['ADDRESS'])
 
-  document.getElementById(updatedUserData['LANG']).selected = true
+  selectedHTML(updatedUserData['LANG'])
 
   $(document).ready(function(){
     $('select').formSelect();
   });
 
   // Update Social Link
-  document.getElementById("social_link_facebook").value = updatedUserData['SOCIALINK']['FACEBOOK']
-  document.getElementById("social_link_instagram").value = updatedUserData['SOCIALINK']['INSTAGRAM']
-  document.getElementById("social_link_youtube").value = updatedUserData['SOCIALINK']['YOUTUBE']
-  document.getElementById("social_link_twitter").value = updatedUserData['SOCIALINK']['TWITTER']
-  document.getElementById("social_link_tiktok").value = updatedUserData['SOCIALINK']['TIKTOK']
+  setHTMLValue("social_link_facebook",updatedUserData['SOCIALINK']['FACEBOOK'])
+  setHTMLValue("social_link_instagram",updatedUserData['SOCIALINK']['INSTAGRAM'])
+  setHTMLValue("social_link_youtube",updatedUserData['SOCIALINK']['YOUTUBE'])
+  setHTMLValue("social_link_twitter",updatedUserData['SOCIALINK']['TWITTER'])
+  setHTMLValue("social_link_tiktok",updatedUserData['SOCIALINK']['TIKTOK'])
 
   // Update Current Location Status
   selectedCurrLocArea = updatedUserData['CURRADDRVALUE'].split(',')[1]
@@ -591,20 +581,20 @@ function updateHTMLPage(updatedUserData) {
   selectedCurrentLocation = selectedCurrLocSubArea + ',' + selectedCurrLocArea
 
   if(updatedUserData['CURRADDRSTATUS'] == 'INSIDE') {    
-    document.getElementById("inside_radbtn").checked = true
+    checkedHTML("inside_radbtn",true)
   } else {   
     setHTML('user_current_location_value',updatedUserData['CURRADDRVALUE'] + '<a href="#!" onclick="openCurrLocAreaSelectorDialog()" class="secondary-content"><i class="material-icons purple-text">chevron_right</i></a>')
-    document.getElementById("outside_radbtn").checked = true
-    document.getElementById("current_outside_location_section").style.display = 'block'; 
+    checkedHTML("outside_radbtn",true)
+    handleBlockView("current_outside_location_section",'show'); 
   }
 
 
   // -----------------------------------------------------------
 
 
-  document.getElementById("spinner").style.display = 'none';
-  document.getElementById("main_profile_section").style.display = 'block';
-  document.getElementById("footer_sec").style.display = 'block';
+  handleBlockView("spinner");
+  handleBlockView("main_profile_section",'show');
+  handleBlockView("footer_sec",'show');
 
 
   // Update Admin Options
@@ -626,7 +616,7 @@ function updateHTMLPage(updatedUserData) {
 
   if (updatedUserData['ROLE'] != 'USER') {
     
-    document.getElementById("extra_options_card").style.display = 'block';
+    handleBlockView("extra_options_card",'show');
 
     let adminOptions = ''
 
@@ -641,14 +631,14 @@ function updateHTMLPage(updatedUserData) {
 
 } else {
   // ---- Open Spcific Block --------------
-  document.getElementById("spinner").style.display = 'none';
-  document.getElementById("main_profile_section").style.display = 'block';
-  document.getElementById("footer_sec").style.display = 'block';
+  handleBlockView("spinner");
+  handleBlockView("main_profile_section",'show');
+  handleBlockView("footer_sec",'show');
 
   divBlockHandling(fl)
 
-  document.getElementById("close_fl_btn").style.display = 'none';
-  document.getElementById("close_fl_btn_to_forum").style.display = 'block';
+  handleBlockView("close_fl_btn");
+  handleBlockView("close_fl_btn_to_forum",'show');
 }
 
 userData = updatedUserData
@@ -710,7 +700,7 @@ function openProfileHelp() {
 // Create and Open Model
 function openDistrictSelectorDialog(){
 
-  let seclectedLocation = document.getElementById("user_district_blocks").value.trim()
+  let seclectedLocation = getHTMLValue("user_district_blocks");
   selectedDistrict = seclectedLocation.split(',')[1]
   selectedBlock = seclectedLocation.split(',')[0]
 
@@ -742,7 +732,7 @@ function openDistrictSelectorDialog(){
     </div>\
     </div>'
 
-  var elem = document.getElementById('dist_location_model');
+  var elem = getHTML('dist_location_model');
   if (elem) { elem.parentNode.removeChild(elem); }
 
 
@@ -795,7 +785,7 @@ function openBlockSelectorDialog(){
     </div>\
     </div>'
 
-  var elem = document.getElementById('block_location_model');
+  var elem = getHTML('block_location_model');
   if (elem) { elem.parentNode.removeChild(elem); }
 
 
@@ -826,7 +816,7 @@ function blockSelected(name) {
   selectedBlock = name
   //toastMsg(name)
 
-  document.getElementById("user_district_blocks").value = selectedBlock + ',' + selectedDistrict
+  setHTMLValue("user_district_blocks",selectedBlock + ',' + selectedDistrict)
   $('#u_district_details').html('You have changed details, Please SAVE it.')
 
 }
@@ -837,13 +827,13 @@ function blockSelected(name) {
 function updateCurrentLocationStatus(details) {
 
   if(details == 'OUTSIDE') {
-    document.getElementById("current_outside_location_section").style.display = 'block';  
+    handleBlockView("current_outside_location_section",'show');  
     selectedCurrLocArea = ''
     selectedCurrLocSubArea = ''
     
     setHTML('user_current_location_value','Please Select Location.'+ '<a href="#!" onclick="openCurrLocAreaSelectorDialog()" class="secondary-content"><i class="material-icons purple-text">chevron_right</i></a>')
   } else {
-    document.getElementById("current_outside_location_section").style.display = 'none';  
+    handleBlockView("current_outside_location_section");  
     selectedCurrLocArea = defaultLocationConfig['DEFAULT_CURRENT_LOC'].split(',')[1]
     selectedCurrLocSubArea = defaultLocationConfig['DEFAULT_CURRENT_LOC'].split(',')[0]
   }
@@ -887,7 +877,7 @@ function openCurrLocAreaSelectorDialog(){
     </div>\
     </div>'
 
-  var elem = document.getElementById('currLocArea_location_model');
+  var elem = getHTML('currLocArea_location_model');
   if (elem) { elem.parentNode.removeChild(elem); }
 
 
@@ -940,7 +930,7 @@ function openCurrLocSubAreaSelectorDialog(){
     </div>\
     </div>'
 
-  var elem = document.getElementById('currLocSubArea_location_model');
+  var elem = getHTML('currLocSubArea_location_model');
   if (elem) { elem.parentNode.removeChild(elem); }
 
 
@@ -986,36 +976,36 @@ function divBlockHandling(value) {
 
   window.scrollTo(0, 0);
 
-  document.getElementById("main_footer_sec").style.display = 'none';
-  document.getElementById("top_div_header").style.display = 'none';
+  handleBlockView("main_footer_sec");
+  handleBlockView("top_div_header");
 
   switch(value) {
     
     case "profile":
 
       if (isMobileBrowser()) {
-        document.getElementById("profile_header_section_mb").style.display = 'none';
+        handleBlockView("profile_header_section_mb");
       } else {
-        document.getElementById("profile_header_section").style.display = 'none';
+        handleBlockView("profile_header_section");
       }
-      document.getElementById("options_card_section").style.display = 'none';
+      handleBlockView("options_card_section");
 
-      document.getElementById("profile_section").style.display = 'block';
-      document.getElementById("close_fl_btn").style.display = 'block';
+      handleBlockView("profile_section",'show');
+      handleBlockView("close_fl_btn",'show');
 
     break;
 
     case "bookmark":
 
       if (isMobileBrowser()) {
-        document.getElementById("profile_header_section_mb").style.display = 'none';
+        handleBlockView("profile_header_section_mb");
       } else {
-        document.getElementById("profile_header_section").style.display = 'none';
+        handleBlockView("profile_header_section");
       }
-      document.getElementById("options_card_section").style.display = 'none';
+      handleBlockView("options_card_section");
 
-      document.getElementById("bookmark_section").style.display = 'block';
-      document.getElementById("close_fl_btn").style.display = 'block';
+      handleBlockView("bookmark_section",'show');
+      handleBlockView("close_fl_btn",'show');
 
       openBookmarkContent()
 
@@ -1024,14 +1014,14 @@ function divBlockHandling(value) {
     case "mylist":
 
       if (isMobileBrowser()) {
-        document.getElementById("profile_header_section_mb").style.display = 'none';
+        handleBlockView("profile_header_section_mb");
       } else {
-        document.getElementById("profile_header_section").style.display = 'none';
+        handleBlockView("profile_header_section");
       }
-      document.getElementById("options_card_section").style.display = 'none';
+      handleBlockView("options_card_section");
 
-      document.getElementById("mylist_section").style.display = 'block';
-      document.getElementById("close_fl_btn").style.display = 'block';
+      handleBlockView("mylist_section",'show');
+      handleBlockView("close_fl_btn",'show');
 
       openMyListContent()
 
@@ -1040,14 +1030,14 @@ function divBlockHandling(value) {
     case "options":
 
       if (isMobileBrowser()) {
-        document.getElementById("profile_header_section_mb").style.display = 'none';
+        handleBlockView("profile_header_section_mb");
       } else {
-        document.getElementById("profile_header_section").style.display = 'none';
+        handleBlockView("profile_header_section");
       }
-      document.getElementById("options_card_section").style.display = 'none';
+      handleBlockView("options_card_section");
 
-      document.getElementById("options_section").style.display = 'block';
-      document.getElementById("close_fl_btn").style.display = 'block';
+      handleBlockView("options_section",'show');
+      handleBlockView("close_fl_btn",'show');
 
     break;
 
@@ -1060,29 +1050,29 @@ function hideFullMessageDialog(){
 
   window.scrollTo(0, 0);
 
-  document.getElementById("profile_section").style.display = 'none'; 
-  document.getElementById("bookmark_section").style.display = 'none';
-  document.getElementById("mylist_section").style.display = 'none';
-  document.getElementById("options_section").style.display = 'none';
-  document.getElementById("close_fl_btn").style.display = 'none';
+  handleBlockView("profile_section"); 
+  handleBlockView("bookmark_section");
+  handleBlockView("mylist_section");
+  handleBlockView("options_section");
+  handleBlockView("close_fl_btn");
 
   if (isMobileBrowser()) {
-    document.getElementById("profile_header_section_mb").style.display = 'block';
+    handleBlockView("profile_header_section_mb",'show');
   } else {
-    document.getElementById("profile_header_section").style.display = 'block';
+    handleBlockView("profile_header_section",'show');
   }
   
-  document.getElementById("options_card_section").style.display = 'block';
-  document.getElementById("main_footer_sec").style.display = 'block';
-  document.getElementById("top_div_header").style.display = 'block';
+  handleBlockView("options_card_section",'show');
+  handleBlockView("main_footer_sec",'show');
+  handleBlockView("top_div_header",'show');
 
 }
 
 // Hide User Booking
 function hideUserBookingView(){
 
-  document.getElementById("user_bookings_view_section").style.display = 'none';
-  document.getElementById("user_bookings").style.display = 'block';
+  handleBlockView("user_bookings_view_section");
+  handleBlockView("user_bookings",'show');
 }
 
 // Return to Forum Page
@@ -1128,7 +1118,7 @@ function saveprofiledata() {
 
   displayOutput(userData)
 
-  var mobileno = document.getElementById("user_mobile").value.trim();
+  var mobileno = getHTMLValue("user_mobile");
   displayOutput('Mobile Number : ' + mobileno)
 
   if(isStrEmpty(mobileno)) {
@@ -1145,7 +1135,7 @@ function saveprofiledata() {
   }
 }
 
-var user_accept_terms_checkbox = document.getElementById("user_accept_terms_checkbox").checked
+var user_accept_terms_checkbox = getHTMLChecked("user_accept_terms_checkbox");
 if(!user_accept_terms_checkbox){
   validation = false
   hidePleaseWaitModel()
@@ -1154,26 +1144,26 @@ if(!user_accept_terms_checkbox){
 
 
 // Read Other Details
-var user_name = document.getElementById("user_name").value.trim();
-var display_user_name = document.getElementById("display_user_name").value.trim();
+var user_name = getHTMLValue("user_name");
+var display_user_name = getHTMLValue("display_user_name");
 if(isStrEmpty(display_user_name)) {
   display_user_name = user_name
 }
 
-var user_bio = document.getElementById("user_bio").value.trim();
+var user_bio = getHTMLValue("user_bio");
 user_bio = nl2br(user_bio)
-var user_age_group = document.getElementById("user_age_group").value.trim();
-var user_profession = document.getElementById("user_profession").value.trim();
-var user_district_blocks = document.getElementById("user_district_blocks").value.trim();
-var user_address = document.getElementById("user_address").value.trim();
+var user_age_group = getHTMLValue("user_age_group");
+var user_profession = getHTMLValue("user_profession");
+var user_district_blocks = getHTMLValue("user_district_blocks");
+var user_address = getHTMLValue("user_address");
 user_address = nl2br(user_address)
 
 // Read Other Settings Details
-var user_profile_chk = document.getElementById("user_profile_chk").checked
-var user_mobile_chk = document.getElementById("user_mobile_chk").checked
-var user_address_chk = document.getElementById("user_address_chk").checked
+var user_profile_chk = getHTMLChecked("user_profile_chk");
+var user_mobile_chk = getHTMLChecked("user_mobile_chk");
+var user_address_chk = getHTMLChecked("user_address_chk");
 
-var user_language = document.getElementById("user_language").value.trim();
+var user_language = getHTMLValue("user_language");
 
 var settings_privacy = {
   PROFILE: user_profile_chk,
@@ -1184,11 +1174,11 @@ var settings_privacy = {
 }
 
 // User Social Link Details
-var social_link_facebook = document.getElementById("social_link_facebook").value.trim();
-var social_link_instagram = document.getElementById("social_link_instagram").value.trim();
-var social_link_youtube = document.getElementById("social_link_youtube").value.trim();
-var social_link_twitter = document.getElementById("social_link_twitter").value.trim();
-var social_link_tiktok = document.getElementById("social_link_tiktok").value.trim();
+var social_link_facebook = getHTMLValue("social_link_facebook");
+var social_link_instagram = getHTMLValue("social_link_instagram");
+var social_link_youtube = getHTMLValue("social_link_youtube");
+var social_link_twitter = getHTMLValue("social_link_twitter");
+var social_link_tiktok = getHTMLValue("social_link_tiktok");
 
  // Social Links
  var social_links = {
@@ -1207,7 +1197,7 @@ if(isStrEmpty(selectedCurrentLocation)) {
   toastMsg(languageContent['MESSAGE_CURRLOC'])
 }
 
-let outside_radbtn = document.getElementById("outside_radbtn").checked
+let outside_radbtn = getHTMLChecked("outside_radbtn");
 let current_location_status = 'INSIDE'
 if(outside_radbtn) {
   current_location_status = 'OUTSIDE'
@@ -1225,7 +1215,7 @@ if(outside_radbtn) {
     userData['ADDRESS'] = user_address
     userData['LANG'] = user_language
 
-    db.collection(userDataPath).doc(uuid).update({
+    db.collection(getCompPath('USER')).doc(uuid).update({
       MOBILE: mobileno,
       DISPNAME: display_user_name,
       BIO: user_bio,
@@ -1271,7 +1261,7 @@ function updateUserPoolContent(uuid, dataArray) {
   }
 
    // Create new user data doc
-   db.collection(userPoolPath).doc(uuid).set(data).then(function () {
+   db.collection(getCompPath('USER_POOL')).doc(uuid).set(data).then(function () {
     displayOutput("User Pool Updated !!");
 
     hidePleaseWaitModel()
@@ -1294,7 +1284,7 @@ function openBookmarkContent() {
   // Get Bookmark Details    
   showPleaseWaitModel()
 
-    db.collection(userDataPath+'/'+uuid+'/BOOKMARK').get().then((querySnapshot) => {
+    db.collection(getCompPath('USER_BOOKMARK',uuid)).get().then((querySnapshot) => {
       displayOutput("SIZE : " + querySnapshot.size);
   
       if (querySnapshot.size == 0) {
@@ -1336,7 +1326,7 @@ function openBookmarkContent() {
            //viewModel('My Wishlist',content);           
            $('#user_bookmark').html(content)  
 
-           document.getElementById("filter_drop_sec_bookmark").style.display = 'block';
+           handleBlockView("filter_drop_sec_bookmark",'show');
 
           }
   
@@ -1363,7 +1353,7 @@ function filterBookmark(details) {
 function removeBookmark(details) {
     displayOutput(details)
 
-    db.collection(userDataPath+'/'+uuid+'/BOOKMARK').doc(details).delete().then(function () {
+    db.collection(getCompPath('USER_BOOKMARK',uuid)).doc(details).delete().then(function () {
       displayOutput("Bookmark Deleted !!");  
 
       closeModel()
@@ -1383,7 +1373,7 @@ function openMyListContent() {
   // Get Bookmark Details    
   showPleaseWaitModel()
 
-    db.collection(userDataPath+'/'+uuid+'/MYLIST').orderBy('CREATEDON', 'desc').get().then((querySnapshot) => {
+    db.collection(getCompPath('USER_MYLIST',uuid)).orderBy('CREATEDON', 'desc').get().then((querySnapshot) => {
       displayOutput("SIZE : " + querySnapshot.size);
   
       if (querySnapshot.size == 0) {
@@ -1426,7 +1416,7 @@ function openMyListContent() {
            //viewModel('My Wishlist',content);           
            $('#user_mylist').html(content)  
 
-           document.getElementById("filter_drop_sec_mylist").style.display = 'block';
+           handleBlockView("filter_drop_sec_mylist",'show');
 
           }
   
@@ -1453,7 +1443,7 @@ function filterMyList(details) {
 function removeMyList(details) {
     displayOutput(details)
 
-    db.collection(userDataPath+'/'+uuid+'/MYLIST').doc(details).delete().then(function () {
+    db.collection(getCompPath('USER')+'/'+uuid+'/MYLIST').doc(details).delete().then(function () {
       displayOutput("MyList Deleted !!");  
 
       closeModel()

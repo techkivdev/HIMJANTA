@@ -6,15 +6,6 @@
 // Date : 16/3/2020
 // *******************************************************************************
 
-// ---------- Main Variables ---------
-var coll_base_path = baseProductionPrivatePath
-
-if (check_dev_publish_content) {
-  coll_base_path = baseProductionPrivatePath
-}
-
-// ----------------------------
-
 checkUserDetailsAndSTART()
 
 
@@ -93,9 +84,8 @@ function updatePostSection() {
   $("#show_post_section").html('');
   document.getElementById("show_post_progress").style.display = "block";
 
-   // Read details
-   let path = coll_base_path + 'FORUM/' + 'POST' 
-   let collectionRef = db.collection(path)
+   // Read details   
+   let collectionRef = db.collection(getCompPath('FORUM_P')+'/POST')
    let queryRef = collectionRef.where('DELETESTATUS', '==', false)
     .orderBy('CREATEDON', 'desc'); 
  
@@ -205,8 +195,15 @@ function updateHTMLPage() {
 }
 
 function checkUserDetailsAndSTART() {
+ 
+  if(getLoginUserStatus() == 'true') {
+    // No Need to update Document Again
+    displayOutput('User Data Already Present !!')
 
-  var userDataPath = coll_base_path + 'USER/ALLUSER'
+    updateHTMLPage()
+
+  } else {
+    displayOutput('User Data Not Present !!')
 
   firebase.auth().onAuthStateChanged(function (user) {
 
@@ -216,7 +213,7 @@ function checkUserDetailsAndSTART() {
       let uuid = user.uid;
 
       // Check User Doc Exist or Not
-      let ref = db.collection(userDataPath).doc(uuid);
+      let ref = db.collection(getCompPath('USER')).doc(uuid);
       let getDoc = ref.get()
         .then(doc => {
 
@@ -250,6 +247,8 @@ function checkUserDetailsAndSTART() {
     displayOutput(error);
     validationFailed()
   });
+
+  }
 
 }
 

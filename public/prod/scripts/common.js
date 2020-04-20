@@ -63,6 +63,119 @@ var mobile_mode = false
 M.AutoInit();
 
 
+// =======================================================
+// ------------ PATH Handling ---------------------------
+
+function getCompPath(name,uuid='NA'){
+
+  var coll_base_path = baseProductionPrivatePath
+  let path = ''
+
+  switch(name) {
+
+    // USER PATH
+    case 'USER' :
+    {
+      path = 'USER/ALLUSER'
+      break;
+    }
+
+    // USER POOL PATH
+    case 'USER_POOL' :
+    {
+      path = 'USER/POOL'
+      break;
+    }
+
+    // USER FOLLOWER PATH
+    case 'USER_FOLLOWER' :
+    {
+      path = 'USER/ALLUSER/' +  uuid + '/FOLLOWER'
+      break;
+    }
+
+    // USER FOLLOWER PATH
+    case 'USER_MYLIST' :
+    {
+      path = 'USER/ALLUSER/' +  uuid + '/MYLIST'
+      break;
+    }
+
+    // USER BOOKMARK PATH
+    case 'USER_BOOKMARK' :
+    {
+      path = 'USER/ALLUSER/' +  uuid + '/BOOKMARK'
+      break;
+    }
+
+    // USER FILTERBOOKMARK PATH
+    case 'USER_FILTERBOOKMARK' :
+    {
+      path = 'USER/ALLUSER/' +  uuid + '/FILTERBOOKMARK'
+      break;
+    }
+
+    // ------------------------------------
+
+    // FORM PATH
+    case 'FORUM_P' :
+    {
+      path = 'FORUM'
+      break;
+    }
+
+    // FORM PATH
+    case 'FORUM' :
+    {
+      path = 'FORUM/' + main_path
+      break;
+    }
+
+    // FORM ID PATH
+    case 'FORUM_ID' :
+    {
+      path = 'FORUM/' + main_path +'/' +  currentTopicID
+      break;
+    }
+    
+
+    // FORM REPORT PATH
+    case 'FORUM_REPORT' :
+    {
+      path = 'FORUM/' + 'REPORT'
+      break;
+    }
+  
+
+    // FORM COMMENT PATH
+    case 'FORUM_COMMENT' :
+    {
+      path = 'FORUM/' + main_path + '/' +  currentTopicID + '/COMMENT'
+      break;
+    }
+
+    // FORM LIKE PATH
+    case 'FORUM_LIKE' :
+    {
+      path = 'FORUM/' + main_path +'/' +  currentTopicID + '/LIKE'
+      break;
+    }
+
+    default :
+    {
+      path = ''
+      break;
+    }
+
+
+  }
+
+  return coll_base_path + path
+
+
+}
+
+
 
 // *******************************************************
 // --------------- Extract Functions ---------------------
@@ -1239,6 +1352,14 @@ function updateDocument(path,data,message) {
   
 }
 
+function deleteDocument(path,message) {
+
+  db.doc(path).delete().then(function() { 
+    if(message != 'NA') {toastMsg(message);}
+  }); 
+
+}
+
 
 // ============= Image Upload Handling ===============
 
@@ -1754,11 +1875,18 @@ function getLoginUserStatus() {
 
   if (typeof (Storage) !== "undefined") {
     // Code for localStorage/sessionStorage.
-    return sessionStorage.getItem('ISUSER');
+    let status = sessionStorage.getItem('ISUSER')
+
+    if((status == null) || (status == undefined)) {
+      return 'false'
+    } else {
+      return sessionStorage.getItem('ISUSER');
+    }
+    
   } else {
     // Sorry! No Web Storage support..
     displayOutput('Sorry! No Web Storage support..')
-    return false
+    return 'false'
   }
 
 }
@@ -1924,11 +2052,59 @@ function savePageHistoryContent(name,image,extra){
 
 // ============== Document Update API ==============
 
+// Get HTML ID
+function getHTML(id) {
+   //displayOutput(id)
+   return document.getElementById(id)
+}
+
 // Set HTML Text Content
 function setHTML(id,value){
   //displayOutput(id)
   $("#"+id).html(value)
 }
+
+// Set HTML Value
+function setHTMLValue(id,data) {
+   //displayOutput(id)
+  document.getElementById(id).value = data
+}
+
+// Selected HTML
+function selectedHTML(id) {
+  //displayOutput(id)
+ document.getElementById(id).selected = true
+}
+
+// Checked HTML
+function checkedHTML(id,data) {
+  //displayOutput(id)
+  document.getElementById(id).checked = data
+}
+
+// Show or Hide Block
+function handleBlockView(id,status='hide') {
+  if(status == 'hide') {
+    document.getElementById(id).style.display = 'none';
+  } else {
+    document.getElementById(id).style.display = 'block';
+  }
+  
+}
+
+// Get HTML Value
+function getHTMLValue(id) {
+ //displayOutput(id)
+ return document.getElementById(id).value.trim()
+}
+
+// Get HTML Checked
+function getHTMLChecked(id) {
+  //displayOutput(id)
+  return document.getElementById(id).checked
+ }
+ 
+
 
 // ================================================
 // ------ String FUnctions ------------------------

@@ -7,12 +7,6 @@
 // *******************************************************************************
 
 // ---------- Main Variables ---------
-var coll_base_path = baseProductionPrivatePath
-
-if (check_dev_publish_content) {
-  coll_base_path = baseProductionPrivatePath
-}
-
 var userLoginData = ''
 
 var main_path = 'NA'
@@ -97,9 +91,9 @@ function checkLoginData(){
     $("#user_info_sec").html(htmlContent);
 
     if(updateExistingContentDetails) {
-      document.getElementById("main_list_container").style.display = 'none';      
+      handleBlockView("main_list_container");     
     } else {
-      document.getElementById("main_list_container").style.display = 'block';      
+      handleBlockView("main_list_container",'show');      
     }
 
     // Get Language Content
@@ -107,7 +101,7 @@ function checkLoginData(){
     languageContent = getLangContent(userLoginData['LANG'],'CREATE')
     
   }  else {
-    document.getElementById("hdr_section_validation_failed").style.display = 'block';
+    handleBlockView("hdr_section_validation_failed",'show');
   }
 
 }
@@ -152,7 +146,7 @@ function updateHTMLPage() {
   if(fl == 'ADD') {
     // Check for type
     if(type == 'POST') {
-      document.getElementById("create_new_topic").style.display = 'block'; 
+      handleBlockView("create_new_topic",'show'); 
     } 
 
 
@@ -161,7 +155,7 @@ function updateHTMLPage() {
     // Check for type
     if(type == 'POST') {
       
-      document.getElementById("create_new_topic").style.display = 'block';
+      handleBlockView("create_new_topic",'show');
       showCurrentTopicContent()
 
     }
@@ -244,13 +238,13 @@ function updateLanguageContent() {
   setHTML('i_accept',languageContent['ACCEPT'] + '  <a class="purple-text" href="#!" onclick="termandcondMessage()">terms and conditions</a>')
 
   setHTML('title_hdr',languageContent['TITLE_HDR'])  
-  document.getElementById("title").placeholder = languageContent['TITLE_PLCHLD'];
+  getHTML("title").placeholder = languageContent['TITLE_PLCHLD'];
 
   setHTML('tags_hdr',languageContent['TAG_HDR'])
   setHTML('category_hdr',languageContent['CATG_HDR'])
   setHTML('category_value',languageContent['CATG_PLCHLD'])
   setHTML('description_hdr',languageContent['DESC_HDR'])
-  document.getElementById("description").placeholder = languageContent['DESC_PLCHLD'];
+  getHTML("description").placeholder = languageContent['DESC_PLCHLD'];
 
   setHTML('loc_header',languageContent['LOC_HEADER'])
   setHTML('loc_scope_header',languageContent['LOC_SCOPE_HEADER'])
@@ -266,7 +260,7 @@ function modifyPageStyle() {
   if (isMobileBrowser()) {
     displayOutput('Mobile Browser found!') 
     
-    document.getElementById('main_list_container').className = "container-fluid";
+    getHTML('main_list_container').className = "container-fluid";
 
   } else {
     displayOutput('Mobile Browser Not found!')
@@ -283,7 +277,7 @@ function mobileModeStartupHandling() {
   // Check for Mobile Mode
   if (mobile_mode) {
     // Disable Nav-bar and Footer
-    //document.getElementById("main_nav_bar").style.display = 'block';
+    //handleBlockView("main_nav_bar",'show');
    
 
   } else {
@@ -305,17 +299,17 @@ function showCurrentTopicContent() {
 
   //showPleaseWaitModel()
 
-  document.getElementById("main_progress").style.display = 'block';
+  handleBlockView("main_progress",'show');
 
-  db.collection(coll_base_path+'FORUM/' + main_path).doc(id).get()
+  db.collection(getCompPath('FORUM')).doc(id).get()
   .then(doc => {
     if (!doc.exists) {
       displayOutput('No such document!');
       //hidePleaseWaitModel()
-      document.getElementById("hdr_section_validation_failed").style.display = 'block';
+      handleBlockView("hdr_section_validation_failed",'show');
 
-      document.getElementById("main_progress").style.display = 'none';
-      $('#validation_msg').html('Post not found !!')
+      handleBlockView("main_progress");
+      setHTML('validation_msg','Post not found !!')
 
 
     } else {
@@ -327,10 +321,10 @@ function showCurrentTopicContent() {
       //displayOutput(data)
 
       // Update HTML Page
-      document.getElementById("title").value = data['TITLE']
+     setHTMLValue("title",data['TITLE'])
 
       // Update Description content      
-      document.getElementById("description").value = br2nl(data['DESC'])
+      setHTMLValue("description",br2nl(data['DESC']))
       M.textareaAutoResize($('#description'));
 
       // create tag map
@@ -352,9 +346,9 @@ function showCurrentTopicContent() {
       setHTML('category_value',data['CATEGORYDIS'])
       selectedCategoryValue = data['CATEGORY']+'#'+data['CATEGORYDIS']
 
-      document.getElementById("main_progress").style.display = 'none';
+      handleBlockView("main_progress");
 
-      document.getElementById("main_list_container").style.display = 'block';  
+      handleBlockView("main_list_container",'show');  
 
       //hidePleaseWaitModel()      
     }
@@ -393,7 +387,7 @@ function selectCategory() {
     </div>\
   </div>'
 
-  var elem = document.getElementById('catg_model');
+  var elem = getHTML('catg_model');
   if (elem) { elem.parentNode.removeChild(elem); }
 
 
@@ -430,7 +424,7 @@ function openHelp() {
       </div>\
   </div>'
 
-  var elem = document.getElementById('help_model');
+  var elem = getHTML('help_model');
   if (elem) { elem.parentNode.removeChild(elem); }
 
 
@@ -504,7 +498,7 @@ function addNewTopic() {
    // Validate input
    let validateInput = true
 
-   var title = document.getElementById("title").value.trim();
+   var title = getHTMLValue("title");
    displayOutput('title : ' + title)
    if(title == '') {
      validateInput = false
@@ -524,7 +518,7 @@ function addNewTopic() {
  displayOutput(tagsData)
   
  
-   var description = document.getElementById("description").value.trim();
+   var description = getHTMLValue("description");
    //description = description.replace(/\r?\n/g, "<br>")
    description = nl2br(description)
    displayOutput('description : ' + description)   
@@ -546,10 +540,10 @@ function addNewTopic() {
    displayOutput('cateData : ' + cateData)
    displayOutput('cateData_display : ' + cateData_display)
 
-   let update_post_curr_loc_check = document.getElementById("update_post_curr_loc_check").checked
+   let update_post_curr_loc_check = getHTMLChecked("update_post_curr_loc_check")
 
    // Check for Term and conditions
-   let terms_check_status = document.getElementById("accept_terms_checkbox").checked
+   let terms_check_status = getHTMLChecked("accept_terms_checkbox")
    if(!terms_check_status){
     toastMsg(languageContent['MESSAGE_ACCEPT'])
     validateInput = false
@@ -746,7 +740,7 @@ function generateNDocuments() {
 
 
     // Create our initial doc    
-    db.collection(coll_base_path+'FORUM/' + main_path).add(forumData).then( ref => {   
+    db.collection(getCompPath('FORUM')).add(forumData).then( ref => {   
       displayOutput('Added document with ID: ' +  ref.id);
       updateMyList(forumData,ref.id)     
     }); 
@@ -810,7 +804,7 @@ function openEditOptionsModal(control) {
     </div>\
   </div>'
 
-  var elem = document.getElementById('commentModal');
+  var elem = getHTML('commentModal');
   if (elem) { elem.parentNode.removeChild(elem); }
 
 
@@ -835,8 +829,8 @@ function editOptionBtn(details) {
   if(details == 'LINK') {
 
     // Read Comment Details
-   var edit_link_name = document.getElementById("edit_link_name").value.trim();
-   var edit_link_address = document.getElementById("edit_link_address").value.trim();
+   var edit_link_name = getHTMLValue("edit_link_name");
+   var edit_link_address = getHTMLValue("edit_link_address");
    if((edit_link_name == '') || (edit_link_address == '')) {
      validateInput = false     
    } 
@@ -844,7 +838,7 @@ function editOptionBtn(details) {
   } else {
 
    // Read Comment Details
-   var edit_content = document.getElementById("edit_content").value.trim();
+   var edit_content = getHTMLValue("edit_content");
    displayOutput('edit_content : ' + edit_content)
    if(edit_content == '') {
      validateInput = false     
@@ -855,7 +849,7 @@ function editOptionBtn(details) {
    if(validateInput) {
 
   // Read Current Content and Update it
-  var description = document.getElementById("description").value.trim();
+  var description = getHTMLValue("description");
 
   switch(details) {
 
@@ -887,7 +881,7 @@ function editOptionBtn(details) {
       break;
   }
 
-  document.getElementById("description").value = description
+  setHTMLValue("description",description)
   M.textareaAutoResize($('#description'));
 
 }
@@ -896,7 +890,7 @@ function editOptionBtn(details) {
 
 // Preview Message
 function previewMessage() {
-  viewModel('',nl2br(document.getElementById("description").value.trim()))
+  viewModel('',nl2br(getHTMLValue("description")))
 }
 
 // View Term and Conditions
@@ -908,8 +902,6 @@ function termandcondMessage() {
 
 // Update MYLIST Section
 function updateMyList(data,docid) { 
-
-  let path = coll_base_path + 'USER/ALLUSER/' +  userLoginData['UUID'] + '/MYLIST' 
 
   let myListData = {}
   
@@ -927,7 +919,7 @@ function updateMyList(data,docid) {
   myListData['LINK'] = url
 
 
-  db.collection(path).doc(docid).set(myListData).then(function() { 
+  db.collection(getCompPath('USER_MYLIST',userLoginData['UUID'])).doc(docid).set(myListData).then(function() { 
     //toastMsg('Bookmark Added !!')
     hidePleaseWaitModel()
     cancelDetails()
@@ -941,12 +933,8 @@ function updateNewPostIntoDatabase(forumData){
 
   showPleaseWaitModel()
 
-  if(first_time_operation) {
-    setNewDocument(coll_base_path,'FORUM',{NAME: 'FORUM'},'NA')
-  } 
-
    // Create our initial doc
-   db.collection(coll_base_path+'FORUM/' + main_path).add(forumData).then( ref => {   
+   db.collection(getCompPath('FORUM')).add(forumData).then( ref => {   
     displayOutput('Added document with ID: ' +  ref.id);
     updateMyList(forumData,ref.id)     
   }); 
@@ -959,7 +947,7 @@ function updateExistPostIntoDatabase(forumData){
   showPleaseWaitModel()  
 
    // Create our initial doc
-   db.collection(coll_base_path+'FORUM/' + main_path).doc(id).set(forumData).then(function() {    
+   db.collection(getCompPath('FORUM')).doc(id).set(forumData).then(function() {    
     hidePleaseWaitModel()
     
     var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(id) + '&fl=' + encodeURIComponent('edit');
