@@ -14,15 +14,100 @@
 
 // Category Data Set
 function getCategoryDataSet() {
+
   return {
-    INFO : "General Infromation",
-    TIPS : "Important Travel Tips",
-    QRY : "Any Query",
+     // ------- Information -----------
+    INFO : "General",
+    
+
+    // ------- News ------------------
+    GADGETS : "Gadgets",
     FOOD : "Food",
-    JOB : "Job",
-    NEW : "New Query"
+    POLTICS : "Poltics",
+
+     // ------- Health ------------------
+    FITNESS : "Fittness",
+    YOGA : "Yoga",
+
+     // ------- Education ------------------
+     EXAM : "Exam",
+     SCHOOL : "School",
+
+    // ------- Travel ------------------
+    TRAVELTIPS : "Travel Tips",
+    TRAVELQUERY : "Travel Query"
+
+
   }
 }
+
+// Category Data Set
+function getCategoryGroupSet(mode = "ALL") {
+
+  // ------------ Group Name -----------------
+  let catg_groups = 
+   {
+     // ---------- START --------------------
+    GROUP1 : 
+    { 
+      NAME: 'Information',
+      ICON: 'live_help',
+      COLOR: 'green'
+    },
+
+    GROUP2 : 
+    { 
+      NAME: 'News',
+      ICON: 'autorenew',
+      COLOR: 'red'
+    },
+
+    GROUP3 : 
+    { 
+      NAME: 'Health',
+      ICON: 'healing',
+      COLOR: 'blue'
+    },
+
+    GROUP4 : 
+    { 
+      NAME: 'Education',
+      ICON: 'school',
+      COLOR: 'orange'
+    },
+
+    GROUP5 : 
+    { 
+      NAME: 'Travel',
+      ICON: 'card_travel',
+      COLOR: 'purple'
+    }
+
+    // ------------ END ---------------------
+  }
+
+  // ------------- Group List ------------------
+
+  let group_data_set = 
+  {
+    GROUP1 : ['INFO'],
+    GROUP2 : ['GADGETS','FOOD','POLTICS'],
+    GROUP3 : ['FITNESS','YOGA'],
+    GROUP4 : ['EXAM','SCHOOL'],
+    GROUP5 : ['TRAVELTIPS','TRAVELQUERY']
+  }
+
+
+  // ------------ Handling -----------------
+  if(mode == 'GROUP') {
+    return catg_groups
+  } else {
+    return group_data_set
+  }
+
+}
+
+// ------------------------------------------
 
 // Category Handling
 function getCatgDataMapping(query) {
@@ -33,17 +118,78 @@ function getCatgDataMapping(query) {
   let map_data = getCategoryDataSet()
   // ==============================================
 
-  if(query == 'LIST') {
-
-    let allList = [""]
-    for(each in map_data) {
-      allList.push(each)
-    }
-    return allList
-
+  if(query == 'LIST') {   
+    return map_data
   } else {
      return map_data[query]
   }
+
+}
+
+// Category Group Handling
+function getCatgGroupDetails(key,value="NA") {
+
+  switch(key) {
+
+    case 'GROUPLIST' : 
+    {
+      return getCategoryGroupSet('GROUP')
+    }
+
+    case 'GROUP' : 
+    {
+      let allData = getCategoryGroupSet('GROUP')
+      return allData[value]
+    }
+
+    case 'GROUPID' : 
+    {
+      let allData = getCategoryGroupSet('GROUP')
+      
+      let group_id = 'NA'
+      for(eachkey in allData)
+      {
+        let group_details = allData[eachkey]
+        if( group_details.NAME == value) {
+          group_id = eachkey
+        }
+
+      }
+
+      return group_id
+
+    }
+
+    case 'LIST' :
+    {
+      let allData = getCategoryGroupSet()  
+      return allData[value]            
+    }
+
+    case 'FIND' :
+    {
+      let allData = getCategoryGroupSet()
+      let allDataName = getCategoryGroupSet('GROUP')
+
+      let find_group_name = 'NA'
+      for(each_key in allData) 
+      {
+        if(allData[each_key].indexOf(value) >= 0) {
+          find_group_name = allDataName[each_key]
+        }
+      }
+
+      return find_group_name
+    }
+
+    default : 
+    {
+      return 'NA'
+    }
+
+  }
+
+
 
 }
 
@@ -95,7 +241,7 @@ function getENGlangCreateContent() {
     TAG_PLCHLD: 'Enter a Tag',
 
     CATG_HDR: 'Category',
-    CATG_PLCHLD: 'Please Select',
+    CATG_PLCHLD: 'Please Select Category',
 
     DESC_HDR: 'Description',
     DESC_PLCHLD: 'Please write something !!',

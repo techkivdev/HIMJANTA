@@ -46,6 +46,9 @@ var userSectionCreated = false
 var user_follower_count = 0
 var user_follower_status = false
 
+// Each Doc FAV Count
+var each_doc_fav_count = 0
+
 // Collect all Details
 var allForumTopics = {}
 
@@ -217,26 +220,17 @@ function updateHTMLPage() {
  
   let filt_html_line = ''
 
-  if(selected_catg != 'NA') {
-    //filt_html_line += '<div class="chip green white-text z-depth-2" style="margin-bottom : 10px;">' + getCatgDataMapping(selected_catg) + '<i onclick="catgReset()" class="close material-icons">close</i></div>'
-
-    filt_html_line +=  '<a class="waves-effect waves-light '+color+' btn z-depth-2" style="border-radius: 10px; margin-bottom : 10px;"><i onclick="catgReset()" class="material-icons right">close</i>' + getCatgDataMapping(selected_catg) + '</a><br>'
-
-    //filt_html_line += createChipLikeCard(getCatgDataMapping(selected_catg) + '#' + 'catg','green')
-  }
+  if(selected_catg != 'NA') {    
+    filt_html_line +=  '<a class="waves-effect waves-light '+getCatgGroupDetails('FIND',selected_catg).COLOR +' btn z-depth-2" style="border-radius: 10px; margin-bottom : 10px;"><i onclick="catgReset()" class="material-icons right">close</i>' + getCatgDataMapping(selected_catg) + '</a><br>'
+ }
 
   if(selected_tag.length > 0) {    
 
     for(each_idx in selected_tag) {
       let tag_name = selected_tag[each_idx]
-
       filt_html_line += '<div class="chip orange white-text z-depth-2" style="margin-bottom : 10px;">' + tag_name + '<i onclick="tagReset(\'' + tag_name + '\')" class="close material-icons">close</i></div>'
     }    
-
-    //filt_html_line += createChipLikeCard(selected_tag + '#' + 'tag','orange')
   }
-
-  //filt_html_line  = '<div class="row">' + filt_html_line + '</div>'
 
   if(!isStrEmpty(filt_html_line)) {
     handleBlockView("main_filter_section",'show');
@@ -280,12 +274,18 @@ function modifyPageStyle() {
     displayOutput('Mobile Browser found!') 
     
     getHTML('show_all_topic_container').className = "container-fluid";
-    getHTML('topic_display_container').className = "container-fluid";
+    getHTML('topic_display_container_sub').className = "container-fluid";
+    getHTML('topic_display_container_sub').style.marginLeft = "5px";
+    getHTML('topic_display_container_sub').style.marginRight = "5px";
+    getHTML('topic_display_container_sub').style.marginTop = "-80px";
 
-    getHTML("filter_section").className = 'row container';
+    //getHTML("filter_section").className = 'row container';
+    getHTML('filter_section').style.marginLeft = "5px";
+    getHTML('filter_section').style.marginRight = "5px";
 
   } else {
     displayOutput('Mobile Browser Not found!')
+    getHTML('topic_display_container_sub').style.marginTop = "-80px";
     
 
   }
@@ -751,11 +751,11 @@ function createEachDocumentCard(data,docid) {
             <div class="card-content" style="margin-top: -35px;">\
             <span class="card-title long-text-nor">'+data['TITLE']+'</span>\
             <div style="margin-top: 5px;">\
-            <p class="long-text grey-text" >'+data['DESC']+'</p>\
+            <p class="long-text grey-text" >'+getDescription(data,'SHORT')+'</p>\
           </div> \
-          <div class="left-align" style="margin-top: 15px;">\
-          <a class="waves-effect waves-light '+color+' btn z-depth-2" onclick="chipClickHandling(\'' + data['CATEGORY'] +'#catg' + '\')" style="border-radius: 10px;">' + data['CATEGORYDIS'] + '</a>\
-              <div  style="margin-top: 8px; z-index: -1">\
+          <div class="left-align" style="margin-top: 15px;">'
+          + getCatgHTMLCode(data['CATEGORY'],data['CATEGORYDIS'],data['CATEGORYGROUP']) +
+              '<div  style="margin-top: 8px; z-index: -1">\
                 '+getChipWithBorderFromListLoc(data['TAGS'])+'\
               </div>\
                <div id="reach_content_btn" class="right-align" style="margin-top: 5px;">\
@@ -772,6 +772,89 @@ container_block.appendChild( block_to_insert );
 
 // Old Set
 // <a href="#!" onclick="chipClickHandling(\'' + data['CATEGORY'] +'#catg' + '\')" ><div class="chip  '+color+' white-text z-depth-2">'+data['CATEGORYDIS']+'</div></a> </div>\
+
+}
+
+// Get CATEGORY HTML Code
+function getCatgHTMLCode(catg_id,catg_name,catg_group_id) {
+  let catg_group_details = getCatgGroupDetails('GROUP',catg_group_id)
+  return  '<a class="waves-effect waves-light '+catg_group_details.COLOR+' btn z-depth-2" onclick="chipClickHandling(\'' + catg_id +'#catg' + '\')" style="border-radius: 10px;"><i class="material-icons left">'+catg_group_details.ICON+'</i>' + catg_name + '</a>'
+}
+
+// Create Description
+function getDescription(post_data,mode='FULL') {
+
+  let content = post_data.DESC
+
+  if(mode == 'FULL') {
+    // Format complet Content
+    content = content.replace(/\r?B#/g, "<b>")
+    content = content.replace(/\r?#B/g, "</b>")
+
+    content = content.replace(/\r?I#/g, "<i>")
+    content = content.replace(/\r?#I/g, "</i>")
+
+    content = content.replace(/\r?U#/g, "<u>")
+    content = content.replace(/\r?#U/g, "</u>")
+
+    content = content.replace(/\r?LS#/g, "<li>")
+    content = content.replace(/\r?#LS/g, "</li>") 
+    
+    // Update BLOCKLIST Content
+    let blocklist_content = post_data.BLOCKLIST
+    for(each_key in blocklist_content) {
+      content = content.replace('@' + each_key + '@', blocklist_content[each_key])
+    }
+
+    // Update Link Content  
+    let all_links_content = post_data.LINKLIST
+    for(each_key in all_links_content) {
+      content = content.replace('@' + each_key + '@', all_links_content[each_key])
+    }
+
+    // Update Image Content  
+    let images_content = post_data.IMAGELIST
+    for(each_key in images_content) {
+      content = content.replace('@' + each_key + '@', '<img class="materialboxed" data-caption=" " width="250" src="'+images_content[each_key]+'">')
+    }
+
+  } else if(mode == 'SHORT') {
+
+    // Format complet Content
+    content = content.replace(/\r?B#/g, "")
+    content = content.replace(/\r?#B/g, "")
+
+    content = content.replace(/\r?I#/g, "")
+    content = content.replace(/\r?#I/g, "")
+
+    content = content.replace(/\r?U#/g, "")
+    content = content.replace(/\r?#U/g, "")
+
+    content = content.replace(/\r?LS#/g, "")
+    content = content.replace(/\r?#LS/g, "") 
+    
+    // Update BLOCKLIST Content
+    let blocklist_content = post_data.BLOCKLIST
+    for(each_key in blocklist_content) {
+      content = content.replace('@' + each_key + '@', '')
+    }
+
+    // Update Link Content  
+    let all_links_content = post_data.LINKLIST
+    for(each_key in all_links_content) {
+      content = content.replace('@' + each_key + '@', '')
+    }
+
+    // Update Image Content  
+    let images_content = post_data.IMAGELIST
+    for(each_key in images_content) {
+      content = content.replace('@' + each_key + '@', '')
+    }
+
+
+  }
+
+  return content
 
 }
 
@@ -804,36 +887,38 @@ function viewEachTopic(details) {
   
   if(isUserMode) {
     handleBlockView("top_div_header");
-  }
+  }  
 
-  // Update Post details 
-  getHTML("u_img").src = data['UPHOTO']
-
-  setHTML('u_name',data['UNAME']);
-  setHTML('u_date',data['DATE']);
-  setHTML('category','<a class="waves-effect waves-light '+color+' btn z-depth-2" onclick="chipClickHandling(\'' + data['CATEGORY'] +'#catg' + '\')" style="border-radius: 10px;">' + data['CATEGORYDIS'] + '</a>');
+  setHTML('category',getCatgHTMLCode(data['CATEGORY'],data['CATEGORYDIS'],data['CATEGORYGROUP']));
   setHTML('title',data['TITLE']);
-  setHTML('publish_date','Published on ' + data['DATE']);
+  setHTML('publish_date',data['DATE']);
  
-  // Update Scope Value  
-  let scope_line = '<p class="grey-text">Published In : <br>' + data['LOCSCOPE']
+  // Update User and Location Value  
+  let user_location_sec_html = '<a href="#!" onclick="openUserDetails(\'' + data['UUID'] + '\')"><div class="chip blue white-text z-depth-2" style="margin-bottom : 10px;"><img src="'+data['UPHOTO']+'" alt="User">' + data['UNAME']+'</div></a>'
+  user_location_sec_html += ' <div class="chip" style="margin-bottom : 10px;">'+data['LOCSCOPE']+'</div>'
+ 
+  if(data['CURRADDRSTATUS'] != 'INSIDE') { 
+    if(data['CURRADDRSUBLOC'] != 'NA') {
+      user_location_sec_html += ' <div class="chip" style="margin-bottom : 10px;">'+data['CURRADDRSUBLOC'] + ',' + data['CURRADDRLOC']+'</div>'
+    }
+    }
 
-  if(data['CURRADDRSTATUS'] != 'NA') {
-    scope_line += ' and ' + data['CURRADDRSUBLOC'] + ',' + data['CURRADDRLOC']
-  }
-
-  scope_line += '</p>'
-
-  setHTML('scope_details',scope_line);
+  setHTML('published_location_user_sec',user_location_sec_html);
 
   setHTML('tags',getChipWithBorderFromListLoc(data['TAGS']));
 
-  setHTML('desc',data['DESC']);
+  setHTML('desc',getDescription(data));
+
+
+  $(document).ready(function(){
+    $('.materialboxed').materialbox();
+  });
 
   // Total Liks Count
   let likePath = getCompPath('FORUM_LIKE') 
   db.collection(likePath).get().then(function(querySnapshot) {
-    setHTML('total_fav_cnt',querySnapshot.size);     
+    each_doc_fav_count = querySnapshot.size
+    setHTML('fav_btn_count',each_doc_fav_count);     
   });
   
 
@@ -887,7 +972,7 @@ function openMoreOptions(details) {
   });
 
 
-  setHTML('more_option_modal').modal('open');
+  $('#more_option_modal').modal('open');
 
 
 }
@@ -895,7 +980,7 @@ function openMoreOptions(details) {
 // Report to us
 function reportToUs(details) {
 
-  setHTML('more_option_modal').modal('close');
+  $('#more_option_modal').modal('close');
  
   let report_data = {}
 
@@ -1071,38 +1156,41 @@ function backTopreviousPage() {
 
 function openSearchDialog() {
 
-  let content =  ''
+  let content_hdr =  ''
+  content_hdr += '<div class="purple-card-content z-depth-2" style="padding : 30px;">\
+  <h4 class="white-text">Search Option</h4>' 
 
+  let input_name = ''
   if(searchSelectedOption == 'USER') {
-    content += '<a href="#!" onclick="searchSelectionOption(\'' + 'USER' + '\')" class="chip purple white-text z-depth-2">User</a>'
-    content += '<a href="#!" onclick="searchSelectionOption(\'' + 'TAG' + '\')" class="chip" style="margin-left : 10px;">Tag</a>'
+    input_name = 'User Name'
+    content_hdr += '<a href="#!" onclick="searchSelectionOption(\'' + 'USER' + '\')" class="chip green white-text z-depth-2">USER</a>'
+    content_hdr += '<a href="#!" onclick="searchSelectionOption(\'' + 'TAG' + '\')" class="chip" style="margin-left : 10px;">TAG</a>'
   } else {
-    content += '<a href="#!" onclick="searchSelectionOption(\'' + 'USER' + '\')" class="chip">User</a>'
-    content += '<a href="#!" onclick="searchSelectionOption(\'' + 'TAG' + '\')" class="chip purple white-text z-depth-2" style="margin-left : 10px;">Tag</a>'
+    input_name = 'Tag'
+    content_hdr += '<a href="#!" onclick="searchSelectionOption(\'' + 'USER' + '\')" class="chip">USER</a>'
+    content_hdr += '<a href="#!" onclick="searchSelectionOption(\'' + 'TAG' + '\')" class="chip green white-text z-depth-2" style="margin-left : 10px;">TAG</a>'
   }
+
+  content_hdr +=  '</div>'
   
 
-  content += ' <div class="row" style="margin-top: 30px;">\
+  let content = ' <div class="row" style="padding: 10px;">\
   <div class="input-field">\
     <i class="material-icons red-text prefix">search</i>\
-    <input type="text" id="search_value" class="autocomplete">\
-    <label for="search_value">Keyword</label>\
+    <input type="text" id="search_value" class="autocomplete" data-length="30">\
+    <label for="search_value">'+input_name+'</label>\
+    <span class="helper-text" data-error="Wrong" data-success="right">Use only (a-z,A-Z,0-9)</span>\
   </div>\
-  </div>'
-
-  content += '<div class="center-align" style="margin-top: 2px;">\
-  <a onclick="applySelectedSearch()" class="waves-effect waves-light btn red rcorners">Search</a>\
-</div>'
-
+  </div>'  
   
   var model = '<!-- Modal Structure -->\
   <div id="searchSectionDialog" class="modal modal-fixed-footer">\
-    <div class="modal-content">\
-    <h4>Search Option</h4>\
-    <p class="long-text-nor">'+ content + '</p>\
+    <div class="">\
+    <div>'+ content_hdr + content + '</div>\
     </div>\
     <div class="modal-footer">\
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>\
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>\
+    <a href="#!" onclick="applySelectedSearch()" class="waves-effect waves-green red btn" style="border-radius: 5px; margin-left: 10px; margin-right: 5px;">SEARCH</a>\
     </div>\
   </div>'
 
@@ -1116,8 +1204,12 @@ function openSearchDialog() {
     $('.modal').modal();
   });
 
+  $(document).ready(function() {
+    $('input#search_value').characterCounter();
+  });
 
-  setHTML('searchSectionDialog').modal('open');
+
+  $('#searchSectionDialog').modal('open');
 
   // Update Data set
 
@@ -1125,7 +1217,7 @@ function openSearchDialog() {
     $('input.autocomplete').autocomplete({
       data: convTagsList(),
       minLength: 2,
-      limit: 6,
+      limit: 4,
     });
   });
 
@@ -1136,7 +1228,7 @@ function searchSelectionOption(details) {
   //toastMsg(details)
   searchSelectedOption = details
 
-  setHTML('searchSectionDialog').modal('close');
+  $('#searchSectionDialog').modal('close');
 
   openSearchDialog()
 
@@ -1145,23 +1237,25 @@ function searchSelectionOption(details) {
 // Apply Selected Search 
 function applySelectedSearch() {
 
-  setHTML('searchSectionDialog').modal('close');
+  searchSelectedValue = 'NA'
 
-  var search_value = getHTML("search_value").value.trim();  
-  if(search_value == '') {
-    searchSelectedValue = 'NA'
-  } else {
+  var search_value = getHTMLValue("search_value")
+  displayOutput('search_value : ' + search_value)
+  
+  if(isInputStringValid(search_value,30,'IGSP')) {
+
+    $('#searchSectionDialog').modal('close');
+
     searchSelectedValue = search_value
-  }
 
-  if(searchSelectedOption == 'TAG') {
-    chipClickHandling(searchSelectedValue+'#tag')
-  } else {
-    toastMsg('User : ' + searchSelectedValue)
-  }
-
+    if(searchSelectedOption == 'TAG') {
+      chipClickHandling(searchSelectedValue+'#tag')
+    } else {
+      toastMsg('User : ' + searchSelectedValue)
+    }
 
 
+  }  
 
 }
 
@@ -1214,6 +1308,11 @@ function startUpCalls() {
       hoverEnabled: false
     });
   });
+
+
+  (element).querySelector('mousedown', (e) => {
+    e.preventDefault()
+   })
 
 }
 

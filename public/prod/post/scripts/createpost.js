@@ -20,9 +20,22 @@ var updateExistingContentDetails = false
 var currentData = {}
 
 var selectedCategoryValue = ''
+var selectedCategoryGroupValue = ''
 var selectedScope = 'BLOCK'
 var selectedScopeValue = ''
 
+// Edit Description Handling
+var blocklist_content = {}
+var blocklist_content_cnt = 0
+
+var all_links_content = {}
+var all_links_content_cnt = 0
+
+var images_content = {}
+var images_content_cnt = 0
+
+// Tag Array List
+var allTagsValue = []
 var chip_color = 'purple'
 
 // Page config
@@ -167,14 +180,15 @@ function updateHTMLPage() {
   setHTML('dist_block_details',userLoginData['BLOCK']+','+userLoginData['DISTRICT'])
   setHTML('state_country_details',userLoginData['STATE']+','+userLoginData['COUNTRY'])
 
-  if(userLoginData['CURRADDRSTATUS'] == 'INSIDE') {
-    setHTML('current_location_status','Inside '+userLoginData['STATE'])
-  } else {
-    setHTML('current_location_status',userLoginData['CURRADDRVALUE'])
+  handleBlockView('current_loc_section')
+  if(userLoginData['CURRADDRSTATUS'] != 'INSIDE') {
+    handleBlockView('current_loc_section','show')
+    setHTML('curr_loc_chk_header','Update post in ' + userLoginData['CURRADDRVALUE'] + ' location also.')
   }
   
   // Update Scope
   updateScope()
+  btnClickHandling(selectedScope)
 
 }
 
@@ -182,46 +196,47 @@ function updateHTMLPage() {
 function updateScope(){
   let scope_html = ''
 
-  if(selectedScope == 'BLOCK') {    
-    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'BLOCK'  + '\')" ><div class="chip '+chip_color+' white-text">'+userLoginData['BLOCK']+'</div></a>'
+  if(selectedScope == 'BLOCK') {
+    scope_html += getBtnHTMLCode('BLOCK',userLoginData['BLOCK'],true)
     selectedScopeValue = userLoginData['BLOCK']
   } else {
-    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'BLOCK'  + '\')" ><div class="chip">'+userLoginData['BLOCK']+'</div></a>'
+    scope_html += getBtnHTMLCode('BLOCK',userLoginData['BLOCK'])
   }
 
   if(selectedScope == 'DISTRICT') {    
-    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'DISTRICT'  + '\')" ><div class="chip '+chip_color+' white-text" style="margin-left: 10px;">'+userLoginData['DISTRICT']+'</div></a>'
+    scope_html += getBtnHTMLCode('DISTRICT',userLoginData['DISTRICT'],true)
     selectedScopeValue = userLoginData['DISTRICT']
   } else {
-    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'DISTRICT'  + '\')" ><div class="chip" style="margin-left: 10px;">'+userLoginData['DISTRICT']+'</div></a>'
+    scope_html += getBtnHTMLCode('DISTRICT',userLoginData['DISTRICT'])
   }
 
   if(selectedScope == 'STATE') {    
-    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'STATE'  + '\')" ><div class="chip '+chip_color+' white-text" style="margin-left: 10px;">'+userLoginData['STATE']+'</div></a>'
+    scope_html += getBtnHTMLCode('STATE',userLoginData['STATE'],true)
     selectedScopeValue = userLoginData['STATE']
   } else {
-    scope_html += '<a href="#!" onclick="scopeHandling(\'' + 'STATE'  + '\')" ><div class="chip" style="margin-left: 10px;">'+userLoginData['STATE']+'</div></a>'
+    scope_html += getBtnHTMLCode('STATE',userLoginData['STATE'])
   }
 
   setHTML('scope_sec',scope_html)
+
 }
 
 // Updated Scope Handling
-function scopeHandling(details){
+function btnClickHandling(details){
   selectedScope = details
 
   if(selectedScope == 'BLOCK') {
-    toastMsg('Your Post Visible to ' + userLoginData['BLOCK'] + ' People only.')
+    setHTML('loc_scope_message','Your Post Visible to ' + userLoginData['BLOCK'] + ' People only.')
     selectedScopeValue = userLoginData['BLOCK']
   }
 
   if(selectedScope == 'DISTRICT') {
-    toastMsg('Your Post Visible to ' + userLoginData['DISTRICT'] + ' People only.')
+    setHTML('loc_scope_message','Your Post Visible to ' + userLoginData['DISTRICT'] + ' People only.')
     selectedScopeValue = userLoginData['DISTRICT']
   }
 
   if(selectedScope == 'STATE') {
-    toastMsg('Your Post Visible to ' + userLoginData['STATE'] + ' People.')
+    setHTML('loc_scope_message','Your Post Visible to ' + userLoginData['STATE'] + ' People.')
     selectedScopeValue = userLoginData['STATE']
   }
 
@@ -249,7 +264,6 @@ function updateLanguageContent() {
   setHTML('loc_header',languageContent['LOC_HEADER'])
   setHTML('loc_scope_header',languageContent['LOC_SCOPE_HEADER'])
   setHTML('curr_loc_header',languageContent['CURR_LOC_HEADER'])
-  setHTML('curr_loc_chk_header',languageContent['CURR_LOC_CHK_HEADER'])
  
 
 }
@@ -327,24 +341,44 @@ function showCurrentTopicContent() {
       setHTMLValue("description",br2nl(data['DESC']))
       M.textareaAutoResize($('#description'));
 
-      // create tag map
-      let tagMap = []
-      for(eachidx in data['TAGS']) {
-        let tagValue = data['TAGS'][eachidx]
-        if(tagValue != 'NA') {
-        tagMap.push({tag: tagValue})
-        }
-      }
+      // Update Other Parameter
+      blocklist_content = data['BLOCKLIST']
+      blocklist_content_cnt = data['BLOCKLIST']['TOTAL@CNT']
 
-      displayOutput(tagMap)
+      all_links_content = data['LINKLIST']
+      all_links_content_cnt = data['LINKLIST']['TOTAL@CNT']
 
-      $('.chips').chips({
-        data: tagMap,
-      });
+      images_content = data['IMAGELIST']
+      images_content_cnt = data['IMAGELIST']['TOTAL@CNT']
+
+      // Update Tag Details
+      allTagsValue = data['TAGS']
+      updateTagSection()
+
 
       // Update CATEGORY      
       setHTML('category_value',data['CATEGORYDIS'])
       selectedCategoryValue = data['CATEGORY']+'#'+data['CATEGORYDIS']
+      selectedCategoryGroupValue = data['CATEGORYGROUP']
+
+      // Update Scope
+      selectedScope = data['LOCSCOPEAREA']
+      selectedScopeValue = data['LOCSCOPE']
+      updateScope()
+      btnClickHandling(selectedScope)
+
+      // Update Current Location Status  
+      handleBlockView('current_loc_section')
+      if(data['CURRADDRSTATUS'] != 'INSIDE') {
+        handleBlockView('current_loc_section','show')
+        if(data['CURRADDRSUBLOC'] == 'NA') {
+          checkedHTML('update_post_curr_loc_check',false)
+        } else {
+          checkedHTML('update_post_curr_loc_check',true)
+        }
+
+        setHTML('curr_loc_chk_header','Update post in ' + userLoginData['CURRADDRVALUE'] + ' location also.')
+      }
 
       handleBlockView("main_progress");
 
@@ -358,55 +392,6 @@ function showCurrentTopicContent() {
     displayOutput('Error getting document' + err);
   });
 
-}
-
-// ============ Category Selection ==============
-
-// Open Category Selection
-function selectCategory() {
-
-  let allCatgeData = getCategoryDataSet()
-
-  let content = ''
-  for(each_key in allCatgeData){
-    let catg_name = allCatgeData[each_key]
-    if(selectedCategoryValue == each_key +'#' + catg_name) {
-      content += '<a href="#!" onclick="catgSelectHandling(\'' + each_key +'#' + catg_name + '\')" ><div class="chip '+chip_color+' white-text">'+catg_name+'</div></a>'
-    } else {
-      content += '<a href="#!" onclick="catgSelectHandling(\'' + each_key +'#' + catg_name + '\')" ><div class="chip">'+catg_name+'</div></a>'
-    }
-    
-  }
-
-  
-
-  var model = '<!-- Modal Structure -->\
-  <div id="catg_model" class="modal modal-fixed-footer">\
-    <div class="modal-content">\
-      <div style="margin-left: 10px; margin-right: 10px;">'+ content + '</div>\
-    </div>\
-  </div>'
-
-  var elem = getHTML('catg_model');
-  if (elem) { elem.parentNode.removeChild(elem); }
-
-
-  $(document.body).append(model);
-
-  $(document).ready(function () {
-    $('.modal').modal();
-  });
-
-  $('#catg_model').modal('open');
-
-}
-
-// Category Selection
-function catgSelectHandling(details) {
-  $('#catg_model').modal('close');
-  selectedCategoryValue = details
-
-  setHTML('category_value',selectedCategoryValue.split('#')[1])
 }
 
 // Open Help Section
@@ -500,27 +485,16 @@ function addNewTopic() {
 
    var title = getHTMLValue("title");
    displayOutput('title : ' + title)
-   if(title == '') {
+   if(!isInputStringValid(title,100,'NA','Title : ')) {
      validateInput = false
-     toastMsg(languageContent['MESSAGE_POST'])
+     //toastMsg(languageContent['MESSAGE_POST'])
    }
    
-   var tagsList= M.Chips.getInstance($('.chips')).chipsData;
-   let tagsData = []
-   if(tagsList.length == 0) {
-     tagsData.push('NA')
-   } else {
-   //displayOutput(tagsList)
-   for(eachIdx in tagsList) {
-     tagsData.push(tagsList[eachIdx]['tag'].replace(/\s/g, ""))
-   }
- }
- displayOutput(tagsData)
+   // Tag Section
+   displayOutput(allTagsValue)
   
  
-   var description = getHTMLValue("description");
-   //description = description.replace(/\r?\n/g, "<br>")
-   description = nl2br(description)
+   var description = getCompletDescContent();   
    displayOutput('description : ' + description)   
    if(description == '') {
      validateInput = false
@@ -539,6 +513,8 @@ function addNewTopic() {
    }
    displayOutput('cateData : ' + cateData)
    displayOutput('cateData_display : ' + cateData_display)
+   displayOutput('Catg Group : ' + selectedCategoryGroupValue)
+  
 
    let update_post_curr_loc_check = getHTMLChecked("update_post_curr_loc_check")
 
@@ -559,13 +535,20 @@ function addNewTopic() {
  
      // --------- Form Data Set -------------
      forumData['TITLE'] =  title
-     forumData['TAGS'] =  tagsData
+     forumData['TAGS'] =  allTagsValue
  
      // ---- Category --------------
      forumData['CATEGORY'] =  cateData
      forumData['CATEGORYDIS'] =  cateData_display
+
+     forumData['CATEGORYGROUP'] =  selectedCategoryGroupValue    
  
+     // Content Section 
      forumData['DESC'] =  description
+     forumData['BLOCKLIST'] =  blocklist_content
+     forumData['LINKLIST'] =  all_links_content
+     forumData['IMAGELIST'] =  images_content
+
      forumData['DATE'] =  getTodayDate()
      forumData['DATELIST'] =  getTodayDateList()
      
@@ -575,8 +558,7 @@ function addNewTopic() {
      } else {
       const timestamp = firebase.firestore.FieldValue.serverTimestamp();
       forumData['CREATEDON'] =  timestamp
-     }
-           
+     }           
  
      forumData['UNAME'] =  userLoginData['NAME']
      forumData['UPHOTO'] =  userLoginData['PHOTO']
@@ -587,39 +569,37 @@ function addNewTopic() {
      //forumData['MULTICONFIG'] = ['NA']
      
      // Location Details
+     forumData['LOCSCOPEAREA'] = selectedScope
      forumData['LOCSCOPE'] = selectedScopeValue
-     forumData['BLOCK'] = userLoginData['BLOCK']
-     forumData['DISTRICT'] = userLoginData['DISTRICT']
-     forumData['STATE'] = userLoginData['STATE']
-     forumData['COUNTRY'] = userLoginData['COUNTRY']
 
-     if(update_post_curr_loc_check) {
-      forumData['CURRADDRSTATUS'] = userLoginData['CURRADDRSTATUS']
-      forumData['CURRADDRSUBLOC'] = userLoginData['CURRADDRVALUE'].split(',')[0]
-      forumData['CURRADDRLOC'] = userLoginData['CURRADDRVALUE'].split(',')[1]  
-     } else {
-      forumData['CURRADDRSTATUS'] = 'NA'
-      forumData['CURRADDRSUBLOC'] = 'NA'
-      forumData['CURRADDRLOC'] = 'NA'
-     }    
+     // Current Location Details
+     forumData['CURRADDRSTATUS'] = userLoginData['CURRADDRSTATUS']
+     forumData['CURRADDRSUBLOC'] = 'NA'
+     forumData['CURRADDRLOC'] = 'NA'
 
+     if(userLoginData['CURRADDRSTATUS'] != 'INSIDE') {
+
+      if(update_post_curr_loc_check) {
+        forumData['CURRADDRSTATUS'] = userLoginData['CURRADDRSTATUS']
+        forumData['CURRADDRSUBLOC'] = userLoginData['CURRADDRVALUE'].split(',')[0]
+        forumData['CURRADDRLOC'] = userLoginData['CURRADDRVALUE'].split(',')[1]  
+       }
+
+     } 
  
+     // Admin Section
      forumData['DOCTYPE'] = 'POST'  // Chnage It according to the Item
      forumData['DOCVER'] = 'V1'
+     forumData['DOCVERIFIED'] = 'NA'
      
      forumData['ISMAIN'] = false
      forumData['PAGEID'] = 1
 
+     // Image Details
      forumData['IMAGESTATUS'] = false
-     forumData['IMAGELINK'] = 'NA'
+     forumData['IMAGEDETAILS'] = {} 
  
-     /*
-     forumData['EXTRA'] = {
-       EXTRA1 : 'NA'
-     }
-     */
      
- 
      if(updateExistingContentDetails) {
        updateExistPostIntoDatabase(forumData)
      } else {
@@ -629,6 +609,120 @@ function addNewTopic() {
    } else {
      displayOutput('Input Validation FALSE !!')
    }
+
+}
+
+// Open Dialog : Add New Tag
+function openAddNewTagDialog() {
+
+  let content_hdr =  ''
+  content_hdr += '<div class="purple-card-content z-depth-2" style="padding : 30px;">\
+  <h4 class="white-text">Tags</h4></div>' 
+  
+
+  let content = ' <div class="row" style="padding: 10px;">\
+  <div class="input-field">\
+    <i class="material-icons red-text prefix">search</i>\
+    <input type="text" id="tag_value" class="autocomplete" data-length="30">\
+    <label for="tag_value">Tag Name</label>\
+    <span class="helper-text" data-error="Wrong" data-success="right">Use only (a-z,A-Z,0-9)</span>\
+  </div>\
+  </div>'  
+  
+  var model = '<!-- Modal Structure -->\
+  <div id="addnewtagdialog" class="modal modal-fixed-footer">\
+    <div class="">\
+    <div>' + content_hdr + content + '</div>\
+    </div>\
+    <div class="modal-footer">\
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>\
+    <a href="#!" onclick="applyTagValue()" class="waves-effect waves-green red btn" style="border-radius: 5px; margin-left: 10px; margin-right: 5px;">ADD</a>\
+    </div>\
+  </div>'
+
+  var elem = getHTML('addnewtagdialog');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+  $(document).ready(function() {
+    $('input#tag_value').characterCounter();
+  });
+
+  
+  // Check for Limit
+  if(allTagsValue.length > 5) {
+     toastMsg('Max Tag limit reach !!')
+  } else {
+    $('#addnewtagdialog').modal('open');
+  }
+  
+
+  // Update Data set
+
+  $(document).ready(function(){
+    $('input.autocomplete').autocomplete({
+      data: convTagsList(),
+      minLength: 1,
+      limit: 5,
+    });
+  });
+
+}
+
+// Apply Enter Tag Details
+function applyTagValue() {
+
+  var tag_value = getHTMLValue("tag_value")
+  displayOutput('tag_value : ' + tag_value)
+  
+  if(isInputStringValid(tag_value,30,'IGSP')) {
+    $('#addnewtagdialog').modal('close');
+
+    displayOutput(tag_value)
+    allTagsValue.push(tag_value)
+    
+    updateTagSection()
+    
+  } 
+
+
+}
+
+// Update Tag Section
+function updateTagSection() {
+
+  allTagsValue = Array.from(new Set(allTagsValue));
+
+  // Update Tag Value
+  let tag_html_line = ''
+  for(each_idx in allTagsValue) {
+    let tag_name = allTagsValue[each_idx]
+    tag_html_line += '<div class="chip" style="margin-bottom : 10px;">' + tag_name + '<i onclick="updateTagList(\'' + tag_name + '\')" class="close material-icons">close</i></div>'
+
+  }
+
+  if(allTagsValue.length == 0) {
+    setHTML('all_tag_section_value','<p class="grey-text">Please add tags (max only 6)</p>')
+  } else {
+    setHTML('all_tag_section_value',tag_html_line)
+  }
+  
+
+
+}
+
+// Update Tag List
+function updateTagList(details) {
+
+  allTagsValue.splice( allTagsValue.indexOf(details), 1 );
+
+  updateTagSection()
 
 }
 
@@ -756,34 +850,47 @@ function openEditOptionsModal(control) {
 
   displayOutput(control) 
 
-  // Click Behaviour Change according to control
+  // Click Behaviour Change according to control  
   let content = ''
   if(control == 'LINK') {
 
     content = '  <!-- edit content -->\
-    <form class="col s12">\
+    <form id="edit_single_option_form" class="col s12">\
       <div class="row">\
           <div class="input-field col s12">\
               <!-- <i class="material-icons prefix">message</i> -->\
-              <textarea id="edit_link_name" class="materialize-textarea"></textarea>\
+              <input type="text" id="edit_link_name">\
               <label for="edit_link_name">Link Name</label>\
             </div>\
             <div class="input-field col s12">\
             <!-- <i class="material-icons prefix">message</i> -->\
-            <textarea id="edit_link_address" class="materialize-textarea"></textarea>\
+            <input type="text" id="edit_link_address">\
             <label for="edit_link_address">Link Address</label>\
           </div>\
       </div>\
     </form>'
 
-  } else {
+  } else if(control == 'IMAGE') {
 
     content = '  <!-- edit content -->\
-    <form class="col s12">\
+    <form id="edit_single_option_form" class="col s12">\
       <div class="row">\
           <div class="input-field col s12">\
               <!-- <i class="material-icons prefix">message</i> -->\
-              <textarea id="edit_content" class="materialize-textarea"></textarea>\
+              <input type="text" id="image_url">\
+              <label for="image_url">Image URL</label>\
+              <p class="grey-text">For tutorial. Please visit link!!</p>\
+            </div></div>\
+    </form>'  
+
+  } else {
+
+    content = '  <!-- edit content -->\
+    <form id="edit_single_option_form" class="col s12">\
+      <div class="row">\
+          <div class="input-field col s12">\
+              <!-- <i class="material-icons prefix">message</i> -->\
+              <input type="text" id="edit_content">\
               <label for="edit_content">Type Text</label>\
             </div></div>\
     </form>'  
@@ -799,8 +906,8 @@ function openEditOptionsModal(control) {
       <p class="long-text-nor">'+ content + '</p>\
     </div>\
     <div class="modal-footer">\
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>\
-      <a href="#!" onclick="editOptionBtn(\'' + control + '\')" class="waves-effect waves-green btn-flat">Add</a>\
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>\
+      <a href="#!" onclick="editOptionBtn(\'' + control + '\')" class="waves-effect waves-green red btn" style="border-radius: 5px; margin-left: 10px; margin-right: 5px;">ADD</a>\
     </div>\
   </div>'
 
@@ -815,6 +922,14 @@ function openEditOptionsModal(control) {
   });
  
   $('#commentModal').modal('open');  
+
+  $(document).ready(function() {
+    $("#edit_single_option_form").bind("keypress", function(e) {
+        if (e.keyCode == 13) {
+            return false;
+        }
+    });
+  });
 
 }
 
@@ -835,7 +950,16 @@ function editOptionBtn(details) {
      validateInput = false     
    } 
 
-  } else {
+  } else if(details == 'IMAGE') {
+
+    // Read Comment Details
+    var image_url_value= getHTMLValue("image_url");
+    displayOutput('image_url_value : ' + image_url_value)
+    if(image_url_value == '') {
+      validateInput = false     
+    } 
+ 
+   } else {
 
    // Read Comment Details
    var edit_content = getHTMLValue("edit_content");
@@ -854,27 +978,46 @@ function editOptionBtn(details) {
   switch(details) {
 
     case 'BOLD' :
-      description = description + ' <b>'+edit_content+'</b> '
+      description = description + ' B#'+edit_content+'#B '
       break;
 
     case 'ITALIC' :
-      description = description + ' <i>'+edit_content+'</i> '
+      description = description + ' I#'+edit_content+'#I '
       break;
 
     case 'UNDERLINE' :
-      description = description + ' <u>'+edit_content+'</u> '
+      description = description + ' U#'+edit_content+'#U '
       break;
 
     case 'LIST' :
-      description = description + ' <li>'+edit_content+'</li> '
+      description = description + ' LS#'+edit_content+'#LS '
       break;
 
     case 'BLOCKLIST' :
-      description = description + ' <blockquote>'+edit_content+'</blockquote> '
+
+      blocklist_content_cnt = blocklist_content_cnt + 1
+      blocklist_content['TOTAL@CNT'] = blocklist_content_cnt
+      blocklist_content['BLOCKLIST'+blocklist_content_cnt] = '<blockquote>'+edit_content+'</blockquote> '
+      description = description + ' @BLOCKLIST' + blocklist_content_cnt + '@ '
       break;
 
     case 'LINK' :
-      description = description + ' <a href="'+edit_link_address+'"><b>'+edit_link_name+'</b></a> '
+
+      all_links_content_cnt = all_links_content_cnt + 1
+      //   <a onclick="openNewLink(\'' + edit_link_address + '\')" class="waves-effect waves-light btn blue rcorners"><i class="material-icons left">web</i>'+edit_link_name+'</a>
+      //  <a href="'+edit_link_address+'"><b>'+edit_link_name+'</b></a>
+      all_links_content['TOTAL@CNT'] = all_links_content_cnt
+      all_links_content['LINK'+all_links_content_cnt] = ' <a onclick="openNewLink(\'' + edit_link_address + '\')" href="#!"><b>'+edit_link_name+'</b></a> '
+
+      description = description + ' @LINK' + all_links_content_cnt + '@ '
+      break;
+
+    case 'IMAGE' :
+
+      images_content_cnt = images_content_cnt + 1
+      images_content['TOTAL@CNT'] = images_content_cnt
+      images_content['IMAGE'+images_content_cnt] =  image_url_value
+      description = description + ' @IMAGE' + images_content_cnt + '@ '
       break;
 
     default:
@@ -888,9 +1031,79 @@ function editOptionBtn(details) {
 
 }
 
-// Preview Message
-function previewMessage() {
-  viewModel('',nl2br(getHTMLValue("description")))
+// Get Complete Description Content
+function getCompletDescContent(mode = "NA") {
+
+  let content = nl2br(getHTMLValue("description"))
+
+  if(mode == 'PREVIEW') {
+
+      // Format complet Content
+      content = content.replace(/\r?B#/g, "<b>")
+      content = content.replace(/\r?#B/g, "</b>")
+
+      content = content.replace(/\r?I#/g, "<i>")
+      content = content.replace(/\r?#I/g, "</i>")
+
+      content = content.replace(/\r?U#/g, "<u>")
+      content = content.replace(/\r?#U/g, "</u>")
+
+      content = content.replace(/\r?LS#/g, "<li>")
+      content = content.replace(/\r?#LS/g, "</li>")
+
+  
+
+    // Update BLOCKLIST Content
+      for(each_key in blocklist_content) {
+        content = content.replace('@' + each_key + '@', blocklist_content[each_key])
+      }
+
+      // Update Link Content  
+      for(each_key in all_links_content) {
+        content = content.replace('@' + each_key + '@', all_links_content[each_key])
+      }
+
+      // Update Image Content  
+      for(each_key in images_content) {
+        content = content.replace('@' + each_key + '@', '<img class="materialboxed" data-caption=" " width="250" src="'+images_content[each_key]+'">')
+      }
+
+
+  }
+
+  
+
+  return content
+
+}
+
+// ---------------------------------------
+
+// Preview Handling
+
+// Show Preview Section
+function showPreviewSection() {
+  handleBlockView('main_list_container')
+  handleBlockView('preview_container','show')
+  handleBlockView('preview_close_fl_btn','show')
+
+  window.scrollTo(0,0)
+
+  setHTML('preview_contant',getCompletDescContent('PREVIEW'))
+
+  $(document).ready(function(){
+    $('.materialboxed').materialbox();
+  });
+
+}
+
+// Hide Preview Section
+function hidePreviewSection() {
+  handleBlockView('preview_container')
+  handleBlockView('preview_close_fl_btn')
+  handleBlockView('main_list_container','show')
+
+  window.scrollTo(0,0)
 }
 
 // View Term and Conditions
@@ -957,6 +1170,84 @@ function updateExistPostIntoDatabase(forumData){
 
 }
 
+// SHOW/HIDE : Category Section
+
+// Show Category Section
+function showCategorySection() {
+  handleBlockView('main_list_container')
+  handleBlockView('category_list_container','show')
+  handleBlockView('catg_close_fl_btn','show')
+
+  window.scrollTo(0,0)
+
+  // Update Category Content
+  let catg_content_html = ''
+
+  // Get All Groups Details
+  let allGroups = getCatgGroupDetails('GROUPLIST') 
+
+  // Collect Each Group Details
+  for(each_group in allGroups) {
+    let groupDetails = allGroups[each_group]
+    
+    catg_content_html += '<ul class="collection" style="border-radius: 10px;"><li class="collection-item">'
+    catg_content_html += '<div><b><span class="card-title '+groupDetails.COLOR+'-text"><span style="font-size: 18px;">'+groupDetails.NAME+'</span><i class="material-icons left">'+groupDetails.ICON+'</i></span></b></div>' 
+
+    catg_content_html += '<div style="margin-top: 15px; margin-bottom : 15px; margin-left: 10px;">'
+
+    // Create Each Group List Content 
+    let eachGroupCatgList = getCatgGroupDetails('LIST',each_group)   
+
+      for(each_idx in eachGroupCatgList){
+
+        let each_key = eachGroupCatgList[each_idx]
+        let catg_name = getCatgDataMapping(each_key)
+
+        if(selectedCategoryValue == each_key +'#' + catg_name) {
+          catg_content_html += getBtnHTMLCode(each_key +'#' + catg_name + '@' + each_group,catg_name,true,'catgSelectHandling')
+        } else {
+          catg_content_html += getBtnHTMLCode(each_key +'#' + catg_name + '@' + each_group,catg_name,false,'catgSelectHandling')
+        }
+        
+      }
+
+      catg_content_html += '</div></li></ul>'
+
+  }
+
+  
+
+  setHTML('category_list_contant',catg_content_html)
+
+
+}
+
+// Category Selection
+function catgSelectHandling(details) { 
+
+  selectedCategoryValue = details.split('@')[0]
+
+  selectedCategoryGroupValue = details.split('@')[1]
+
+  setHTML('category_value',selectedCategoryValue.split('#')[1])
+
+  // Update Icon
+  setHTML('catg_icon',getCatgGroupDetails('GROUP',selectedCategoryGroupValue).ICON)
+  getHTML("catg_sec").className = getCatgGroupDetails('GROUP',selectedCategoryGroupValue).COLOR + '-text';
+
+  hideCategoryDialog()
+}
+
+
+// Hide Category  Section
+function hideCategoryDialog() {
+  handleBlockView('category_list_container')
+  handleBlockView('catg_close_fl_btn')
+  handleBlockView('main_list_container','show')
+
+  window.scrollTo(0,0)
+}
+
 // ----------- START UP CALLS ----------------
 function startUpCalls() {
 
@@ -996,6 +1287,11 @@ function startUpCalls() {
 
   $(document).ready(function(){
     $('.tooltipped').tooltip();
+  });
+
+
+  $(document).ready(function() {
+    $('input#title').characterCounter();
   });
 
 

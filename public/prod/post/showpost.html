@@ -205,9 +205,7 @@
 
       <!-- ========================================= -->
       <!-- Filter Section -->
-      <div id="filter_section" class="row" style="margin-top: 2%; display: none;">
-        <!-- <h4 id="filter_hdr" class="black-text">Filter Options</h4> -->
-
+      <div id="filter_section" class="" style="margin-top: 2%; display: none;">        
         <!-- All Options -->
 
         <div id="filter_reset_btn" class="right-align" style="margin-top: 0px;">
@@ -217,16 +215,6 @@
         <!-- Filter Selection -->
 
         <h5 class="grey-text" style="margin-left: 20px; display:none;">Filter Option's</h5>
-
-        <!--
-        <div class="row" style="margin-top: 20px;">
-          <div class="col s12">
-            <ul class="tabs tabs-fixed-width tab-demo z-depth-1" style="border-radius: 50px;">
-              <li class="tab col s3"><a class="active" href="#quick_opt">Quick</a></li>
-              <li class="tab col s3"><a href="#extra_opt">Extra</a></li>
-            </ul>
-          </div>
-        -->
 
           <!-- Quick Filter Option Section -->
           <div id="quick_opt">
@@ -246,120 +234,48 @@
                 </div>
               </div>
 
-              <!-- ALl Category Section --> 
-              <div class="card" style="border-radius: 10px;">
-                <div class="card-content">
-                  <span class="card-title">Category</span>
-                  <li class="divider" tabindex="-1"></li>                                      
-                <div id="all_Category_details" style="margin-top: 20px;">
-                  <!-- Script Code -->
-                </div>              
-              
+              <!-- Tab Section -->
 
+              <div style="margin-top: 20px;">                
+                  <ul class="tabs tabs-fixed-width z-depth-1" style="border-radius: 10px;">
+                    <li class="tab col s6"><a class="active" href="#catg">Category</a></li>
+                    <li class="tab col s6"><a href="#tags">Tags</a></li>                   
+                  </ul>
+                
+                <div id="catg">
+                   <!-- ALl Category Section -->                    
+                    <div id="all_Category_details" style="margin-top: 20px;">
+                      <!-- Script Code -->
+                    </div>
                 </div>
+
+                <!-- Tags  -->
+                <div id="tags">                 
+
+                    <!-- ALl Tags Section -->
+                    <div style="margin-top: 35px;">
+                      <h5 class="grey-text">Popular Tags</h5>
+                      <div id="all_tags_details" style="margin-top: 10px;">
+                        <!-- Script Code -->
+                      </div>
+
+                    </div>   
+
+                </div>   
+                
+                
               </div>
 
+              <!-- END   -->
 
-              <!-- ALl Tags Section -->
-              <div style="margin-top: 35px;">
-                <h5 class="grey-text">Popular Tags</h5>
-                <div id="all_tags_details" style="margin-top: 10px;">
-                  <!-- Script Code -->
-                </div>
+             
 
-              </div>   
+
 
             </div>
               
           </div>
 
-
-          <!-- All Filter Options 
-
-          <div id="extra_opt" class="col s12">
-
-                          
-              <div style="margin-top: 50px; margin-left: 10px; margin-right: 10px;"> 
-
-                    
-                  <div class="row" style="margin-top: 40px;">
-                      <div class="input-field">                  
-                          <select id="catg_options">
-                            <option value="" disabled selected>Select a Category</option>
-                            <option id="INFO" value="1">General Infromation</option>
-                            <option id="TIPS" value="2">Important Travel Tips</option>
-                            <option id="QRY" value="3">Any Query</option>
-                          </select>
-                          <label>Category</label> 
-                      </div>                                  
-                  </div>
-              
-
-                
-                  <div class="row">
-                    <div class="input-field">
-                      <i class="material-icons prefix">textsms</i>
-                      <input type="text" id="autocomplete-input" class="autocomplete">
-                      <label for="autocomplete-input">Search Tags</label>
-                    </div>        
-                  </div>
-
-
-                
-                <div class="row">
-                  <div class="input-field">
-                    <i class="material-icons prefix">date_range</i>
-                    <input type="text" id="topic_date" class="datepicker">
-                    <label for="topic_date" class="black-text">Post Date</label>
-                  </div>
-
-                
-                  <form action="#" style="margin-left: 45px;">
-
-                    <p>
-                      <label>
-                        <input id="selected_date_chkbx" name="group1" type="radio" checked/>
-                        <span>Consider complete date.</span>
-                      </label>
-                    </p>
-
-                    <p>
-                      <label>
-                        <input id="selected_month_chkbx" name="group1" type="radio"/>
-                        <span>Consider only Month from above selected date.</span>
-                      </label>
-                    </p>
-
-                    <p>
-                      <label>
-                        <input id="selected_year_chkbx" name="group1" type="radio"/>
-                        <span>Consider only Year from above selected date.</span>
-                      </label>
-                    </p>
-                  
-                  </form> 
-
-                </div>
-
-            </div>
-
-              
-            <div class="center-align" style="margin-top: 2px;">
-              <a onclick="applyFilter()" class="waves-effect waves-light btn red rcorners">Apply Filter</a>
-            </div>
-
-            <li class="divider" tabindex="-1" style="margin-top: 10px;"></li>
-                
-
-          </div>
-        
-
-
-        </div>
-
-        -->
-
-        
       </div>
 
 
@@ -407,22 +323,50 @@
   <!-- Message Display Section -->
   <!-- **************************************** -->
 
-  <div id="topic_display_container" class="container row" style="display: none; margin-top: 1px;">
+  <div id="topic_display_container" class="" style="display: none; margin-top: 1px;">
+
+    <div id="top_div_header" class="purple-card-content z-depth-2" style="height: 100px; display: block;">
+    </div>
             
-    <div class="row">
+    <div id="topic_display_container_sub" class="container" style="margin-top: -80px;">
+
+      <!-- Header Card -->
+       <!-- Show Title and other details -->
+      <div class="card" style="border-radius: 10px;">
+        <div class="" style="padding: 10px;">
+          <div style="padding: 5px;">
+              <span id="title" class="card-title long-text-nor">Title</span>
+              <p id="publish_date" class="grey-text" style="font-size: 13px; margin-top: 2px;"></p>
+          </div>
+
+          <div class="right-align" style="margin-top: -10px;" id="category">
+            <!-- Script Code -->                     
+          </div>       
+          
+        </div> 
+      </div>
+        
+      <!-- Header 2 -->
+        <div class="row" style="margin-top: 20px;">
+
+          <div class="col s6 m6 left-align">
+              <!-- Button Handling -->
+              <a href="#!" onclick="likeTopic()" class="waves-effect waves-light btn white black-text rcorners"><i id="fav_btn_icon" class="material-icons left red-text">favorite_border</i><span id="fav_btn_count"></span></a>
+          </div>  
+          
+          <div class="col s6 m6 right-align" style="margin-top: 5px;">
+            <a href="#!" onclick="bookmarkTopic()"><i id="bookmark_btn" class="small  material-icons orange-text" style="margin-right: 20px;">bookmark_border</i></a> 
+            <a href="#!" onclick="shareTopic()"><i id="bookmark_btn" class="small  material-icons blue-text">share</i></a>
+          </div>
+            
+        </div>
+     
 
       <div class="col s12 m12">
 
-          <!-- Show Title and other details -->
-          <div style="margin-left: 5px; margin-right: 5px; margin-top: 10px;">
-            <b id="title" class="long-text-nor" style="font-size: 25px;">Title</b>
-            <p id="publish_date" class="grey-text" style="margin-top: -2px;"></p>
-          </div>
-
-
           <!-- display description -->
-          <div style="margin-left: 5px; margin-right: 5px; margin-top: 2px;">
-            <p id="desc" class= "long-text-nor" style="font-size: 17px;">Desc</p>
+          <div style="margin-left: 5px; margin-right: 5px; margin-top: 2px; margin-bottom: 20px;">
+            <div id="desc" style="font-size: 17px;">Description</div>
           </div>
 
           <!-- Other details -->
@@ -430,45 +374,28 @@
 
           <div style="margin-left: 5px; margin-right: 5px; margin-top: 10px;">
 
-            <div class="left-align" id="category">
-              <!-- Script Code -->                     
-            </div>
-
             <div id="tags" style="margin-top: 10px;">
               Tags
-            </div>           
-           
-
-            <div id="social_control" class="left-align" style="margin-top: 20px; height: 70px; margin-bottom: 10px; margin-left: 0px;">
-              <span><small><a href="#!" onclick="likeTopic()" style="margin-right: 3px;"><i id="like_btn" class="small  material-icons red-text">favorite_border</i><a></small><small id="total_fav_cnt" class="grey-text" style="font-size: 25px; margin-right: 20px;"></small></span>
-              <a href="#!" onclick="bookmarkTopic()"><i id="bookmark_btn" class="small  material-icons orange-text" style="margin-right: 20px;">bookmark_border</i></a> 
-              <a href="#!" onclick="shareTopic()"><i id="bookmark_btn" class="small  material-icons blue-text">share</i></a>                     
-            </div>
+            </div>   
+            
+              <!-- Extra Details  -->
+              <div style="margin-top: 20px;">
+                <!-- User and Location Details -->
+                <div id="published_location_user_sec">
+                 <!-- Script Code -->
+                </div>  
+              </div>
+          
             
             <div id="user_control_section" class="right-align" style="margin-top: 5px; height: 50px; margin-bottom: 10px; margin-right: 0px; display: none;">
-              <a onclick="editTopic()" class="waves-effect waves-light btn-flat blue-text style="margin-right: 20px;"><i class="medium material-icons left">edit</i>edit</a>
+              <a onclick="editTopic()" class="waves-effect waves-light btn-flat blue-text style="margin-right: 20px;><i class="medium material-icons left">edit</i>edit</a>
               <a onclick="askToDeleteCompleteTopic()" class="waves-effect waves-light btn-flat red-text"><i class="medium material-icons left">delete</i>delete</a>                      
-            </div>
-
-
-            <!-- User Details  -->
-            <p id="publish_by" class="grey-text">Published by </p>
-
-            <ul class="collection" style="border-radius: 10px 10px 10px 10px;">
-              <li class="collection-item avatar">
-                <img id="u_img" src="" alt="" class="circle">
-                <span class="title"><b id="u_name">Name</b></span>
-                <p class="grey-text" style="font-size: 13px;" id="u_date">Date</p>
-                </li>
-            </ul>
-
-            <div id="scope_details" style="margin-top: 10px;">
-              Scope
-            </div>
+            </div>       
+          
 
           </div>
 
-          <li class="divider" tabindex="-1"></li>
+          <li class="divider" style="margin-top: 10px;" tabindex="-1"></li>
 
           <!-- Comment Section -->
           <div style="margin-left: 5px; margin-right: 5px; margin-top: 10px;">

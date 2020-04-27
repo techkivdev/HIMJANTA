@@ -25,9 +25,9 @@ function bookmarkFilterOptions() {
       <div class="row">\
           <div class="input-field col s12">\
               <!-- <i class="material-icons prefix">message</i> -->\
-              <input placeholder="Enter Filter Set Name" id="filter_bookmark_name" type="text" data-length="10">\
+              <input placeholder="Enter Filter Set Name" id="filter_bookmark_name" type="text" data-length="20">\
               <label for="filter_bookmark_name">Name</label>\
-              <span class="helper-text" data-error="Wrong : We consider only 10 Charecter." data-success="right"></span>\
+              <span class="helper-text" data-error="Wrong" data-success="right">Use only (a-z,A-Z,0-9)</span>\
             </div></div>\
     </form>'  
    
@@ -60,7 +60,7 @@ function bookmarkFilterOptions() {
       M.updateTextFields();
     });
     
-    setHTML('saveFilterOptionModal').modal('open');
+   $('#saveFilterOptionModal').modal('open');
 
     
     $(document).ready(function() {
@@ -76,26 +76,16 @@ function bookmarkFilterOptions() {
 }
 
 // Add Into DB Filter Option Name
-function addbookmarkFilterOptions() {
-
-  setHTML('saveFilterOptionModal').modal('close');
-
-  let validateInput =  true
+function addbookmarkFilterOptions() {  
 
   // Read Comment Details
   var filter_bookmark_name = getHTMLValue("filter_bookmark_name")
   displayOutput('filter_bookmark_name : ' + filter_bookmark_name)
-  if(filter_bookmark_name == '') {
-    validateInput = false
-    toastMsg('Please provide valid Name !!')
-  } 
-
-  //validateInput = false
-
-  if(validateInput) {
-
-    filter_bookmark_name = filter_bookmark_name.substring(1, 11);
-    displayOutput('filter_bookmark_name : ' + filter_bookmark_name)
+  
+  if(isInputStringValid(filter_bookmark_name))
+   {  
+    
+      $('#saveFilterOptionModal').modal('close');
 
       let filter_bookmark_data = {}
 
@@ -174,125 +164,6 @@ function resetFilterSoft() {
 
 }
 
-// Apply Filter
-function applyFilter() {
-
-  let filter_validation = true
-
-  filter_selection_status = {
-    CATG : false,
-    TAG : false,
-    DATE : false,
-    MONTH : false,
-    YEAR : false
-  }
-
-  filter_selection_data = {
-    CATG : '',
-    TAG : '',
-    DATE : ''
-  }
-
-  // Read Filter details
-
-   let catgOption = getCatgDataMapping('LIST') 
-   let catDropValue = getHTMLValue("catg_options")
-   let cateData = ''  
-
-   if(catDropValue == '') {
-    filter_selection_status['CATG'] = false
-   } else {
-    filter_selection_status['CATG'] = true
-     cateData = catgOption[catDropValue]     
-     filter_selection_data['CATG'] = cateData
-   } 
-  
-
-
-  var tagDetails = getHTMLValue("autocomplete-input") 
-  if(tagDetails == '') {
-    filter_selection_status['TAG'] = false
-  } else {
-    filter_selection_status['TAG'] = true
-    filter_selection_data['TAG'] = tagDetails
-  }
-
-  var topic_date = getHTMLValue("topic_date")
-  displayOutput('Post Date : ' + topic_date)
-  if(topic_date == '') {
-    filter_selection_status['DATE'] = false
-  } else {
-    filter_selection_status['DATE'] = true
-    filter_selection_data['DATE'] = topic_date
-  }
-
-  //displayOutput(filter_selection_status)
-  //displayOutput(filter_selection_data)
-
-  // Check Month and year status
-  let selected_date = getHTMLChecked("selected_date_chkbx")
-  if(selected_date) {
-    filter_selection_status['MONTH'] = false
-    filter_selection_status['YEAR'] = false
-  } else {
-    filter_selection_status['MONTH'] = getHTMLChecked("selected_month_chkbx")
-    filter_selection_status['YEAR'] = getHTMLChecked("selected_year_chkbx")
-  }
-  
-
-  filter_validation = filter_selection_status['CATG'] || filter_selection_status['TAG'] || filter_selection_status['DATE']
-  displayOutput('Filter Validation : ' + filter_validation)
-  //filter_validation = false
-
-  if(filter_validation) {
-
-  filter_enable_flag = true 
-
-   // Update Filter message
-   let chip_html = ''
-   if(filter_selection_status['DATE']) {
-    chip_html += '<div class="chip">' + 'Date : ' +  filter_selection_data['DATE'] + '</div>'
-   }
-
-   if(filter_selection_status['CATG']) {
-    chip_html += '<div class="chip">' + 'Category : ' +  getCatgDataMapping(filter_selection_data['CATG']) + '</div>'
-   }
-
-   if(filter_selection_status['TAG']) {
-    chip_html += '<div class="chip">' + 'Tag : ' +  filter_selection_data['TAG'] + '</div>'
-   }
-
-   let sel_value = ''
-   if(filter_selection_status['MONTH']) {
-     sel_value = filter_selection_data['DATE'].split(' ')[0]
-    chip_html = '<div class="chip">' + 'Month : ' +  sel_value  + '</div>'
-    filter_selection_data['DATE'] = sel_value
-   }
-
-   if(filter_selection_status['YEAR']) {
-    sel_value = filter_selection_data['DATE'].split(' ')[2]
-    chip_html = '<div class="chip">' + 'Year : ' +  sel_value  + '</div>'
-    filter_selection_data['DATE'] = sel_value
-   }
-
-   handleBlockView("main_filter_section",'show');
-   setHTML('main_filter_section_value',chip_html)
-
-   
-    setHTML('message_content','Filter Applied !!')
-   
-
-  closeFilterSection()
-  readAllForums()
-
-  } else {     
-    toastMsg('No Filter Applied !!')
-    closeFilterSection()
-  }
-
-
-}
-
 // Create Filter tags details
 
 // Create Location Scope Section
@@ -305,9 +176,9 @@ function createFilterScopeDetails() {
     let scope_name = scope_list[each_idx]
 
     if(scope_name == location_scope) {
-      html_line += '<a class="waves-effect waves-light blue btn z-depth-2" onclick="chipClickHandling(\'' + scope_name +'#scope' + '\')" style="border-radius: 10px; margin-right: 10px; margin-bottom: 10px;">' + scope_name + '</a>'
+      html_line += getBtnHTMLCode(scope_name +'#scope',scope_name,true,'chipClickHandling','green')
     } else {
-      html_line += '<a class="waves-effect waves-light grey btn" onclick="chipClickHandling(\'' + scope_name +'#scope' + '\')" style="border-radius: 10px; margin-right: 10px; margin-bottom: 10px;">' + scope_name + '</a>'
+      html_line += getBtnHTMLCode(scope_name +'#scope',scope_name,false,'chipClickHandling','green')      
     }
 
     
@@ -375,23 +246,42 @@ function createFilterTagsDetails() {
 function createFilterCategoryDetails() {
   setHTML('all_Category_details','');
 
-  let catg_list = getCatgDataMapping('LIST')
+  // Update Category Content
+  let catg_content_html = ''
 
-  let html_line = ''
-  for(each_idx in catg_list) {
-    if(each_idx == 0) {continue}
+  // Get All Groups Details
+  let allGroups = getCatgGroupDetails('GROUPLIST') 
 
-    let catg_name = catg_list[each_idx]
+  // Collect Each Group Details
+  for(each_group in allGroups) {
+    let groupDetails = allGroups[each_group]
+    
+    catg_content_html += '<ul class="collection" style="border-radius: 10px;"><li class="collection-item">'
+    catg_content_html += '<div><b><span class="card-title '+groupDetails.COLOR+'-text"><span style="font-size: 18px;">'+groupDetails.NAME+'</span><i class="material-icons left">'+groupDetails.ICON+'</i></span></b></div>' 
 
-    if(getCatgDataMapping(catg_name) == getCatgDataMapping(selected_catg)) {
-      html_line += '<a class="waves-effect waves-light '+color+' btn z-depth-2" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" style="border-radius: 10px; margin-right: 10px; margin-bottom: 10px;">' + getCatgDataMapping(catg_name) + '</a>'
-    } else {
-      html_line += '<a class="waves-effect waves-light grey btn" onclick="chipClickHandling(\'' + catg_name +'#catg' + '\')" style="border-radius: 10px; margin-right: 10px; margin-bottom: 10px;">' + getCatgDataMapping(catg_name) + '</a>'  
-    }
+    catg_content_html += '<div style="margin-top: 15px; margin-bottom : 15px; margin-left: 10px;">'
 
-    }
+    // Create Each Group List Content 
+    let eachGroupCatgList = getCatgGroupDetails('LIST',each_group)   
 
-  setHTML('all_Category_details',html_line);
+      for(each_idx in eachGroupCatgList){
+
+        let each_key = eachGroupCatgList[each_idx]
+        let catg_name = getCatgDataMapping(each_key)
+
+        if(catg_name == getCatgDataMapping(selected_catg)) {
+          catg_content_html += getBtnHTMLCode(each_key +'#catg' ,catg_name,true,'chipClickHandling')
+        } else {
+          catg_content_html += getBtnHTMLCode(each_key +'#catg' ,catg_name,false,'chipClickHandling')
+        }
+        
+      }
+
+      catg_content_html += '</div></li></ul>'
+
+  }
+
+  setHTML('all_Category_details',catg_content_html);
 
 }
 

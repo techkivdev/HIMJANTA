@@ -115,53 +115,36 @@
                               <!-- Title -->
                               <div class="col s12">
                                 <div class="row">
-                                  <div class="input-field col s12">
+                                  <div class="input-field">
                                     <!-- <i class="material-icons prefix">message</i> -->
-                                    <input placeholder="Give a title for your topic" type="text" id="title">
+                                    <input placeholder="Give a title for your post" type="text" id="title" data-length="100">
                                     <label id="title_hdr" for="title">Title</label>
+                                    <span class="helper-text" data-error="Wrong" data-success="right">Use only (a-z,A-Z,0-9 )</span>
                                   </div>
                                 </div>
                               </div>
-                           
 
-                               <!-- Tag Section -->
-
-                               <form class="col s12">
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <!-- <i class="material-icons prefix">message</i> -->
-                                        <div class="chips chips-autocomplete" style="margin-top: -3px;"></div>
-                                        <label id="tags_hdr" class="active">Tags</label>
-                                      </div>                                       
-                                </div>                                
-                              </form>
-
-                              <div class="row col s12">
-                                <p id="tag_info" class="container grey-text long-text-nor" style="margin-top: -45px; margin-left: 5px;">Please enter tag name and then press enter.
-                                Do not add any space in tag name.</p>
-                              </div>
 
                               <!-- Category -->
-                                <form class="col s12">
-                                  <div class="row">
-                                    <div class="card" style="border-radius: 10px;">
-                                      <ul class="collection" style="border-radius: 10px;">
-                                        <a href="#!" onclick="selectCategory()"><li class="collection-item avatar">
-                                          <i class="material-icons circle red">dashboard</i>
-                                          <span id="category_hdr" class="title grey-text">Category</span><br>
-                                          <p id="category_value" style="font-size: 21px; margin-top: 3px;" class="purple-text">Please Select ..</p>
-                                          <div class="secondary-content" style="display: none;"><i class="medium black-text material-icons" style="margin-top: -5px;">chevron_right</i></div>
-                                        </li>
-                                        </a>
-                                      </ul>
-                                  </div>
+
+                              <form class="col s12" style="margin-top: -15px;">
+                                <div class="row">
+                                  <p class="grey-text" style="font-size: 12px;">Category</p>
+                                  <a href="#!" onclick="showCategorySection()">
+                                    <div id="create_sec" class="card hoverable white" style="border-radius: 10px;">
+                                      <div id="catg_sec" style="padding: 10px;" class="purple-text">
+                                        <span class="truncate"><b><i id="catg_icon" class="material-icons left" style="margin-top: -1px;">style</i></b><span id="category_value">Please Select Category</span></span>               
+                                      </div>              
+                                    </div>
+                                   </a>
                                 </div>
-                              </form> 
+                              </form>
+
                          
                                <!-- user message -->
                                <form class="col s12">
                                   <div class="row">
-                                      <div class="input-field col s12">
+                                      <div class="input-field">
                                           <!-- <i class="material-icons prefix">message</i> -->
                                           <textarea id="description" placeholder="Please write something !!" class="materialize-textarea"></textarea>
                                           <label id="description_hdr" for="description">Description</label>
@@ -177,13 +160,35 @@
                                 <a onclick="openEditOptionsModal('LIST')" class="waves-effect waves-teal btn-flat black-text tooltipped" data-position="bottom" data-tooltip="List"><i class="medium material-icons left">format_list_bulleted</i></a>
                                 <a onclick="openEditOptionsModal('BLOCKLIST')" class="waves-effect waves-teal btn-flat black-text tooltipped" data-position="bottom" data-tooltip="Block Content"><i class="medium material-icons left">format_line_spacing</i></a>
                                 <a onclick="openEditOptionsModal('LINK')" class="waves-effect waves-teal btn-flat black-text tooltipped" data-position="bottom" data-tooltip="Insert Link"><i class="medium material-icons left">insert_link</i></a>
+                                <a onclick="openEditOptionsModal('IMAGE')" class="waves-effect waves-teal btn-flat black-text tooltipped" data-position="bottom" data-tooltip="Insert Image"><i class="medium material-icons left">wallpaper</i></a>
                               </div>
                               
                               <div class="row col s12 right-align">
-                                <a onclick="previewMessage()" class="waves-effect waves-teal btn-flat blue-text" style="margin-right: 20px;">Preview</a>
+                                <a onclick="showPreviewSection()" class="waves-effect waves-teal btn-flat blue-text" style="margin-right: 20px;">Preview</a>
                               </div>                             
 
                             <!-- end -->
+
+
+
+                             <!-- Tag Section -->
+                             <form class="col s12" style="margin-top: -15px;">
+                              <div class="row">
+
+                                <ul class="collection" style="border-radius: 10px;">
+                                  <li class="collection-item">
+                                  <div id="all_tag_section_value" style="margin-top: 0px;"> 
+                                    <!-- Script Code -->
+                                    <p class="grey-text">Please add tags (max only 6)</p>
+                                  </div>
+                                  <div class="right-align" style="margin-top: 5px;">
+                                    <a onclick="openAddNewTagDialog()" class="waves-effect waves-light btn purple rcorners"><i class="material-icons left">add</i>ADD</a>
+                                  </div>
+                                </li>
+                              </ul>
+
+                              </div>
+                             </form>
                           
                         </div>
                   </div>                  
@@ -191,29 +196,33 @@
 
                 <!-- Configuration -->
                 <div class="card" style="border-radius: 5px;">
-                  <div class="card-content">  
+                  <div class="" style="padding: 10px;">  
                     
-                      <div class="row" style="margin-left: 10px;">
+                      <div class="" style="margin-left: 10px;">
 
                           <div>
-                            <p id="loc_header" class="grey-text">Location Details</p>
-                            <p id="dist_block_details" style="font-size: 13px;" class="black-text">BLOCK, DISTRICT</p>
-                            <p id="state_country_details" class="grey-text" style="font-size: 13px; margin-top: -8px;">STATE, COUNTRY</p>
+                            <div style="display: none;">
+                              <p id="loc_header" class="grey-text">Location Details</p>
+                              <p id="dist_block_details" style="font-size: 13px;" class="black-text">BLOCK, DISTRICT</p>
+                              <p id="state_country_details" class="grey-text" style="font-size: 13px; margin-top: -8px;">STATE, COUNTRY</p>
 
-                            <p id="loc_scope_header" class="grey-text" style="margin-top: 5px;">What is the scope of your post ?</p>
+                              <p id="loc_scope_header" class="grey-text" style="margin-top: 5px;">What is the scope of your post ?</p>
+                            </div>
+
                             <div id="scope_sec" style="margin-top: 5px;">
                               <!-- Script Code  -->
                             </div>
+                            <p id="loc_scope_message" class="grey-text" style="margin-top: 5px;"></p>
 
-                            <p id="curr_loc_header" class="grey-text" style="margin-top: 20px;">Current Location Details</p>
-                            <p id="current_location_status" class="black-text">Inside</p>
-
-                            <p>
-                              <label>
-                                <input id="update_post_curr_loc_check" type="checkbox" checked />
-                                <span id="curr_loc_chk_header">Update post in my current location also.</span>
-                              </label>
-                            </p>
+                            <!-- Current Location -->
+                            <div id="current_loc_section">
+                                <p>
+                                  <label>
+                                    <input id="update_post_curr_loc_check" type="checkbox"/>
+                                    <span id="curr_loc_chk_header">Update post in my current location also.</span>
+                                  </label>
+                                </p>
+                            </div>
 
                           </div>
 
@@ -306,7 +315,45 @@
   </div>
 
    <!-- ***************** END ******************* -->  
+
+
+   <!-- ******************************************* -->
+   <!-- ************ Catgegory List *************** -->
+   <!-- ******************************************* -->
+
+   <div id="category_list_container" style="display:none;" class="container">     
+     <div id="category_list_contant" style="margin-top: 30px;">
+         <!-- Script Code -->
+     </div>
+    </div>
+
+    <div id="catg_close_fl_btn" class="fixed-action-btn" style="display: none;">
+      <a href="#!" onclick="hideCategoryDialog()" class="btn-floating btn-large  red">
+        <i class="large material-icons">close</i>
+      </a>
+    </div>
+   
+   
+  <!-- ***************** END ******************* -->
+
+  <!-- ******************************************* -->
+   <!-- ************ Preview List *************** -->
+   <!-- ******************************************* -->
+
+   <div id="preview_container" style="display:none;" class="container">
+    <div id="preview_contant" style="margin-top: 30px;">
+        <!-- Script Code -->
+    </div>
+   </div>
+
+   <div id="preview_close_fl_btn" class="fixed-action-btn" style="display: none;">
+     <a href="#!" onclick="hidePreviewSection()" class="btn-floating btn-large  red">
+       <i class="large material-icons">close</i>
+     </a>
+   </div>
   
+  
+ <!-- ***************** END ******************* -->
 
   <!-- **************************************** -->
   <!-- Footer -->

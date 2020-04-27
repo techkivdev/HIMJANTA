@@ -2103,6 +2103,23 @@ function getHTMLChecked(id) {
   //displayOutput(id)
   return document.getElementById(id).checked
  }
+
+ // Open New Link
+ function openNewLink(details) {
+     //displayOutput(details)
+     window.open(details); 
+ }
+
+ // get HTML Button Code
+function getBtnHTMLCode(btn_click_value,btn_name,checked=false,btn_click_name='btnClickHandling',color='purple') {
+
+  if(checked) {
+    return '<a href="#!" onclick="'+btn_click_name+'(\'' + btn_click_value  + '\')" class="waves-effect waves-light btn '+color+' white-text" style="border-radius : 5px; margin-right: 10px; margin-bottom: 10px;"><i class="material-icons left">check</i>'+btn_name+'</a>'
+  } else {
+    return '<a href="#!" onclick="'+btn_click_name+'(\'' + btn_click_value  + '\')" class="waves-effect waves-light btn white black-text" style="border-radius : 5px; margin-right: 10px; margin-bottom: 10px;">'+btn_name+'</a>'
+  }
+
+}
  
 
 
@@ -2168,6 +2185,41 @@ function getUserProfileFormat(userData,mode = "default") {
   return content
 
   
+}
+
+// Validate String
+function isInputStringValid(value,count = 20,mode = 'NA',message='') {
+  let isValid = true
+
+  if(value == '') {
+    isValid = false
+    toastMsg(message + 'No Details Found !!')
+  } 
+  
+  // Input Validation 
+  if(value.length > count) {
+    isValid = false
+    toastMsg(message + 'Charecter limits out of range !!')
+  }
+
+    //Regex for Valid Characters i.e. Alphabets, Numbers and Space.
+    if(mode != 'IGNORE') {
+
+        var regex = /^[A-Za-z0-9 ]+$/
+        if(mode == 'IGSP') {
+          regex = /^[A-Za-z0-9]+$/
+        }
+        
+
+      //Validate TextBox value against the Regex.
+      if(!regex.test(value)) {
+        isValid = false
+        toastMsg(message + 'Special Charecter found !!')
+      }
+   }
+
+  return isValid;
+
 }
 
 // ============= Common Data Set =================

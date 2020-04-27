@@ -313,7 +313,7 @@ function askToDeleteCompleteTopic() {
   });
 
 
-  setHTML('askmodel').modal('open');
+  $('#askmodel').modal('open');
 
 }
 
@@ -437,8 +437,8 @@ function openCommentModal(control) {
       <p class="long-text-nor">'+ content + '</p>\
     </div>\
     <div class="modal-footer">\
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>\
-      <a href="#!" onclick="'+onclick_html+'" class="waves-effect waves-green btn-flat">Add Comment</a>\
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>\
+      <a href="#!" onclick="'+onclick_html+'" class="waves-effect waves-green purple btn" style="border-radius: 5px; margin-left: 10px; margin-right: 5px;">Add Comment</a>\
     </div>\
   </div>'
 
@@ -453,7 +453,7 @@ function openCommentModal(control) {
   });
 
   if(validateInput) {
-     setHTML('commentModal').modal('open');
+     $('#commentModal').modal('open');
   }
 
 }
@@ -461,7 +461,7 @@ function openCommentModal(control) {
 // Add new Comment
 function addNewComment() { 
 
-  setHTML('commentModal').modal('close');
+  
  
   var validateInput =  true
 
@@ -475,6 +475,8 @@ function addNewComment() {
 
   if(validateInput) {
        // Update Comment into Comment Section
+
+       $('#commentModal').modal('close');
 
        let forumData = {}
 
@@ -677,7 +679,7 @@ function askToDeleteComment(details) {
   });
 
 
-  setHTML('askmodel').modal('open');
+  $('#askmodel').modal('open');
 
 }
 
@@ -755,7 +757,7 @@ function shareTopic() {
 
 function shareTopicFromMain(docid) {
 
-  setHTML('more_option_modal').modal('close');
+  $('#more_option_modal').modal('close');
 
   let link = 'https://kivtravels.com/prod/post/' + main_page +'?pt='+main_path+'&id='+docid+'&fl=only' 
 
@@ -789,14 +791,22 @@ function likeTopic() {
   if(currentTopicLikeStatus) {
 
     db.collection(getCompPath('FORUM_LIKE')).doc(userLoginData['UUID']).delete().then(function() { 
-      setHTML('like_btn','favorite_border');
+      setHTML('fav_btn_icon','favorite_border');
+      if(each_doc_fav_count == 0) {
+        each_doc_fav_count = 0
+      } else {
+        each_doc_fav_count = each_doc_fav_count - 1
+      }
+      setHTML('fav_btn_count',each_doc_fav_count);
       currentTopicLikeStatus = false
     }); 
 
   } else {
 
-    db.collection(path).doc(userLoginData['UUID']).set({LIKE : 'YES'}).then(function() { 
-      setHTML('like_btn','favorite');
+    db.collection(getCompPath('FORUM_LIKE')).doc(userLoginData['UUID']).set({LIKE : 'YES'}).then(function() { 
+      setHTML('fav_btn_icon','favorite');
+      each_doc_fav_count = each_doc_fav_count + 1
+      setHTML('fav_btn_count',each_doc_fav_count);
       currentTopicLikeStatus = true
     }); 
 
@@ -817,11 +827,11 @@ function likeBtnHandling() {
 
   db.collection(getCompPath('FORUM_LIKE')).doc(userLoginData['UUID']).get()
   .then(doc => {
-    if (!doc.exists) {
-      setHTML('like_btn','favorite_border');
+    if (!doc.exists) {      
+      setHTML('fav_btn_icon','favorite_border');
       currentTopicLikeStatus = false
-    } else {
-      setHTML('like_btn','favorite');
+    } else {     
+      setHTML('fav_btn_icon','favorite');
       currentTopicLikeStatus = true
     }
   })
