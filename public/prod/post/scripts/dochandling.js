@@ -266,91 +266,6 @@ function updateFollower() {
 
 }
 
-
-
-
-// ----- Each DOC Handling ----------
-
-// Ask model to confirm delete
-function askToDeleteCompleteTopic() {
-
-  let mdlContent = ''
-
-  let header = 'Delete Complete Post'
-  let content = 'Are you sure to delete complete topic ?'
-
-  mdlContent += '<div class="left-align z-depth-2" style="border-radius: 5px 5px 0px 0px;">\
-  <div class="card-content" style="padding: 5px;">\
-  <p style="font-size: 30px; margin-left: 30px;">'+ header + '</p>\
-  </div>\
-  </div>'
-
-  mdlContent += '<div class="card-content"><p class="grey-text" style="font-size: 15px; margin-left: 30px;">' + content + '</p>\</div>'
-
-  mdlContent += '<div class="card-content center-align"><a onclick="deleteCompleteTopic()" class="waves-effect waves-teal btn blue white-text rcorners">Yes</a>\
-  <a onclick="askNO()" class="waves-effect waves-teal btn black white-text rcorners" style="margin-left: 2%;">No</a>\
-  </div>'
-
-
-
-  var model = '<!-- Modal Structure -->\
-  <div id="askmodel" class="modal" style="border-radius: 25px;">\
-    <div style="margin-top: -4%;">\
-      <p>'+ mdlContent + '</p>\
-    </div>\
-  </div>'
-
-
-
-  var elem = getHTML('askmodel');
-  if (elem) { elem.parentNode.removeChild(elem); }
-
-
-  $(document.body).append(model);
-
-  $(document).ready(function () {
-    $('.modal').modal();
-  });
-
-
-  $('#askmodel').modal('open');
-
-}
-
-// Delete complete topic
-function deleteCompleteTopic() {
-
-   displayOutput('Delete Post : ' + currentTopicID)  
-
-   // Delete all comments
-   //deleteCollectionDocuments(getCompPath('FORUM_COMMENT'))
-
-   // Delete all like
-   //deleteCollectionDocuments(getCompPath('FORUM_LIKE'))
-   
-
-   // Delete Main topic Document
-
-   showPleaseWaitModel()
-
-  // Just Update DELETESTATUS to true
-
-  
-  db.doc(getCompPath('FORUM_ID')).update({
-    DELETESTATUS: true
-  }).then(ref => {
-
-    db.doc(getCompPath('USER_MYLIST',userLoginData['UUID']) + '/' + currentTopicID).delete().then(function () {
-      hidePleaseWaitModel()
-      toastMsg('Post Deleted !!')
-      resetFilter()
-    });
-
-  });
-  
-
-}
-
 // Delete Collection Documents
 function deleteCollectionDocuments(path) {
 
@@ -722,13 +637,6 @@ function deleteComment(details) {
 
 }
 
-
-// --------------- Edit Topic --------------
-function editTopic() {
-  var url = create_page + '?pt='+encodeURIComponent(main_path)+'&id=' + encodeURIComponent(currentTopicID)+'&fl=' + encodeURIComponent('edit') + '&type=' + encodeURIComponent(allForumTopics[currentTopicID]['DOCTYPE']);
-  window.location.href = url
-}
-
 // Share topic
 function shareTopic() {
   let link = 'https://kivtravels.com/prod/post/' + main_page +'?pt='+main_path+'&id='+currentTopicID+'&fl=only' 
@@ -850,7 +758,7 @@ function bookmarkTopic() {
   
   if(currentTopicBookmarkStatus) {
 
-    db.collection(getCompPath('USER_BOOKMARK',userLoginData['UUID'])).doc(currentTopicID).delete().then(function() { 
+    db.collection(getCompPath('USER_BOOKMARK',userLoginData['UUID'],main_path)).doc(currentTopicID).delete().then(function() { 
       setHTML('bookmark_btn','bookmark_border');
       currentTopicBookmarkStatus = false
       toastMsg('Bookmark Removed !!')
@@ -865,16 +773,18 @@ function bookmarkTopic() {
     bookmarkData['UPHOTO'] = data['UPHOTO']
     bookmarkData['UNAME'] = data['UNAME']
     bookmarkData['DATE'] = data['DATE']
+    bookmarkData['CATG'] = data['CATEGORY']+'#'+data['CATEGORYDIS']
+    bookmarkData['CATGCOLOR'] =  getCatgGroupDetails('GROUP',data['CATEGORYGROUP']).COLOR
     bookmarkData['TITLE'] = data['TITLE']
-    bookmarkData['TYPE'] = 'FORUM'
+    bookmarkData['TYPE'] = main_path
     bookmarkData['SPACE'] = main_path
-    bookmarkData['SPACENAME'] = current_space
 
-    var url = 'post/' + main_page +'?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(currentTopicID) + '&fl=' + encodeURIComponent('only'); 
+
+    var url = 'post/' + main_page +'?pt=' + encodeURIComponent('BOOKMARK') + '&id=' + encodeURIComponent(currentTopicID) + '&fl=' + encodeURIComponent('only'); 
     bookmarkData['LINK'] = url
 
 
-    db.collection(getCompPath('USER_BOOKMARK',userLoginData['UUID'])).doc(currentTopicID).set(bookmarkData).then(function() { 
+    db.collection(getCompPath('USER_BOOKMARK',userLoginData['UUID'],main_path)).doc(currentTopicID).set(bookmarkData).then(function() { 
       setHTML('bookmark_btn','bookmark');
       currentTopicBookmarkStatus = true
       toastMsg('Bookmark Added !!')
@@ -895,7 +805,7 @@ function bookmarkBtnHandling() {
   currentTopicBookmarkStatus = false
 
   if(getLoginUserStatus() == 'true') {
-    db.collection(getCompPath('USER_BOOKMARK',userLoginData['UUID'])).doc(currentTopicID).get()
+    db.collection(getCompPath('USER_BOOKMARK',userLoginData['UUID'],main_path)).doc(currentTopicID).get()
     .then(doc => {
       if (!doc.exists) {
         setHTML('bookmark_btn','bookmark_border');

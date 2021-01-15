@@ -172,11 +172,11 @@
            </div>
 
             <div class="col s12 m8">
-              <div id="user_content" class="right-align" style="margin-top: 10px;">                   
-                <b id="profile_name" style="font-size: 30px;"></b>
-                <p id="profile_email" style="font-size: 15px; margin-top: -5px;" class="white-text"></p>                
+              <div id="user_content" class="right-align" style="margin-top: 30px;">                   
+                <b id="profile_name" class="white-text" style="font-size: 30px;"></b>
+                <!-- <p id="profile_email" style="font-size: 15px; margin-top: -5px;" class="white-text"></p> -->               
 
-                <div class="right-align" style="margin-top: 5px;">                          
+                <div class="right-align" style="margin-top: 10px;">                          
                   <a onclick="showProfileDetails()" class="waves-effect waves-teal btn-flat blue-text" style="margin-top: -15px;"><b>View Details</b></a>
                 </div>
                 
@@ -203,7 +203,7 @@
               <div class="col s12 m12">
                 <div id="user_content_mb" class="center-align" style="margin-top: 0px;">                    
                     <b id="profile_name_mb" style="font-size: 30px;"></b>
-                    <p id="profile_email_mb" style="font-size: 15px; margin-top: -8px;" class="grey-text"></p>
+                    <!-- <p id="profile_email_mb" style="font-size: 15px; margin-top: -8px;" class="grey-text"></p> -->
                     
                     <div class="center-align" style="margin-top: 5px;">                          
                       <a onclick="showProfileDetails()" class="waves-effect waves-teal btn-flat blue-text" style="margin-top: -15px;"><b>View Details</b></a>
@@ -238,7 +238,7 @@
 
                <!-- Option 2 -->
                <div class="col s12 m6">
-                <a href="#!" onclick="divBlockHandling('bookmark')" >
+                <a href="#!" onclick="divBlockHandling('BOOKMARK')" >
                   <div class="card hoverable" style="border-radius: 10px;">
                   <ul class="collection" style="border-radius: 10px;">
                     <li class="collection-item avatar">
@@ -253,7 +253,7 @@
 
                <!-- Option 3 -->
                <div class="col s12 m6">
-                <a href="#!" onclick="divBlockHandling('mylist')" >
+                <a href="#!" onclick="divBlockHandling('MYLIST')" >
                   <div class="card hoverable" style="border-radius: 10px;">
                   <ul class="collection" style="border-radius: 10px;">
                     <li class="collection-item avatar">
@@ -323,70 +323,68 @@
           
                  <!-- Profile -->
               <div style="border-radius: 10px; margin-top: 30px;">
-                <ul class="collapsible">
+                <ul class="collapsible" style="border-radius: 10px;">
                   <li>
-                    <div id="collps_profile_header" class="collapsible-header"><i class="material-icons">perm_contact_calendar</i>Profile Information</div>
+                    <div id="collps_profile_header" class="collapsible-header" style="border-radius: 10px;"><i class="material-icons">perm_contact_calendar</i>Profile Information</div>
                     <div class="collapsible-body">
                   
                       <div class="row" style="margin-top: -10px;">
 
-                        <form class="col s12" style="display: none;">
-                          <div class="row">
+                        <form id="profile_form" class="col s12">
+
+                          <div class="row" style="display: none;">
                             <div class="input-field col s12">
                               <i class="material-icons prefix">account_circle</i>
                               <input disabled value="abc" id="user_name" type="text" class="validate">
                               <label for="user_name">Name</label>
                             </div>
                           </div>
-                        </form>
 
-                        <form class="col s12" style="display: none;">
-                          <div class="row">
-                            <div class="input-field col s12">
-                              <i class="material-icons prefix">account_circle</i>
-                              <input value="  " id="display_user_name" type="text" class="validate">
-                              <label for="display_user_name">Profile Name</label>
-                            </div>
-                          </div>
-                        </form>
-
-                        <form class="col s12" style="display: none;">
-                          <div class="row">
+                          <div class="row" style="display: none;">
                             <div class="input-field col s12">
                               <i class="material-icons prefix">email</i>
                               <input disabled value="abc@gmail.com" id="user_email" type="text" class="validate">
                               <label for="user_email">Email ID</label>
                             </div>
                           </div>
-                        </form>
+                        
 
+                        
+                          <div class="row">
+                            <div class="input-field col s12">
+                              <i class="material-icons prefix">account_circle</i>
+                              <input value="  " id="display_user_name" type="text" class="validate" data-length="15">
+                              <label for="display_user_name">Name</label>
+                              <span class="helper-text" data-error="Max limit reached" data-success="right">Use only (a-z,A-Z,0-9)</span>
+                            </div>
+                          </div>
 
-                        <form class="col s12">
+                        
                           <div class="row">
                             <div class="input-field col s12">
                               <i class="material-icons prefix">phone</i>
-                              <input value="0" id="user_mobile" type="number" class="validate">
+                              <input value="0" id="user_mobile" type="number" class="validate" data-length="10">
                               <label class="active" for="user_mobile">Mobile Number (+91)</label>
+                              <span class="helper-text" data-error="Only 10 digit" data-success="right">Not mandatory</span>
                             </div>
                           </div>
-                        </form>
 
-                        <div class="row col s12" style="display: none;">
-                          <p class="container grey-text long-text-nor" style="font-size: 15px; margin-top: -35px; margin-left: 30px;">Note : It's your own choice to share you mobile number.</p>
-                        </div>
+                        </form>
+                      
 
                         <form class="col s12">
                           <div class="row">
                             <div class="input-field col s12">
                               <i class="material-icons prefix">info</i>                             
-                              <textarea placeholder="Please update bio !!" id="user_bio" class="materialize-textarea"></textarea>
+                              <textarea placeholder="Please update bio !!" id="user_bio" class="materialize-textarea" data-length="150"></textarea>
                               <label for="user_bio">Bio</label>
+                              <span class="helper-text" data-error="Max limit reached" data-success="right"></span>
                             </div>
                           </div>
                         </form>
-
-                        <form class="col s12">
-                          <div class="row">    
+                        
+                       
+                          <div class="row" style="display: none;">    
                               <div class="input-field" style="margin-right: 10px; margin-left: 10px;">
                                 <i class="material-icons prefix">group</i>
                                 <select id="user_age_group">    
@@ -397,10 +395,9 @@
                                 <label>Age Group</label>
                               </div>                           
                           </div>
-                        </form>
-
-                        <form class="col s12">
-                          <div class="row">    
+                        
+                       
+                          <div class="row" style="display: none;">    
                               <div class="input-field" style="margin-right: 10px; margin-left: 10px;">
                                 <i class="material-icons prefix">group_work</i>
                                 <select id="user_profession">    
@@ -411,7 +408,7 @@
                                 <label>Profession</label>
                               </div>                           
                           </div>
-                        </form>
+                        
 
                         
                         <div class="right-align" style="margin-top: 35px; display: none;">                          
@@ -427,66 +424,49 @@
 
               <!-- Location and Address -->
               <div style="border-radius: 10px; margin-top: 30px;">
-                <ul class="collapsible">
+                <ul class="collapsible" style="border-radius: 10px;">
                   <li>
-                    <div id="collps_locaddr_header" class="collapsible-header"><i class="material-icons">person_pin</i>Location & Address</div>
+                    <div id="collps_locaddr_header" class="collapsible-header" style="border-radius: 10px;"><i class="material-icons">person_pin</i>Location & Address</div>
                     <div class="collapsible-body">
 
-                      <div class="row" style="margin-top : -10px;"> 
-                      
-                        <form class="col s12">
-                          <div class="row">
-                            <div class="input-field col s12">                           
-                              <input disabled value="INDIA" id="user_country" type="text" class="validate">
-                              <label for="user_country">Country</label>
-                            </div>
-                          </div>
-                        </form> 
-  
-                        <form class="col s12" style="margin-top: -25px;">
-                          <div class="row">
-                            <div class="input-field col s12">                           
-                              <input disabled value="HIMACHAL PRADESH" id="user_state" type="text" class="validate">
-                              <label for="user_state">State</label>
-                            </div>
-                          </div>
-                        </form> 
+                      <!-- Location Choice -->
+                      <div id="location_choice" class="row">
+                        <!-- Script Code -->
+                      </div>
 
-                        <div class="row col s12" style="margin-top: -40px;">
-                          <p id="user_loc_header" class="black-text">What is your permanent address ? </p>
-                       </div>
+                      <!-- Resident Section -->
+                      <div id="resident_section" class="row" style="margin-top : 0px; display: none;"> 
 
-                        <form class="col s12" style="margin-top: -15px;">
-                          <div class="row">
-                            <div class="input-field col s12">                           
-                              <input disabled value="HIMACHAL PRADESH" id="user_district_blocks" type="text" class="validate">
-                              <label for="user_district_blocks">Block & District</label>
-                            </div>
-                          </div>
-                        </form> 
-  
+                        <!-- Display Location -->
                         <div class="row col s12">
-                          <p id="u_district_details" class="container red-text long-text-nor" style="margin-top: -35px; margin-left: 2px;"></p>
+                          <span class="card-title grey-text"><span id="cntry_state_name" style="font-size: 18px;"></span><i class="material-icons left">location_on</i></span>
                         </div>
 
-                        <form class="col s12" style="margin-top: -10px;">
-                          <div class="row"> 
-                            <div class="right-align">                          
-                              <a onclick="openDistrictSelectorDialog()" class="waves-effect btn purple rcorners z-depth-2" style="margin-top: -15px;">Update Location</a>
-                            </div>                          
-                          </div>
-                        </form>
+                       <form class="row col s12" style="margin-top: -15px;">
+                        <div class="">
+                          <p id="user_loc_header" class="grey-text" style="font-size: 12px; margin-left: 5px;">Choose Block/District</p>
+                          <a href="#!" onclick="openDistrictSelectorDialog()">
+                            <div class="card hoverable white" style="border-radius: 10px;">
+                              <div style="padding: 10px;" class="purple-text">
+                                <span class="truncate"><b><i class="material-icons left" style="margin-top: 0px;">add_location</i></b><span id="user_district_blocks">Please Select location</span></span>               
+                              </div>              
+                            </div>
+                           </a>
+                        </div>
+                      </form>
+
   
-                        <form class="col s12">
+                        <form class="col s12" style="display: none;">
                           <div class="row">
                             <div class="input-field col s12"> 
                               <textarea placeholder="Please update address !!" id="user_address" class="materialize-textarea"></textarea>
                               <label for="user_address">Address</label>
+                              <span class="helper-text" data-error="" data-success="right">Not mandatory</span>
                             </div>
                           </div>
                         </form>
 
-                        <form class="col s12" style="margin-top: -60px;">
+                        <form class="col s12" style="margin-top: -30px;">
                           <div class="row">                            
                             <div class="input-field col s12"> 
                               <p id="user_curr_loc_header" class="black-text">Where are you now ?</p>
@@ -509,18 +489,17 @@
                           </div>
                         </form>
 
-                       
-                        
-                        <form id="current_outside_location_section" class="col s12" style="margin-top: -30px; display: none;">
-                          <div class="row">                           
-                            <div class="card  col s12" style="border-radius: 10px;">
-                              <ul class="collection" style="border-radius: 10px;">
-                                <a href="#!" onclick="openOutsideLocationSelector()"><li class="collection-item"><div id="user_current_location_value" >Alvin<a href="#!" onclick="openOutsideLocationSelector()" class="secondary-content"><i class="material-icons purple-text">chevron_right</i></a></div></li></a>                
-                              </ul>                            
-                            </div>                          
+                        <form id="current_outside_location_section" class="row col s12" style="margin-top: -30px; display: none;" >
+                          <div class="">
+                            <a href="#!" onclick="openCurrLocAreaSelectorDialog()">
+                              <div class="card hoverable white" style="border-radius: 10px;">
+                                <div style="padding: 10px;" class="purple-text">
+                                  <span class="truncate"><b><i class="material-icons right" style="margin-top: 3px;">chevron_right</i></b><span id="user_current_location_value" style="margin-left: 10px;">Please Select location</span></span>               
+                                </div>              
+                              </div>
+                             </a>
                           </div>
-                        </form>
-
+                        </form> 
   
                       </div>
                     
@@ -530,7 +509,7 @@
               </div>
 
               <!-- Privacy Settings -->
-              <div style="border-radius: 10px; margin-top: 30px;">
+              <div style="border-radius: 10px; margin-top: 30px; display: none;">
                 <ul class="collapsible">
                   <li>
                     <div id="collps_privacy_header" class="collapsible-header"><i class="material-icons">verified_user</i>Privacy Settings</div>
@@ -568,11 +547,41 @@
                 </ul>
               </div>
 
+              <!-- Settings -->
+              <div style="border-radius: 10px; margin-top: 30px;">
+                <ul class="collapsible" style="border-radius: 10px;">
+                  <li>
+                    <div id="collps_settings_header" class="collapsible-header" style="border-radius: 10px;"><i class="material-icons">settings</i>Settings</div>
+                    <div class="collapsible-body">
+
+                      <div class="row" style="margin-top: -10px;">
+                       
+                        <form class="col s12" style="display: block;">                          
+                            <div class="row">
+                              <div class="input-field col s12">
+                                <i class="material-icons prefix">language</i>
+                                <select id="user_language">                           
+                                  <option id="ENG" value="ENG">English</option> 
+                                  <option id="HIN" value="HIN">Hindi</option>                         
+                                </select>
+                                <label>Language</label>
+                              </div>
+                        </div>
+                      </form>
+
+
+                      </div>
+                    
+                    </div>
+                  </li>                 
+                </ul>
+              </div>
+
               <!-- Social Links -->
               <div style="border-radius: 10px; margin-top: 30px;">
-                <ul class="collapsible">
+                <ul class="collapsible" style="border-radius: 10px;">
                   <li>
-                    <div id="collps_sociallink_header" class="collapsible-header"><i class="material-icons">insert_link</i>Social Links</div>
+                    <div id="collps_sociallink_header" class="collapsible-header" style="border-radius: 10px;"><i class="material-icons">insert_link</i>Social Links</div>
                     <div class="collapsible-body">
 
                       <div class="row" style="margin-top: -10px;">
@@ -634,37 +643,6 @@
                 </ul>
               </div>
 
-              <!-- Settings -->
-              <div style="border-radius: 10px; margin-top: 30px;">
-                <ul class="collapsible">
-                  <li>
-                    <div id="collps_settings_header" class="collapsible-header"><i class="material-icons">settings</i>Settings</div>
-                    <div class="collapsible-body">
-
-                      <div class="row" style="margin-top: -10px;">
-                       
-                        <form class="col s12" style="display: block;">                          
-                            <div class="row">
-                              <div class="input-field col s12">
-                                <i class="material-icons prefix">language</i>
-                                <select id="user_language">                           
-                                  <option id="ENG" value="ENG">English</option> 
-                                  <option id="HIN" value="HIN">Hindi</option>                         
-                                </select>
-                                <label>Language</label>
-                              </div>
-                        </div>
-                      </form>
-
-
-                      </div>
-                    
-                    </div>
-                  </li>                 
-                </ul>
-              </div>
-
-
                <!-- Check for Term and conditions -->
                <div class="row col s12" style="margin-top: 10px;">
                 <p>
@@ -693,47 +671,22 @@
           </div>
 
            <!-- bookmark Section -->
-           <div id="bookmark_section" class="row" style="margin-top: 0%; display: none;">
+           <div id="bookmark_section" class="container" style="margin-top: 0%; display: none;">
 
-            <div id="filter_drop_sec_bookmark" class="center-align" style="display: none; margin-top: 25px;">
-             <!-- Dropdown Trigger -->
-            <a id="bookmark_filter_drop_down" class='dropdown-trigger btn pink rcorners' href='#' data-target='filter_btn_bookmark'><i class="material-icons left">filter_list</i>All</a>
-
-            <!-- Dropdown Structure -->
-            <ul id='filter_btn_bookmark' class='dropdown-content'>
-              <li><a onclick="filterBookmark('ALL')" href="#!">All</a></li>
-              <li><a onclick="filterBookmark('POST')" href="#!">Post</a></li>
-              <li><a onclick="filterBookmark('EVENT')" href="#!">Event</a></li>              
-            </ul>
-
-          </div>
-
-
-            <div id="user_bookmark" class="container" style="margin-top:10px;">
+            <div id="user_bookmark" style="margin-top:10px;">
               <!-- Script Code -->
             </div> 
+            
           </div>
 
            <!-- mylist Section -->
-           <div id="mylist_section" class="row" style="margin-top: 0%; display: none;">
-
-            <div id="filter_drop_sec_mylist" class="center-align" style="display: none; margin-top: 25px;">
-             <!-- Dropdown Trigger -->
-            <a id="mylist_filter_drop_down" class='dropdown-trigger btn pink rcorners' href='#' data-target='filter_btn_mylist'><i class="material-icons left">filter_list</i>All</a>
-
-            <!-- Dropdown Structure -->
-            <ul id='filter_btn_mylist' class='dropdown-content'>
-              <li><a onclick="filterMyList('ALL')" href="#!">All</a></li>
-              <li><a onclick="filterMyList('POST')" href="#!">Post</a></li>
-              <li><a onclick="filterMyList('EVENT')" href="#!">Event</a></li>              
-            </ul>
-
-          </div>
+           <div id="mylist_section" class="container" style="margin-top: 0%; display: none;">         
 
 
-            <div id="user_mylist" class="container" style="margin-top:10px;">
+            <div id="user_mylist" style="margin-top:10px;">
               <!-- Script Code -->
             </div> 
+
           </div>
 
           <!-- Options Section -->

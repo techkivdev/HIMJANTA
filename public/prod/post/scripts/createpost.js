@@ -426,7 +426,7 @@ function openHelp() {
 function cancelDetails() {
 
   if(updateExistingContentDetails) {
-    var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(id) + '&fl=' + encodeURIComponent('edit');
+    var url = '../login.html' + '?fl=' + encodeURIComponent('MYLIST') + '&fl2=' + encodeURIComponent('POST');
     window.location.href = url
   }  else {
     var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent('NA') + '&fl=' + encodeURIComponent('NA');
@@ -1118,21 +1118,19 @@ function updateMyList(data,docid) {
 
   let myListData = {}
   
-  myListData['UPHOTO'] = data['UPHOTO']
-  myListData['UNAME'] = data['UNAME']
-  myListData['UUID'] = data['UUID']
   myListData['DATE'] = data['DATE']
   myListData['TITLE'] = data['TITLE']
-  myListData['TYPE'] = 'FORUM'
+  myListData['CATG'] = selectedCategoryValue
+  myListData['CATGCOLOR'] = getCatgGroupDetails('GROUP',selectedCategoryGroupValue).COLOR
+  myListData['TYPE'] = main_path
   myListData['CREATEDON'] = data['CREATEDON']
   myListData['SPACE'] = main_path
-  myListData['SPACENAME'] = 'POST'
 
-  var url = 'post/'+main_page+'?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(docid) + '&fl=' + encodeURIComponent('only'); 
+  var url = 'post/'+main_page+'?pt=' + encodeURIComponent('MYLIST') + '&id=' + encodeURIComponent(docid) + '&fl=' + encodeURIComponent('only'); 
   myListData['LINK'] = url
 
 
-  db.collection(getCompPath('USER_MYLIST',userLoginData['UUID'])).doc(docid).set(myListData).then(function() { 
+  db.collection(getCompPath('USER_MYLIST',userLoginData['UUID'],main_path)).doc(docid).set(myListData).then(function() { 
     //toastMsg('Bookmark Added !!')
     hidePleaseWaitModel()
     cancelDetails()
@@ -1162,9 +1160,10 @@ function updateExistPostIntoDatabase(forumData){
    // Create our initial doc
    db.collection(getCompPath('FORUM')).doc(id).set(forumData).then(function() {    
     hidePleaseWaitModel()
+    updateMyList(forumData,id)
     
-    var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(id) + '&fl=' + encodeURIComponent('edit');
-    window.location.href = url
+    //var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(id) + '&fl=' + encodeURIComponent('edit');
+    //window.location.href = url
      
   }); 
 

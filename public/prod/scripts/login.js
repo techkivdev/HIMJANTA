@@ -18,6 +18,9 @@ let userData = {}
 var uuid = ''
 var allDocCmpData = {}
 
+var userLocation = ''
+
+var selectedLocChoice = 'VISITOR'
 var selectedCurrentLocation = ''
 var selectedCurrLocArea = ''
 var selectedCurrLocSubArea = ''
@@ -36,9 +39,11 @@ var bookingData = ''
 var bookingID = ''
 var cancelDetails = ''
 var signinpopup = 'popup'
+
 var wishlistFilter = 'ALL'
 var bookmarkFilter = 'ALL'
 var myListFilter = 'ALL'
+var current_space = 'NA'
 
 var color = 'purple'
 
@@ -71,6 +76,7 @@ function getParams() {
   if(parmFound) {
     fl = params['fl']
     fl2 = params['fl2'].replace('#!','')
+    current_space = fl2
   }
 
 }
@@ -108,6 +114,9 @@ function modifyPageStyle() {
 
     handleBlockView("profile_header_section_mb",'show');
     handleBlockView("profile_header_section");
+
+    getHTML("mylist_section").className = "container-fluid";
+    getHTML("bookmark_section").className = "container-fluid";
     
 
   } else {
@@ -196,14 +205,15 @@ function authDetails() {
 
         //userData['TEST'] = false
 
-        // User Data        
-        userData['NAME'] = displayName
+        // User Data   
+        userData['PROFILENAME'] = displayName     
+        userData['NAME'] = getFilteredProfileName(displayName)
         userData['EMAIL'] = email
         userData['EMAILVERIFIED'] = emailVerified
         userData['PROVIDERDATA'] = providerData
         userData['UUID'] = uuid
         userData['BIO'] = ''
-        userData['DISPNAME'] = displayName 
+        
         userData['AGEGROUP'] = 'CHILDREN'
         userData['PROFESSION'] = 'FREE@I AM FREE'
 
@@ -220,6 +230,7 @@ function authDetails() {
         userData['MOBILE'] = ''
 
         // Location Information
+        userData['LOCCHOICE'] = 'VISITOR'
         userData['COUNTRY'] = defaultLocationConfig['COUNTRY']
         userData['STATE'] = defaultLocationConfig['STATE']
         userData['DISTRICT'] = defaultLocationConfig['DISTRICT']
@@ -428,8 +439,7 @@ function syncProvideDetails() {
       showPleaseWaitModel()
       
       db.collection(getCompPath('USER')).doc(uuid).update({
-        NAME: displayName,
-        DISPNAME: displayName,
+        PROFILENAME: displayName,
         PHOTOURL: photoURL
       }).then(function () {
         displayOutput("Provider Date Updated ..");  
@@ -466,7 +476,7 @@ function updateNewImageRefintoDoc(newImageRef,imgName) {
     PHOTOURL: newImageRef
   }).then(function () {   
     // Update Pool
-    updateUserPoolContent(uuid,[userData['DISPNAME'],newImageRef])
+    updateUserPoolContent(uuid,[userData['NAME'],newImageRef])
 
   });
 
@@ -495,25 +505,11 @@ function updateHTMLPage(updatedUserData) {
   // Update User Profile Content  
 
   $("#profile_name").html(updatedUserData['NAME'])
-  $("#profile_email").html(updatedUserData['EMAIL'])
-  if(updatedUserData['MOBILE'] != '') {
-  $("#profile_mobile").html('+91- '+updatedUserData['MOBILE'])
-  }
-  $("#profile_location").html(updatedUserData['BLOCK'] + ' , ' + updatedUserData['DISTRICT'])
-  $("#profile_bio").html(updatedUserData['BIO'])
-
+  //$("#profile_email").html(updatedUserData['EMAIL'])
 
   // For Mobile 
   $("#profile_name_mb").html(updatedUserData['NAME'])
-  $("#profile_email_mb").html(updatedUserData['EMAIL'])
-  if(updatedUserData['MOBILE'] != '') {
-  $("#profile_mobile_mb").html('+91- '+updatedUserData['MOBILE'])
-  }
-
-  $("#profile_location_mb").html(updatedUserData['BLOCK'] + ' , ' + updatedUserData['DISTRICT'])
-  $("#profile_bio_mb").html(updatedUserData['BIO'])
-
-  
+  //$("#profile_email_mb").html(updatedUserData['EMAIL'])  
 
   getHTML("user_profile_image").src = updatedUserData['PHOTOURL']
   getHTML("user_profile_image_mb").src = updatedUserData['PHOTOURL']
@@ -527,30 +523,32 @@ function updateHTMLPage(updatedUserData) {
   // Update Provider Information
   $("#provider_details").html('Provided By : ' + updatedUserData['PROVIDERDATA'][0]['providerId']);
 
-  $("#u_name").html(updatedUserData['NAME']);
+  $("#u_name").html(updatedUserData['PROFILENAME']);
   $("#u_email").html(updatedUserData['EMAIL']);
 
   setHTMLValue("user_name",updatedUserData['NAME'])
   setHTMLValue("user_email",updatedUserData['EMAIL'])
   setHTMLValue("user_mobile",updatedUserData['MOBILE'])
 
-  setHTMLValue("display_user_name",updatedUserData['DISPNAME'])
+  setHTMLValue("display_user_name",updatedUserData['NAME'])
   setHTMLValue("user_bio",br2nl(updatedUserData['BIO']))
   M.textareaAutoResize($('#user_bio'));
 
   selectedHTML(updatedUserData['AGEGROUP'])
   selectedHTML(updatedUserData['PROFESSION'].split('@')[0])
 
-  
+  setHTML('cntry_state_name',updatedUserData['STATE'] + ' , ' + updatedUserData['COUNTRY'])
+
   selectedDistrict = updatedUserData['DISTRICT']
   selectedBlock = updatedUserData['BLOCK']
 
-  if(updatedUserData['BLOCK'] == defaultLocationConfig['BLOCK']){
-    setHTMLValue("user_district_blocks",updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT'])
-    $('#u_district_details').html(updatedUserData['BLOCK'] + ' - Please update it.')    
-  } else {
-    setHTMLValue("user_district_blocks",updatedUserData['BLOCK'] + ',' + updatedUserData['DISTRICT'])
-  }
+  userLocation = selectedBlock + ',' + selectedDistrict
+  let userLocationHtml = selectedBlock + ' / <b>' + selectedDistrict + '</b>'
+
+  setHTML("user_district_blocks",userLocationHtml) 
+
+  selectedLocChoice = updatedUserData['LOCCHOICE']
+  locationChoiceInit(selectedLocChoice)
   
 
   setHTMLValue("user_address",br2nl(updatedUserData['ADDRESS']))
@@ -583,7 +581,7 @@ function updateHTMLPage(updatedUserData) {
   if(updatedUserData['CURRADDRSTATUS'] == 'INSIDE') {    
     checkedHTML("inside_radbtn",true)
   } else {   
-    setHTML('user_current_location_value',updatedUserData['CURRADDRVALUE'] + '<a href="#!" onclick="openCurrLocAreaSelectorDialog()" class="secondary-content"><i class="material-icons purple-text">chevron_right</i></a>')
+    setHTML('user_current_location_value',selectedCurrLocSubArea + ' / <b>' + selectedCurrLocArea + '</b>')
     checkedHTML("outside_radbtn",true)
     handleBlockView("current_outside_location_section",'show'); 
   }
@@ -700,9 +698,8 @@ function openProfileHelp() {
 // Create and Open Model
 function openDistrictSelectorDialog(){
 
-  let seclectedLocation = getHTMLValue("user_district_blocks");
-  selectedDistrict = seclectedLocation.split(',')[1]
-  selectedBlock = seclectedLocation.split(',')[0]
+  selectedDistrict = userLocation.split(',')[1]
+  selectedBlock = userLocation.split(',')[0]
 
   let allLocationData = getLocationData()
 
@@ -713,16 +710,18 @@ function openDistrictSelectorDialog(){
     let dist_htm = ''
 
     if(selectedDistrict == each_dist) {
-      dist_htm += '<li class="collection-item purple center-align active"><a href="#!" onclick="districtSelected(\''+each_dist+'\')"  class="white-text">'+each_dist+'</a></li>'
+      dist_htm += '<a href="#!" onclick="districtSelected(\''+each_dist+'\')" class="collection-item purple active center-align">'+each_dist+'</a>'
     } else {
-      dist_htm += '<li class="collection-item center-align"><a href="#!" onclick="districtSelected(\''+each_dist+'\')"  class="black-text">'+each_dist+'</a></li>'
+      dist_htm += '<a href="#!" onclick="districtSelected(\''+each_dist+'\')" class="collection-item center-align">'+each_dist+'</a>'
     }
     
     location_html += dist_htm
   }
 
-  location_html = '<h5 style="margin-left : 15px;">Select District</h5><ul class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</ul>'
-
+  location_html = '<div class="purple-card-content z-depth-2" style="padding : 20px;">\
+  <h4 class="white-text">Select District</h4></div>\
+  <div class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</div>'
+ 
   // Open Model
 
   var model = '<!-- Modal Structure -->\
@@ -761,11 +760,13 @@ function openBlockSelectorDialog(){
        
         for(each_idx in each_dist_blocks){
           let each_block = each_dist_blocks[each_idx]
+
           if(selectedBlock == each_block) {
-            block_html += '<li class="collection-item purple center-align active"><a href="#!" onclick="blockSelected(\''+each_block +'\')"  class="white-text">'+each_block+'</a></li>'
+            block_html += '<a href="#!" onclick="blockSelected(\''+each_block+'\')" class="collection-item purple active center-align">'+each_block+'</a>'
           } else {
-            block_html += '<li class="collection-item center-align"><a href="#!" onclick="blockSelected(\''+each_block +'\')"  class="black-text">'+each_block+'</a></li>'
+            block_html += '<a href="#!" onclick="blockSelected(\''+each_block+'\')" class="collection-item center-align">'+each_block+'</a>'
           }
+
         }
     }
    
@@ -773,7 +774,11 @@ function openBlockSelectorDialog(){
     location_html += block_html
   }
 
-  location_html = '<h5 style="margin-left : 15px;">Select Block</h5><ul class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</ul>'
+  location_html = '<div class="purple-card-content z-depth-2" style="padding : 20px;">\
+  <h4 class="white-text">Select Block</h4></div>\
+  <div class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</div>'
+
+  //location_html = '<h5 style="margin-left : 15px;">Select Block</h5><ul class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</ul>'
 
 
   // Open Model
@@ -816,8 +821,12 @@ function blockSelected(name) {
   selectedBlock = name
   //toastMsg(name)
 
-  setHTMLValue("user_district_blocks",selectedBlock + ',' + selectedDistrict)
-  $('#u_district_details').html('You have changed details, Please SAVE it.')
+  userLocation = selectedBlock + ',' + selectedDistrict
+
+  let userLocationHtml = selectedBlock + ' / <b>' + selectedDistrict + '</b>'
+
+  setHTML("user_district_blocks",userLocationHtml)
+  
 
 }
 
@@ -831,7 +840,7 @@ function updateCurrentLocationStatus(details) {
     selectedCurrLocArea = ''
     selectedCurrLocSubArea = ''
     
-    setHTML('user_current_location_value','Please Select Location.'+ '<a href="#!" onclick="openCurrLocAreaSelectorDialog()" class="secondary-content"><i class="material-icons purple-text">chevron_right</i></a>')
+    setHTML('user_current_location_value','Please Select Location.')
   } else {
     handleBlockView("current_outside_location_section");  
     selectedCurrLocArea = defaultLocationConfig['DEFAULT_CURRENT_LOC'].split(',')[1]
@@ -858,15 +867,19 @@ function openCurrLocAreaSelectorDialog(){
     let dist_htm = ''
 
     if(selectedCurrLocArea == each_dist) {
-      dist_htm += '<li class="collection-item purple center-align active"><a href="#!" onclick="currLocAreaSelected(\''+each_dist+'\')"  class="white-text">'+each_dist+'</a></li>'
+      dist_htm += '<a href="#!" onclick="currLocAreaSelected(\''+each_dist+'\')" class="collection-item purple active center-align">'+each_dist+'</a>'
     } else {
-      dist_htm += '<li class="collection-item center-align"><a href="#!" onclick="currLocAreaSelected(\''+each_dist+'\')"  class="black-text">'+each_dist+'</a></li>'
+      dist_htm += '<a href="#!" onclick="currLocAreaSelected(\''+each_dist+'\')" class="collection-item center-align">'+each_dist+'</a>'
     }
     
     location_html += dist_htm
   }
 
-  location_html = '<h5 style="margin-left : 15px;">Select Your Choice</h5><ul class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</ul>'
+  location_html = '<div class="purple-card-content z-depth-2" style="padding : 20px;">\
+  <h4 class="white-text">Area</h4></div>\
+  <div class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</div>'
+
+  //location_html = '<h5 style="margin-left : 15px;">Select Your Choice</h5><ul class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</ul>'
 
   // Open Model
 
@@ -907,18 +920,22 @@ function openCurrLocSubAreaSelectorDialog(){
         for(each_idx in each_dist_blocks){
           let each_block = each_dist_blocks[each_idx]
           if(selectedCurrLocSubArea == each_block) {
-            block_html += '<li class="collection-item purple center-align active"><a href="#!" onclick="currLocSubAreaSelected(\''+each_block +'\')"  class="white-text">'+each_block+'</a></li>'
+            block_html += '<a href="#!" onclick="currLocSubAreaSelected(\''+each_block+'\')" class="collection-item purple active center-align">'+each_block+'</a>'
           } else {
-            block_html += '<li class="collection-item center-align"><a href="#!" onclick="currLocSubAreaSelected(\''+each_block +'\')"  class="black-text">'+each_block+'</a></li>'
+            block_html += '<a href="#!" onclick="currLocSubAreaSelected(\''+each_block+'\')" class="collection-item center-align">'+each_block+'</a>'
           }
-        }
+       }
     }
    
     
     location_html += block_html
   }
 
-  location_html = '<h5 style="margin-left : 15px;">Select Your Choice</h5><ul class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</ul>'
+  location_html = '<div class="purple-card-content z-depth-2" style="padding : 20px;">\
+  <h4 class="white-text">Area</h4></div>\
+  <div class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</div>'
+
+  //location_html = '<h5 style="margin-left : 15px;">Select Your Choice</h5><ul class="collection" style="margin-left : 0px; margin-right : 0px;">' + location_html + '</ul>'
 
 
   // Open Model
@@ -962,7 +979,7 @@ function currLocSubAreaSelected(name) {
   //toastMsg(name)
 
   selectedCurrentLocation = selectedCurrLocSubArea + ',' + selectedCurrLocArea
-  setHTML('user_current_location_value',selectedCurrentLocation + '<a href="#!" onclick="openCurrLocAreaSelectorDialog()" class="secondary-content"><i class="material-icons purple-text">chevron_right</i></a>')
+  setHTML('user_current_location_value',selectedCurrLocSubArea + ' / <b>' + selectedCurrLocArea + '</b>')
 
 
 }
@@ -974,14 +991,14 @@ function currLocSubAreaSelected(name) {
 function divBlockHandling(value) {
   displayOutput(value)
 
-  window.scrollTo(0, 0);
-
-  handleBlockView("main_footer_sec");
-  handleBlockView("top_div_header");
-
   switch(value) {
     
     case "profile":
+
+      window.scrollTo(0, 0);
+
+      handleBlockView("main_footer_sec");
+      handleBlockView("top_div_header");
 
       if (isMobileBrowser()) {
         handleBlockView("profile_header_section_mb");
@@ -995,23 +1012,29 @@ function divBlockHandling(value) {
 
     break;
 
-    case "bookmark":
+    case "BOOKMARK": 
 
-      if (isMobileBrowser()) {
-        handleBlockView("profile_header_section_mb");
-      } else {
-        handleBlockView("profile_header_section");
-      }
-      handleBlockView("options_card_section");
+        handleBlockView("main_footer_sec");
+        handleBlockView("top_div_header");
 
-      handleBlockView("bookmark_section",'show');
-      handleBlockView("close_fl_btn",'show');
+        if (isMobileBrowser()) {
+          handleBlockView("profile_header_section_mb");
+        } else {
+          handleBlockView("profile_header_section");
+        }
+        handleBlockView("options_card_section");
 
-      openBookmarkContent()
+        handleBlockView("bookmark_section",'show');
+        handleBlockView("close_fl_btn",'show');
+
+      openSpaceSelectorAndHandle('BOOKMARK')
 
     break;
 
-    case "mylist":
+    case "MYLIST":     
+
+      handleBlockView("main_footer_sec");
+      handleBlockView("top_div_header");
 
       if (isMobileBrowser()) {
         handleBlockView("profile_header_section_mb");
@@ -1023,7 +1046,7 @@ function divBlockHandling(value) {
       handleBlockView("mylist_section",'show');
       handleBlockView("close_fl_btn",'show');
 
-      openMyListContent()
+      openSpaceSelectorAndHandle('MYLIST')     
 
     break;
 
@@ -1050,6 +1073,8 @@ function hideFullMessageDialog(){
 
   window.scrollTo(0, 0);
 
+  current_space = fl2
+
   handleBlockView("profile_section"); 
   handleBlockView("bookmark_section");
   handleBlockView("mylist_section");
@@ -1065,19 +1090,20 @@ function hideFullMessageDialog(){
   handleBlockView("options_card_section",'show');
   handleBlockView("main_footer_sec",'show');
   handleBlockView("top_div_header",'show');
-
-}
-
-// Hide User Booking
-function hideUserBookingView(){
-
-  handleBlockView("user_bookings_view_section");
-  handleBlockView("user_bookings",'show');
+  
+  displayOutput('Hide all')
 }
 
 // Return to Forum Page
 function returnToForumPage() {
-  window.history.back();
+
+  if(fl=='NA') {
+    window.history.back();
+  } else {
+    var url = 'login.html'
+    window.location.href = url
+  }
+  
 }
 
 // View Term and Conditions
@@ -1105,6 +1131,18 @@ function startupcalls() {
     $('select').formSelect();
   });
 
+  $(document).ready(function() {
+    $('input#user_mobile, input#display_user_name, textarea#user_bio').characterCounter();
+  });
+
+  $(document).ready(function() {
+    $("#profile_form").bind("keypress", function(e) {
+        if (e.keyCode == 13) {
+            return false;
+        }
+    });
+  });
+
 }
 
 
@@ -1113,6 +1151,7 @@ function startupcalls() {
 // ==================================================================
 function saveprofiledata() {
   displayOutput('Save Profile Data ...')
+  let validation = true
 
   showPleaseWaitModel()
 
@@ -1120,7 +1159,7 @@ function saveprofiledata() {
 
   var mobileno = getHTMLValue("user_mobile");
   displayOutput('Mobile Number : ' + mobileno)
-
+  
   if(isStrEmpty(mobileno)) {
     validation = true
   } else {
@@ -1133,28 +1172,38 @@ function saveprofiledata() {
   } else {
     validation = true
   }
-}
-
-var user_accept_terms_checkbox = getHTMLChecked("user_accept_terms_checkbox");
-if(!user_accept_terms_checkbox){
-  validation = false
-  hidePleaseWaitModel()
-  toastMsg(languageContent['MESSAGE_ACCEPT'])
-}
+} 
 
 
 // Read Other Details
-var user_name = getHTMLValue("user_name");
+//var user_name = getHTMLValue("user_name");
+
 var display_user_name = getHTMLValue("display_user_name");
-if(isStrEmpty(display_user_name)) {
-  display_user_name = user_name
+
+if(isInputStringValid(display_user_name,15,'IGSP','Name : ')) {
+  validation = true
+} else {
+  validation = false
+  hidePleaseWaitModel()
 }
 
 var user_bio = getHTMLValue("user_bio");
-user_bio = nl2br(user_bio)
+
+if(!isStrEmpty(user_bio)) {
+    if(isInputStringValid(user_bio,150,'IGNORE','Bio : ')) {
+      validation = true
+      user_bio = nl2br(user_bio)
+    } else {
+      validation = false
+      hidePleaseWaitModel()
+    }
+}
+
+
+
+/*
 var user_age_group = getHTMLValue("user_age_group");
 var user_profession = getHTMLValue("user_profession");
-var user_district_blocks = getHTMLValue("user_district_blocks");
 var user_address = getHTMLValue("user_address");
 user_address = nl2br(user_address)
 
@@ -1163,7 +1212,6 @@ var user_profile_chk = getHTMLChecked("user_profile_chk");
 var user_mobile_chk = getHTMLChecked("user_mobile_chk");
 var user_address_chk = getHTMLChecked("user_address_chk");
 
-var user_language = getHTMLValue("user_language");
 
 var settings_privacy = {
   PROFILE: user_profile_chk,
@@ -1172,6 +1220,11 @@ var settings_privacy = {
   AGEGROUP: true,
   LOCATION: true
 }
+*/
+
+var user_language = getHTMLValue("user_language");
+
+
 
 // User Social Link Details
 var social_link_facebook = getHTMLValue("social_link_facebook");
@@ -1203,43 +1256,67 @@ if(outside_radbtn) {
   current_location_status = 'OUTSIDE'
 }
 
+// Location choice Update
+if(selectedLocChoice == 'VISITOR') {
+  userLocation = defaultLocationConfig['BLOCK']+','+defaultLocationConfig['DISTRICT']
+  //user_address = ''
+  current_location_status = 'INSIDE'
+  selectedCurrentLocation = defaultLocationConfig['DEFAULT_CURRENT_LOC']
+
+} else {
+
+  if(userLocation.split(',')[0] == defaultLocationConfig['BLOCK']) {
+    validation = false
+    hidePleaseWaitModel()
+    toastMsg('Please Select correct Block / District !!')
+  }
+
+  if((current_location_status == 'OUTSIDE') && (selectedCurrentLocation == defaultLocationConfig['DEFAULT_CURRENT_LOC'])) {
+    validation = false
+    hidePleaseWaitModel()
+    toastMsg('Please Select correct Outside Location !!')
+  }
+
+}
+
 // ============================================================
 
-  if (validation) {
-    userData['MOBILE'] = mobileno
-    userData['DISPNAME'] = display_user_name
-    userData['BIO'] = user_bio
-    userData['AGEGROUP'] = user_age_group
-    userData['DISTRICT'] = user_district_blocks.split(',')[1]
-    userData['BLOCK'] = user_district_blocks.split(',')[0]
-    userData['ADDRESS'] = user_address
-    userData['LANG'] = user_language
+var user_accept_terms_checkbox = getHTMLChecked("user_accept_terms_checkbox");
+if(!user_accept_terms_checkbox){
+  validation = false
+  hidePleaseWaitModel()
+  toastMsg(languageContent['MESSAGE_ACCEPT'])
+}
 
+  if (validation) {   
     db.collection(getCompPath('USER')).doc(uuid).update({
       MOBILE: mobileno,
-      DISPNAME: display_user_name,
+      NAME: display_user_name,
       BIO: user_bio,
-      AGEGROUP: user_age_group,
-      PROFESSION: user_profession,
-      DISTRICT: user_district_blocks.split(',')[1],
-      BLOCK: user_district_blocks.split(',')[0],
-      ADDRESS: user_address,
+      DISTRICT: userLocation.split(',')[1],
+      BLOCK: userLocation.split(',')[0],
       LANG: user_language,
+      LOCCHOICE: selectedLocChoice,
       CURRADDRSTATUS: current_location_status,
       CURRADDRVALUE: selectedCurrentLocation,
-      SHOWSETTINGS: settings_privacy,
       SOCIALINK: social_links
     }).then(function () {
-      displayOutput("Mobile details Updated ..");
-
-      updateSessionData(userData)
+      displayOutput("Profile Updated ..");
 
       // Update Pool
-      updateUserPoolContent(uuid,[userData['DISPNAME'],userData['PHOTOURL']])
+      updateUserPoolContent(uuid,[userData['NAME'],userData['PHOTOURL']])
 
     });
 
   }
+
+}
+
+// get filtered Profile Name
+function getFilteredProfileName(name) {
+
+  name = name.replace(/\s/g,'');
+  return name.substring(0,40);
 
 }
 
@@ -1256,7 +1333,7 @@ function updateUserPoolContent(uuid, dataArray) {
 
   /*
   let data = {
-      DISPNAME: dataArray[0],
+      NAME: dataArray[0],
       PHOTOURL: dataArray[1]
   }
 
@@ -1275,6 +1352,97 @@ function updateUserPoolContent(uuid, dataArray) {
   */
 }
 
+// ---------- Location Choice Handling --------------
+
+// Location Choice Init
+function locationChoiceInit(choice) {
+
+  let btn_html_code = ''
+
+  selectedLocChoice = choice
+
+  if(choice == 'VISITOR') {
+    btn_html_code += '<a onclick="locationChoiceInit(\'' + 'VISITOR' + '\')" class="waves-effect btn purple rcorners z-depth-2" style="margin-right: 10px;"><i class="material-icons left">check</i>Visitor</a>'
+    btn_html_code += '<a onclick="locationChoiceInit(\'' + 'RESIDENT' + '\')" class="waves-effect btn white black-text rcorners" style="margin-right: 10px;">Resident</a>' 
+    
+    handleBlockView('resident_section')
+
+  } else {
+    btn_html_code += '<a onclick="locationChoiceInit(\'' + 'VISITOR' + '\')" class="waves-effect btn white black-text rcorners" style="margin-right: 10px;">Visitor</a>'
+    btn_html_code += '<a onclick="locationChoiceInit(\'' + 'RESIDENT' + '\')" class="waves-effect btn purple rcorners z-depth-2" style="margin-right: 10px;"><i class="material-icons left">check</i>Resident</a>'
+    
+    handleBlockView('resident_section','show')
+  }
+ 
+  setHTML('location_choice',btn_html_code)
+
+}
+
+// =========== SPACE Handling =============
+
+// Change My List Space
+function openSpaceSelectorAndHandle(mode='MYLIST') {
+
+  let select_space_html = ''
+  
+  let start_fcn_name = 'filterMyList'
+  if(mode == 'BOOKMARK') {
+    start_fcn_name = 'filterBookmark'
+  }
+
+  select_space_html += createChipLikeCard('Post','green',start_fcn_name,'POST','style')
+  select_space_html += createChipLikeCard('Event','blue',start_fcn_name,'EVENT','add')
+
+  // Close Function
+  let return_fcn_name = 'returnToForumPage()'
+  if(fl == 'NA') {
+    return_fcn_name = 'hideFullMessageDialog()'
+  }
+
+  // Open Model
+
+  var model = '<!-- Modal Structure -->\
+  <div id="space_selected_dialog" class="modal modal-fixed-footer">\
+    <div class="">\
+    <div style="padding : 10px;">'+ select_space_html + '</div>\
+    </div>\
+    <div class="modal-footer">\
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat" onclick="'+return_fcn_name+'">Close</a>\
+    </div>\
+  </div>'
+
+  var elem = getHTML('space_selected_dialog');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+    $('.modal').modal({'dismissible': false});
+  });
+
+  // Handling According to Current Space
+  if(current_space == 'NA') {
+
+    $('#space_selected_dialog').modal('open');
+
+  } else {
+
+    if(fl == 'MYLIST') {
+      filterMyList(current_space)
+    } 
+    
+    if(fl == 'BOOKMARK') {
+      filterBookmark(current_space)
+    }
+
+  }
+
+  
+
+}
+
 // --------------- Bookmark Handling -----------------
 // Open Bookmark details
 function openBookmarkContent() {
@@ -1284,7 +1452,7 @@ function openBookmarkContent() {
   // Get Bookmark Details    
   showPleaseWaitModel()
 
-    db.collection(getCompPath('USER_BOOKMARK',uuid)).get().then((querySnapshot) => {
+    db.collection(getCompPath('USER_BOOKMARK',uuid,current_space)).get().then((querySnapshot) => {
       displayOutput("SIZE : " + querySnapshot.size);
   
       if (querySnapshot.size == 0) {
@@ -1302,11 +1470,9 @@ function openBookmarkContent() {
         // Read Each Documents
         querySnapshot.forEach((doc) => {
           let data = doc.data()
-          //displayOutput(mark_data);
-
-         
-         if((data['SPACENAME'] == bookmarkFilter) || (bookmarkFilter == 'ALL')) {         
-                  
+          //displayOutput(mark_data);   
+                
+          /*
           content += '<ul class="collection"><a href="'+data['LINK']+'"><li class="collection-item avatar black-text hoverable">\
           <img src="'+data['UPHOTO']+'" alt="" class="circle">\
           <span class="title black-text"><b>'+data['UNAME']+'</b></span>\
@@ -1314,8 +1480,28 @@ function openBookmarkContent() {
           <b>'+data['TITLE']+'</b>\
           <a href="#!" onclick="removeBookmark(\'' + doc.id  + '\')" class="secondary-content"><i class="material-icons">delete</i></a>\
         </li></a></ul>'  
+        
 
-         }
+       content +=  '<div class="col s12 m5"><a href="'+data['LINK']+'"><div class="card-panel '+data['CATGCOLOR']+'" style="border-radius : 10px;">\
+       <span class="white-text">'+data['TITLE']+'</span>\
+       <br><div><div class="chip" style="margin-top : 10px;">'+data['CATG'].split('#')[1]+'</div>\
+       <div class="chip" style="margin-top : 10px;"><img src="'+data['UPHOTO']+'" alt="">'+data['UNAME']+'</div></div>\
+   </div></a></div>'
+   */
+
+   content += '<div class="col s12 m6"><div class="card" style="border-radius : 10px;">\
+   <div class="" style="padding : 10px;">\
+   <span class=" black-text">'+data['TITLE']+'</span>\
+   <div>\
+   <div class="chip '+data['CATGCOLOR']+' white-text" style="margin-top : 10px;">'+data['CATG'].split('#')[1]+'</div>\
+   <div class="chip" style="margin-top : 10px;"><img src="'+data['UPHOTO']+'" alt="">'+data['UNAME']+'</div>\
+   </div>\
+    </div>\
+   <div class="" style="padding : 10px;">\
+   <li class="divider" tabindex="-1" style="margin-top: 0px;"></li>\
+   <span class="card-title white-text text-darken-4"><a href="'+data['LINK']+'" class="blue-text" style="font-size : 15px;">Read More</a><a href="#!" onclick="askToRemoveBookmark(\'' + doc.id  + '\')"><i class="material-icons right red-text" style="margin-top : 10px;">delete</i></a></span>\
+   </div>\
+ </div></div>'
 
           // Check Document count
           docCount++;
@@ -1326,7 +1512,6 @@ function openBookmarkContent() {
            //viewModel('My Wishlist',content);           
            $('#user_bookmark').html(content)  
 
-           handleBlockView("filter_drop_sec_bookmark",'show');
 
           }
   
@@ -1342,16 +1527,67 @@ function openBookmarkContent() {
 // Filter Bookmark Content 
 function filterBookmark(details) {
 
+  $('#space_selected_dialog').modal('close');
+
   bookmarkFilter = details
-  $('#bookmark_filter_drop_down').html('<i class="material-icons left">filter_list</i>' + details)
+
+  current_space = details
 
   openBookmarkContent()
+
+}
+
+// Ask model to confirm delete
+function askToRemoveBookmark(details) {
+
+  let mdlContent = ''
+
+  let header = 'Remove Bookmark'
+  let content = 'Are you sure to Remove Bookmark ?'
+
+  mdlContent += '<div class="left-align z-depth-2" style="border-radius: 5px 5px 0px 0px;">\
+  <div class="card-content" style="padding: 5px;">\
+  <p style="font-size: 30px; margin-left: 30px;">'+ header + '</p>\
+  </div>\
+  </div>'
+
+  mdlContent += '<div class="card-content"><p class="grey-text" style="font-size: 15px; margin-left: 30px;">' + content + '</p>\</div>'
+
+  mdlContent += '<div class="card-content center-align"><a onclick="removeBookmark(\'' + details + '\')" class="waves-effect waves-teal btn blue white-text rcorners">Yes</a>\
+  <a onclick="askNO(\'' + 'askmodel' + '\')" class="waves-effect waves-teal btn black white-text rcorners" style="margin-left: 2%;">No</a>\
+  </div>'
+
+
+
+  var model = '<!-- Modal Structure -->\
+  <div id="askmodel" class="modal" style="border-radius: 25px;">\
+    <div style="margin-top: -4%;">\
+      <p>'+ mdlContent + '</p>\
+    </div>\
+  </div>'
+
+
+
+  var elem = getHTML('askmodel');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+
+  $('#askmodel').modal('open');
 
 }
 
 // Remove Bookmark
 function removeBookmark(details) {
     displayOutput(details)
+
+    $('#askmodel').modal('close');
 
     db.collection(getCompPath('USER_BOOKMARK',uuid)).doc(details).delete().then(function () {
       displayOutput("Bookmark Deleted !!");  
@@ -1366,14 +1602,14 @@ function removeBookmark(details) {
 
 // --------------- Mylist Handling -----------------
 // Open Mylist details
-function openMyListContent() {
+function openMyListContent() {  
 
   let content = ''
 
   // Get Bookmark Details    
   showPleaseWaitModel()
 
-    db.collection(getCompPath('USER_MYLIST',uuid)).orderBy('CREATEDON', 'desc').get().then((querySnapshot) => {
+    db.collection(getCompPath('USER_MYLIST',uuid,current_space)).orderBy('CREATEDON', 'desc').get().then((querySnapshot) => {
       displayOutput("SIZE : " + querySnapshot.size);
   
       if (querySnapshot.size == 0) {
@@ -1392,20 +1628,43 @@ function openMyListContent() {
         querySnapshot.forEach((doc) => {
           let data = doc.data()
           //displayOutput(mark_data);
+           
+          let edit_line_arg = current_space.toLowerCase() + '/createpost.html#'+current_space+'#'+doc.id
+          
+          content += '<div class="col s12 m6"><div class="card" style="border-radius : 10px;">\
+   <div class="" style="padding : 10px;">\
+   <span class=" black-text">'+data['TITLE']+'</span>\
+   <div>\
+   <div class="chip '+data['CATGCOLOR']+' white-text" style="margin-top : 10px;">'+data['CATG'].split('#')[1]+'</div>\
+   </div>\
+    </div>\
+   <div class="" style="padding : 10px;">\
+   <li class="divider" tabindex="-1" style="margin-top: 0px;"></li>\
+   <span class="activator card-title white-text text-darken-4"><a href="'+data['LINK']+'" class="blue-text" style="font-size : 15px;">Read More</a><i class="material-icons right black-text" style="margin-top : 10px;">more_vert</i></span>\
+   </div>\
+   <div class="card-reveal">\
+   <span class="card-title grey-text text-darken-4"><i class="material-icons right">close</i></span>\
+   <div>\
+       <a onclick="editTopic(\'' + edit_line_arg + '\')" class="waves-effect waves-light btn-flat blue-text style="margin-right: 20px;><i class="medium material-icons left">edit</i>EDIT</a>\
+       <a onclick="askToDeleteCompleteTopic(\'' + current_space+ '#'+doc.id + '\')" class="waves-effect waves-light btn-flat red-text"><i class="medium material-icons left">delete</i>DELETE</a>\
+   </div>\
+ </div>\
+ </div></div>'
 
-          // <a href="#!" onclick="removeBookmark(\'' + doc.id  + '\')" class="secondary-content"><i class="material-icons">delete</i></a>\
+ /*
+        
+        content +=  '<div class="col s12 m6"><a href="'+data['LINK']+'"><div class="card" style="border-radius : 10px; padding: 10px;">\
+          <span class="black-text">'+data['TITLE']+'</span>\
+          <br><div class="chip '+data['CATGCOLOR']+' white-text" style="margin-top : 10px;">'+data['CATG'].split('#')[1]+'</div>\
+          <li class="divider" tabindex="-1" style="margin-top: 5px;"></li>\
+          <div class="right-align" style="">\
+              <a onclick="editTopic()" class="waves-effect waves-light btn-flat blue-text style="margin-right: 20px;><i class="medium material-icons left">edit</i></a>\
+              <a onclick="askToDeleteCompleteTopic()" class="waves-effect waves-light btn-flat red-text"><i class="medium material-icons left">delete</i></a>\
+              </div>\
+      </div></a></div>'
+      */
+
          
-         if((data['SPACENAME'] == myListFilter) || (myListFilter == 'ALL')) {         
-                  
-          content += '<ul class="collection"><a href="'+data['LINK']+'"><li class="collection-item avatar black-text hoverable">\
-          <img src="'+data['UPHOTO']+'" alt="" class="circle">\
-          <span class="title black-text"><b>'+data['UNAME']+'</b></span>\
-          <p class="grey-text">'+data['DATE'] +' , '+ data['SPACENAME'] +'</p><br>\
-          <b>'+data['TITLE']+'</b>\
-          <a href="#!" class="secondary-content"><i class="material-icons"></i></a>\
-        </li></a></ul>'  
-
-         }
 
           // Check Document count
           docCount++;
@@ -1414,9 +1673,7 @@ function openMyListContent() {
            hidePleaseWaitModel()
            content += ''
            //viewModel('My Wishlist',content);           
-           $('#user_mylist').html(content)  
-
-           handleBlockView("filter_drop_sec_mylist",'show');
+           $('#user_mylist').html(content) 
 
           }
   
@@ -1432,8 +1689,10 @@ function openMyListContent() {
 // Filter MyList Content 
 function filterMyList(details) {
 
+  $('#space_selected_dialog').modal('close');
+
   myListFilter = details
-  $('#mylist_filter_drop_down').html('<i class="material-icons left">filter_list</i>' + details)
+  current_space = details
 
   openMyListContent()
 
@@ -1450,6 +1709,87 @@ function removeMyList(details) {
       openMyListContent()
     });
 
+
+}
+
+
+// Each Document Handling
+
+// --------------- Edit Topic --------------
+function editTopic(details) {
+  var url = details.split('#')[0] + '?pt='+encodeURIComponent(details.split('#')[1])+'&id=' + encodeURIComponent(details.split('#')[2])+'&fl=' + encodeURIComponent('edit') + '&type=' + encodeURIComponent(details.split('#')[1]);
+  window.location.href = url
+}
+
+// ----- Each DOC Handling ----------
+
+// Ask model to confirm delete
+function askToDeleteCompleteTopic(details) {
+
+  let mdlContent = ''
+
+  let header = 'Delete Complete Post'
+  let content = 'Are you sure to delete complete topic ?'
+
+  mdlContent += '<div class="left-align z-depth-2" style="border-radius: 5px 5px 0px 0px;">\
+  <div class="card-content" style="padding: 5px;">\
+  <p style="font-size: 30px; margin-left: 30px;">'+ header + '</p>\
+  </div>\
+  </div>'
+
+  mdlContent += '<div class="card-content"><p class="grey-text" style="font-size: 15px; margin-left: 30px;">' + content + '</p>\</div>'
+
+  mdlContent += '<div class="card-content center-align"><a onclick="deleteCompleteTopic(\'' + details + '\')" class="waves-effect waves-teal btn blue white-text rcorners">Yes</a>\
+  <a onclick="askNO()" class="waves-effect waves-teal btn black white-text rcorners" style="margin-left: 2%;">No</a>\
+  </div>'
+
+
+
+  var model = '<!-- Modal Structure -->\
+  <div id="askmodel" class="modal" style="border-radius: 25px;">\
+    <div style="margin-top: -4%;">\
+      <p>'+ mdlContent + '</p>\
+    </div>\
+  </div>'
+
+
+
+  var elem = getHTML('askmodel');
+  if (elem) { elem.parentNode.removeChild(elem); }
+
+
+  $(document.body).append(model);
+
+  $(document).ready(function () {
+    $('.modal').modal();
+  });
+
+
+  $('#askmodel').modal('open');
+
+}
+
+// Delete complete topic
+function deleteCompleteTopic(details) {
+
+   displayOutput('Delete Post : ' + details.split('#')[1])  
+
+   showPleaseWaitModel()
+  
+  db.doc(getCompPath('FORUM_P') + '/' + details.split('#')[0] + '/' +details.split('#')[1]).update({
+    DELETESTATUS: true
+  }).then(ref => {
+
+    db.doc(getCompPath('USER_MYLIST',uuid) + '/' + details.split('#')[1]).delete().then(function () {
+      hidePleaseWaitModel()
+      toastMsg('Post Deleted !!')
+     
+      openMyListContent()
+
+    });
+
+  });
+  
 
 }
 
@@ -1511,7 +1851,7 @@ function getENGlangContent() {
     ACCEPT: 'I Accept',
 
     // Location Section
-    LOC_HEADER: 'What is your permanent address ?',
+    LOC_HEADER: 'Choose Block/District',
     CURR_LOC_HEADER: 'Where are you now ?',
 
     // Display Message 

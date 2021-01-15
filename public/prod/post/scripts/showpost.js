@@ -8,6 +8,7 @@
 
 // ---------- Main Variables ---------
 var main_path = 'NA'
+var pt = 'NA'
 var id = 'NA'
 var fl = 'NA'
 
@@ -20,6 +21,7 @@ var currentTopicBookmarkStatus = false
 
 // Current SPACE
 var current_space = 'POST'
+main_path = current_space
 
 // Main Filter
 var filter_enable_flag = false
@@ -88,8 +90,7 @@ function getParams() {
   }
   displayOutput(params); 
 
-  main_path = params['pt']
-  displayOutput(main_path)
+  pt = params['pt']
   id = params['id']
   fl = params['fl'].replace('#!','')
 
@@ -365,6 +366,8 @@ function readAllForums() {
        handleBlockView("main_progress");
        handleBlockView("more_btn");
 
+       handleBlockView("col_section_1","show");
+
      } else {    
  
      snapshot.forEach(doc => { 
@@ -379,6 +382,8 @@ function readAllForums() {
     // updateForumContent()
 
     handleBlockView("main_progress");   
+
+    handleBlockView("col_section_1","show");
 
     window.scrollTo(horizScrollPosition, vertiScrollPosition);
  
@@ -901,11 +906,12 @@ function viewEachTopic(details) {
     if(data['CURRADDRSUBLOC'] != 'NA') {
       user_location_sec_html += ' <div class="chip" style="margin-bottom : 10px;">'+data['CURRADDRSUBLOC'] + ',' + data['CURRADDRLOC']+'</div>'
     }
-    }
+  }
 
   setHTML('published_location_user_sec',user_location_sec_html);
 
-  setHTML('tags',getChipWithBorderFromListLoc(data['TAGS']));
+  setHTML('each_doc_tags',getChipWithBorderFromListLoc(data['TAGS']));
+  
 
   setHTML('desc',getDescription(data));
 
@@ -925,13 +931,7 @@ function viewEachTopic(details) {
   // Btn Handling
   likeBtnHandling()
   bookmarkBtnHandling()
-
-  // Handle user_control_section Section
-  handleBlockView("user_control_section");
-  if(userLoginData['UUID'] == data['UUID']) {
-    handleBlockView("user_control_section",'show');    
-  }
-
+  
   // Display all comments
   updateCommentMessage('FIRST')
 
@@ -1046,46 +1046,39 @@ function getChipWithBorderFromListLoc(details){
 function chipClickHandling(details) {
   displayOutput(details)
 
-  horizScrollPosition = 0
-  vertiScrollPosition = 0
-
-  if(details.split('#')[1] == 'tag') {
-
-    selected_tag.push(details.split('#')[0])
-
-    selected_tag = Array.from(new Set(selected_tag));
-
-    saveConfig(details.split('#')[1],selected_tag)
-
-    hideFullMessageDialog()
-    closeFilterSection()
-    updateHTMLPage()
-
-  } else {
-
-    saveConfig(details.split('#')[1],details.split('#')[0])
-
-    hideFullMessageDialog()
-    closeFilterSection()
-    updateHTMLPage()
-
+  let isenable = true
+  // Enable or Disable Operation
+  if(pt!=main_path) {
+    isenable = false
   }
-  
 
-  /*
-  if(details.split('#')[1] == 'scope') {
-    saveConfig('LOCSCOPE',details.split('#')[0])
+  if(isenable) {
+      horizScrollPosition = 0
+      vertiScrollPosition = 0
 
-    closeFilterSection()
+      if(details.split('#')[1] == 'tag') {
 
-    updateHTMLPage()
+        selected_tag.push(details.split('#')[0])
 
-  } else {
-    // Open URL with tag filter option
-    var url = main_page + '?pt=' + encodeURIComponent(main_path) + '&id=' + encodeURIComponent(details.split('#')[0]) + '&fl=' + encodeURIComponent(details.split('#')[1]);
-    window.location.href = url
-  } 
-  */
+        selected_tag = Array.from(new Set(selected_tag));
+
+        saveConfig(details.split('#')[1],selected_tag)
+
+        hideFullMessageDialog()
+        closeFilterSection()
+        updateHTMLPage()
+
+      } else {
+
+        saveConfig(details.split('#')[1],details.split('#')[0])
+
+        hideFullMessageDialog()
+        closeFilterSection()
+        updateHTMLPage()
+
+      }
+
+    }
 
 }
 
@@ -1149,7 +1142,15 @@ function hideFullMessageDialog() {
 
 // Back to previous page
 function backTopreviousPage() {
-  window.history.back();
+
+  if(fl=='only') {
+    var url = '../login.html' + '?fl=' + encodeURIComponent(pt) + '&fl2=' + encodeURIComponent(current_space);
+    window.location.href = url
+
+  } else {
+    window.history.back();
+  }
+  
 }
 
 // ------------ Search Dialog ----------------
@@ -1308,11 +1309,6 @@ function startUpCalls() {
       hoverEnabled: false
     });
   });
-
-
-  (element).querySelector('mousedown', (e) => {
-    e.preventDefault()
-   })
 
 }
 

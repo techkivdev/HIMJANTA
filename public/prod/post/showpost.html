@@ -29,8 +29,8 @@
     <!-- Dropdown Structure -->
     <ul id="nav_dropdown" class="dropdown-content">       
       <li><a href="../login.html?fl=NA&fl2=NA">Profile</a></li>  
-      <li id="my_list_menu" style="display: none;"><a href="../login.html?fl=mylist&fl2=NA">My List</a></li> 
-      <li id="my_bookmark_menu" style="display: none;" ><a href="../login.html?fl=bookmark&fl2=NA">My Bookmark</a></li>  
+      <li id="my_list_menu" style="display: none;"><a href="../login.html?fl=MYLIST&fl2=POST">My List</a></li> 
+      <li id="my_bookmark_menu" style="display: none;" ><a href="../login.html?fl=BOOKMARK&fl2=POST">My Bookmark</a></li>  
       <li id="manage_post_menu" style="display: none;"><a href="managepost.html">Manage Posts</a></li>              
     </ul>
 
@@ -99,7 +99,7 @@
 
       <!-- **************************************** -->
       <!--   Coloum Section 1  --> 
-      <div id="col_section_1" style="display: block; margin-bottom: 100px;"> 
+      <div id="col_section_1" style="display: none; margin-bottom: 100px;"> 
 
          <!-- User Section -->
          <div id="userinfo_section" style="display: block;">
@@ -374,8 +374,8 @@
 
           <div style="margin-left: 5px; margin-right: 5px; margin-top: 10px;">
 
-            <div id="tags" style="margin-top: 10px;">
-              Tags
+            <div id="each_doc_tags" style="margin-top: 10px;">
+              
             </div>   
             
               <!-- Extra Details  -->
@@ -384,13 +384,7 @@
                 <div id="published_location_user_sec">
                  <!-- Script Code -->
                 </div>  
-              </div>
-          
-            
-            <div id="user_control_section" class="right-align" style="margin-top: 5px; height: 50px; margin-bottom: 10px; margin-right: 0px; display: none;">
-              <a onclick="editTopic()" class="waves-effect waves-light btn-flat blue-text style="margin-right: 20px;><i class="medium material-icons left">edit</i>edit</a>
-              <a onclick="askToDeleteCompleteTopic()" class="waves-effect waves-light btn-flat red-text"><i class="medium material-icons left">delete</i>delete</a>                      
-            </div>       
+              </div>  
           
 
           </div>

@@ -284,17 +284,3 @@ function createFilterCategoryDetails() {
   setHTML('all_Category_details',catg_content_html);
 
 }
-
-// Create chip like card with title and close btn
-function createChipLikeCard(name,color,icon_name="close") {
-
-  let card_html = '<div class="">\
-  <div class="card hoverable '+color+'" style="border-radius: 10px;">\
-    <div style="padding: 10px;" class="white-text">\
-      <span class="card-title truncate"><i class="material-icons left" style="margin-top: 5px;">'+icon_name+'</i>'+name+'</span>\
-      </div>\
-      </div>\
-      </div>'
-  return card_html
-
-}

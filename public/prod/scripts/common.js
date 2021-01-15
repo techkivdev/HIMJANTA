@@ -66,7 +66,7 @@ M.AutoInit();
 // =======================================================
 // ------------ PATH Handling ---------------------------
 
-function getCompPath(name,uuid='NA'){
+function getCompPath(name,uuid='NA',space='NA'){
 
   var coll_base_path = baseProductionPrivatePath
   let path = ''
@@ -97,14 +97,14 @@ function getCompPath(name,uuid='NA'){
     // USER FOLLOWER PATH
     case 'USER_MYLIST' :
     {
-      path = 'USER/ALLUSER/' +  uuid + '/MYLIST'
+      path = 'USER/ALLUSER/' +  uuid + '/SPACE/'+space+'/MYLIST'
       break;
     }
 
     // USER BOOKMARK PATH
     case 'USER_BOOKMARK' :
     {
-      path = 'USER/ALLUSER/' +  uuid + '/BOOKMARK'
+      path = 'USER/ALLUSER/' +  uuid + '/SPACE/'+space+ '/BOOKMARK'
       break;
     }
 
@@ -2120,6 +2120,20 @@ function getBtnHTMLCode(btn_click_value,btn_name,checked=false,btn_click_name='b
   }
 
 }
+
+// Create chip like card with title and close btn
+function createChipLikeCard(name,color,btn_click_fcn,btn_click_arg,icon_name="close") {
+
+  let card_html = '<a href="#!" onclick="'+btn_click_fcn+'(\'' + btn_click_arg  + '\')"><div class="">\
+  <div class="card hoverable '+color+'" style="border-radius: 10px;">\
+    <div style="padding: 10px;" class="white-text">\
+      <span class="card-title truncate"><i class="material-icons left" style="margin-top: 5px;">'+icon_name+'</i>'+name+'</span>\
+      </div>\
+      </div>\
+      </div> </a>'
+  return card_html
+
+}
  
 
 
@@ -2153,27 +2167,28 @@ function getUserProfileFormat(userData,mode = "default") {
     content += '<p class=grey-text style="font-size : 13px;">Mobile Number</p><p style="margin-top: -25px;">'+userData['MOBILE']+'</p>'
   } 
 
-  content += '<p class=grey-text style="font-size : 13px;">Age Group</p><p style="margin-top: -25px;">'+userData['AGEGROUP']+'</p>'
-  content += '<p class=grey-text style="font-size : 13px;">Profession</p><p style="margin-top: -25px;">'+userData['PROFESSION'].split('@')[1]+'</p>'
+  //content += '<p class=grey-text style="font-size : 13px;">Age Group</p><p style="margin-top: -25px;">'+userData['AGEGROUP']+'</p>'
+  //content += '<p class=grey-text style="font-size : 13px;">Profession</p><p style="margin-top: -25px;">'+userData['PROFESSION'].split('@')[1]+'</p>'
    
-  content += '<li class="divider" tabindex="-1"></li>'
+  //content += '<li class="divider" tabindex="-1"></li>'
 
-  if(userData['BLOCK'] == defaultLocationConfig_loc['BLOCK']){
-    content += '<p class=grey-text style="font-size : 13px;">Permanent Location</p><p style="margin-top: -25px;">'+ userData['DISTRICT']+'</p>'
-  } else {
-    content += '<p class=grey-text style="font-size : 13px;">Permanent Location</p><p style="margin-top: -25px;">'+userData['BLOCK']+','+userData['DISTRICT']+'</p>'
-  }  
+  if(userData['LOCCHOICE'] == 'VISITOR') {
+    content += '<p class=grey-text style="font-size : 13px;">You Are</p><p style="margin-top: -25px;">'+ userData['LOCCHOICE']+'</p>'
+  } else {   
+    content += '<p class=grey-text style="font-size : 13px;">Resident Location</p><p style="margin-top: -25px;">'+userData['BLOCK']+' / <b>'+userData['DISTRICT']+'</b></p>'
+  }
  
-  
+  /*
   if(userData['ADDRESS'] != ''){   
     content += '<p class=grey-text style="font-size : 13px;">Address</p><p class="long-text-nor" style="margin-top: -20px;">'+userData['ADDRESS']+'</p>'
   } 
+  */
 
   if(userData['CURRADDRSTATUS'] == 'INSIDE') {    
-    content += '<p class=grey-text style="font-size : 13px;">Current Location Status</p><p style="margin-top: -25px;">'+'Inside ' + defaultLocationConfig_loc['STATE'] +'</p>'
+    //content += '<p class=grey-text style="font-size : 13px;">Current Location</p><p style="margin-top: -25px;">'+'Inside ' + defaultLocationConfig_loc['STATE'] +'</p>'
   } else {    
-    content += '<p class=grey-text style="font-size : 13px;">Current Location Status</p><p style="margin-top: -25px;">'+'Outside ' + defaultLocationConfig_loc['STATE'] +'</p>'
-    content += '<p class=grey-text style="font-size : 13px;">Location</p><p style="margin-top: -25px;">'+userData['CURRADDRVALUE']+'</p>'
+    //content += '<p class=grey-text style="font-size : 13px;">Current Location</p><p style="margin-top: -25px;">'+'Outside ' + defaultLocationConfig_loc['STATE'] +'</p>'
+    content += '<p class=grey-text style="font-size : 13px;">Current Location</p><p style="margin-top: -25px;">'+userData['CURRADDRVALUE']+'</p>'
   }
 
   content += '<li class="divider" tabindex="-1"></li>'
@@ -2191,7 +2206,7 @@ function getUserProfileFormat(userData,mode = "default") {
 function isInputStringValid(value,count = 20,mode = 'NA',message='') {
   let isValid = true
 
-  if(value == '') {
+  if(isStrEmpty(value)) {
     isValid = false
     toastMsg(message + 'No Details Found !!')
   } 
